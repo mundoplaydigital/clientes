@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mundo Play Digital - Gestão e Controle de Assinaturas</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Personalização do Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        /* Ocultar scrollbar nos menus horizontalmente */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="h-full text-slate-100 bg-slate-950 flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- ========================================== -->
+    <!-- 1. TELA DE LOGIN                           -->
+    <!-- ========================================== -->
+    <section id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950">
+        <!-- Efeitos de iluminação de fundo -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-40 -left-40 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <!-- Card de Login -->
+        <div class="w-full max-w-md bg-slate-900/90 border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative z-10 space-y-6">
+            
+            <!-- Logotipo e Título -->
+            <div class="text-center space-y-2">
+                <div class="inline-flex p-3 bg-brand-500/10 border border-brand-500/20 text-brand-500 rounded-2xl shadow-lg shadow-brand-500/10 mb-1">
+                    <i data-lucide="tv" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight text-white flex items-center justify-center gap-2">
+                    Mundo Play <span class="text-xs px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 font-extrabold tracking-wider">DIGITAL</span>
+                </h1>
+                <p class="text-xs text-slate-400">Entre para gerenciar suas assinaturas e clientes</p>
+            </div>
+
+            <!-- Alerta de Erro -->
+            <div id="loginErrorAlert" class="hidden p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-400 flex items-center gap-2">
+                <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                <span>Usuário ou senha incorretos.</span>
+            </div>
+
+            <!-- Formulário de Login -->
+            <form id="loginForm" onsubmit="handleAuthLogin(event)" class="space-y-4 text-xs">
+                <div class="space-y-1.5">
+                    <label for="loginUsername" class="block font-semibold text-slate-300">Usuário de Acesso</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                        <input type="text" id="loginUsername" required placeholder="Digite seu usuário" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-500 transition-all">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <label for="loginPassword" class="block font-semibold text-slate-300">Senha</label>
+                    </div>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                        <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-10 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-500 transition-all">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                            <i data-lucide="eye" id="eyeIcon" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-1">
+                    <label class="flex items-center gap-2 cursor-pointer text-slate-400 text-xs">
+                        <input type="checkbox" id="rememberMe" checked class="w-4 h-4 bg-slate-950 border-slate-800 rounded text-brand-500 focus:ring-brand-500/20">
+                        <span>Lembrar sessão neste dispositivo</span>
+                    </label>
+                </div>
+
+                <button type="submit" id="loginSubmitBtn" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-600/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                    <span>Entrar no Painel</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 2. APLICAÇÃO PRINCIPAL (SISTEMA)           -->
+    <!-- ========================================== -->
+    <div id="mainApp" class="hidden flex-1 flex flex-col min-h-screen max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8 pb-20 md:pb-10">
+
+        <!-- Barra de Cabeçalho Superior -->
+        <header class="py-4 border-b border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sticky top-0 bg-slate-950/95 backdrop-blur-md z-30">
+            <div class="flex items-center gap-3.5">
+                <div class="p-3 bg-brand-500/10 border border-brand-500/25 text-brand-400 rounded-2xl shadow-lg shadow-brand-500/10">
+                    <i data-lucide="tv" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                        Mundo Play <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 tracking-wider">DIGITAL</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium">Painel de Controle de Assinaturas</p>
+                </div>
+            </div>
+
+            <!-- Botões de Ação do Topo -->
+            <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
+                <button onclick="switchTab('sheets')" class="flex items-center gap-2 px-4 py-2.5 text-xs md:text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-xl border border-slate-700/80 shadow-md transition-all active:scale-95">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i>
+                    <span id="syncStatusBadge">Google Sheets</span>
+                </button>
+                <button onclick="openClientModal()" class="flex items-center justify-center gap-2 px-5 py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white rounded-xl shadow-lg shadow-brand-600/25 transition-all active:scale-95">
+                    <i data-lucide="user-plus" class="w-4.5 h-4.5"></i>
+                    <span>Novo Cliente</span>
+                </button>
+                <button onclick="handleLogout()" class="p-2.5 bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl border border-slate-800 transition-all shadow-md" title="Sair da Conta">
+                    <i data-lucide="log-out" class="w-4.5 h-4.5"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Menu de Navegação por Abas -->
+        <div class="my-5 bg-slate-900/90 border border-slate-800/90 p-1.5 rounded-2xl shadow-xl backdrop-blur-md">
+            <nav class="flex items-center space-x-2 overflow-x-auto text-sm no-scrollbar">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-5 py-3 font-bold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap transition-all bg-gradient-to-r from-brand-600 to-emerald-600 text-white shadow-lg shadow-brand-500/25 border border-brand-400/30 scale-[1.02]">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+                </button>
+                <button onclick="switchTab('clients')" id="tab-clients" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent transition-all">
+                    <i data-lucide="users" class="w-5 h-5"></i> Lista de Clientes 
+                    <span id="countTotalTab" class="ml-1 px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700/60">0</span>
+                </button>
+                <button onclick="switchTab('alerts')" id="tab-alerts" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent transition-all">
+                    <i data-lucide="bell-ring" class="w-5 h-5 text-amber-400"></i> Alertas Urgentes 
+                    <span id="countAlertsTab" class="ml-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/30">0</span>
+                </button>
+                <button onclick="switchTab('sheets')" id="tab-sheets" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent transition-all">
+                    <i data-lucide="database" class="w-5 h-5 text-emerald-400"></i> Conexão Sheets
+                </button>
+            </nav>
+        </div>
+
+        <!-- ABA 1: DASHBOARD -->
+        <main id="view-dashboard" class="space-y-6">
+            
+            <!-- Grid de Indicadores KPI -->
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between hover:border-slate-700 transition-all shadow-sm">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-xs font-medium">Total de Clientes</span>
+                        <div class="p-2 bg-slate-800 rounded-xl text-slate-300">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span id="kpiTotal" class="text-2xl font-bold text-white">0</span>
+                        <span class="text-[10px] text-slate-500 block mt-0.5">Capacidade: 500+ registros</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between hover:border-emerald-500/30 transition-all shadow-sm">
+                    <div class="flex items-center justify-between text-emerald-400">
+                        <span class="text-xs font-medium">Assinaturas Ativas</span>
+                        <div class="p-2 bg-emerald-500/10 rounded-xl">
+                            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span id="kpiActive" class="text-2xl font-bold text-emerald-400">0</span>
+                        <span id="kpiActivePct" class="text-[10px] text-emerald-500/80 block mt-0.5">0% do total</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between hover:border-amber-500/30 transition-all shadow-sm">
+                    <div class="flex items-center justify-between text-amber-400">
+                        <span class="text-xs font-medium">Vence em 7d</span>
+                        <div class="p-2 bg-amber-500/10 rounded-xl">
+                            <i data-lucide="clock" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span id="kpiExpiring" class="text-2xl font-bold text-amber-400">0</span>
+                        <span class="text-[10px] text-amber-500/80 block mt-0.5">Requer notificação</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between hover:border-rose-500/30 transition-all shadow-sm">
+                    <div class="flex items-center justify-between text-rose-400">
+                        <span class="text-xs font-medium">Assinaturas Vencidas</span>
+                        <div class="p-2 bg-rose-500/10 rounded-xl">
+                            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span id="kpiExpired" class="text-2xl font-bold text-rose-400">0</span>
+                        <span class="text-[10px] text-rose-500/80 block mt-0.5">Cobrança pendente</span>
+                    </div>
+                </div>
+
+                <div class="col-span-2 lg:col-span-1 bg-gradient-to-br from-slate-900 to-slate-900/90 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+                    <div class="flex items-center justify-between text-brand-400">
+                        <span class="text-xs font-medium">Receita Estimada</span>
+                        <div class="p-2 bg-brand-500/10 rounded-xl">
+                            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span id="kpiRevenue" class="text-2xl font-bold text-white">R$ 0,00</span>
+                        <span class="text-[10px] text-slate-400 block mt-0.5">Soma de contratos válidos</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos e Ações Rápidas -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Gráfico de Status -->
+                <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+                            <i data-lucide="pie-chart" class="w-4 h-4 text-brand-400"></i>
+                            Visão Geral das Assinaturas
+                        </h2>
+                    </div>
+                    <div class="h-64 relative">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Lista de Ações Rápidas -->
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+                                <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+                                Cobranças Iminentes
+                            </h2>
+                            <span class="text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full">Alertas do Dia</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">Clientes que requerem aviso imediato via WhatsApp.</p>
+
+                        <div id="urgentList" class="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+                            <!-- Preenchido dinamicamente -->
+                        </div>
+                    </div>
+
+                    <button onclick="switchTab('alerts')" class="mt-4 w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl text-center transition-all shadow-sm">
+                        Ver Todos os Alertas
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ABA 2: LISTA DE CLIENTES -->
+        <main id="view-clients" class="hidden space-y-4">
+            
+            <!-- Barra de Ferramentas e Pesquisa -->
+            <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-lg">
+                <div class="relative flex-1">
+                    <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInput" oninput="filterClients()" placeholder="Pesquisar por cliente, telefone ou plano..." class="w-full pl-11 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                </div>
+
+                <div class="flex items-center gap-2.5 overflow-x-auto pb-1 md:pb-0">
+                    <select id="filterStatus" onchange="filterClients()" class="bg-slate-950 border border-slate-800 text-sm text-slate-200 font-medium rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all cursor-pointer">
+                        <option value="ALL">Todos os Status</option>
+                        <option value="ACTIVE">🟢 Ativas</option>
+                        <option value="EXPIRING">🟡 Vence em 7 Dias</option>
+                        <option value="EXPIRED">🔴 Vencidas</option>
+                    </select>
+
+                    <select id="filterRenewal" onchange="filterClients()" class="bg-slate-950 border border-slate-800 text-sm text-slate-200 font-medium rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all cursor-pointer">
+                        <option value="ALL">Todas Renovações</option>
+                        <option value="Automática">Automática</option>
+                        <option value="Manual">Manual</option>
+                    </select>
+
+                    <button onclick="resetFilters()" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700/70 transition-all shadow-sm" title="Limpar Filtros">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabela de Clientes -->
+            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl overflow-hidden shadow-sm">
+                <!-- Visão Desktop -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-950/80 text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-800">
+                            <tr>
+                                <th class="p-3.5">ID</th>
+                                <th class="p-3.5">Cliente</th>
+                                <th class="p-3.5">Plano / Serviço</th>
+                                <th class="p-3.5">Valor (R$)</th>
+                                <th class="p-3.5">Vencimento</th>
+                                <th class="p-3.5">Renovação</th>
+                                <th class="p-3.5">Status</th>
+                                <th class="p-3.5 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientsTableBody" class="divide-y divide-slate-800/60">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Visão Mobile (Cards) -->
+                <div id="clientsMobileContainer" class="md:hidden divide-y divide-slate-800/80">
+                    <!-- Preenchido via JS -->
+                </div>
+
+                <!-- Estado Vazio -->
+                <div id="emptyState" class="hidden py-12 text-center text-slate-500">
+                    <i data-lucide="user-x" class="w-10 h-10 mx-auto mb-2 opacity-40"></i>
+                    <p class="text-sm font-medium">Nenhum cliente encontrado.</p>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ABA 3: ALERTAS URGENTES -->
+        <main id="view-alerts" class="hidden space-y-4">
+            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                        <i data-lucide="bell" class="w-5 h-5 text-amber-400"></i>
+                        Central de Notificação WhatsApp
+                    </h2>
+                </div>
+                <p class="text-xs text-slate-400">
+                    Clique no botão de notificação para disparar uma mensagem pré-formatada direta para o WhatsApp do cliente.
+                </p>
+            </div>
+
+            <div id="alertsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Preenchido via JS -->
+            </div>
+        </main>
+
+        <!-- ABA 4: CONEXÃO GOOGLE SHEETS -->
+        <main id="view-sheets" class="hidden space-y-6">
+            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+                        <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-white">Integração com o Google Planilhas</h2>
+                        <p class="text-xs text-slate-400">Salve e sincronize os dados do seu aplicativo com a nuvem do Google Sheets.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-xs text-slate-300">
+                    <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                        <h3 class="font-semibold text-emerald-400 flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">1</span>
+                            URL do Web App (Google Apps Script)
+                        </h3>
+                        <p class="text-slate-400 leading-relaxed">
+                            Insira o endereço publicado do seu Google Apps Script para sincronizar alterações automaticamente:
+                        </p>
+                        <div class="flex gap-2">
+                            <input type="url" id="sheetApiUrl" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500">
+                            <button onclick="saveSheetsUrl()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition-all">
+                                Sincronizar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <button onclick="exportJSON()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs flex items-center gap-2 border border-slate-700 transition-all">
+                            <i data-lucide="download" class="w-4 h-4"></i> Exportar Cópia de Segurança (JSON)
+                        </button>
+                        <button onclick="document.getElementById('importFile').click()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs flex items-center gap-2 border border-slate-700 transition-all">
+                            <i data-lucide="upload" class="w-4 h-4"></i> Importar Arquivo
+                        </button>
+                        <input type="file" id="importFile" class="hidden" accept=".json" onchange="importJSON(event)">
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- MODAL 1: CADASTRAR / EDITAR CLIENTE -->
+    <div id="clientModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+            <button onclick="closeClientModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <h3 id="modalTitle" class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                <i data-lucide="user-plus" class="w-5 h-5 text-brand-400"></i> Cadastrar Novo Cliente
+            </h3>
+
+            <form id="clientForm" onsubmit="handleFormSubmit(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="clientId">
+
+                <div>
+                    <label class="block text-slate-400 mb-1">Nome do Cliente *</label>
+                    <input type="text" id="clientName" required placeholder="Ex: João Silva" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1">WhatsApp / Contato *</label>
+                        <input type="tel" id="clientPhone" required placeholder="Ex: 21998765432" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1">Plano / Serviço *</label>
+                        <input type="text" id="clientPlan" required placeholder="Ex: Mensal Premium" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Valor (R$) *</label>
+                        <input type="number" step="0.01" id="clientPrice" required placeholder="149.90" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1">Data Vencimento *</label>
+                        <input type="date" id="clientExpiration" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1">Renovação</label>
+                        <select id="clientRenewal" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                            <option value="Automática">Automática</option>
+                            <option value="Manual">Manual</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 mb-1">Observações</label>
+                    <textarea id="clientNotes" rows="2" placeholder="Notas adicionais sobre o cliente..." class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+                    <button type="button" onclick="closeClientModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-lg shadow-lg shadow-brand-600/20">Salvar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: DISPARADOR WHATSAPP -->
+    <div id="waModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeWaModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl">
+                    <i data-lucide="message-square" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white">Enviar Mensagem WhatsApp</h3>
+                    <p id="waTargetName" class="text-xs text-slate-400"></p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">Modelo de Mensagem:</label>
+                    <select id="waTemplate" onchange="updateWaPreview()" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white">
+                        <option value="EXPIRING">🟡 Lembrete: Vence em breve</option>
+                        <option value="EXPIRED">🔴 Cobrança: Assinatura Vencida</option>
+                        <option value="RENEWED">🟢 Confirmação: Renovada com sucesso</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 mb-1">Pré-visualização do Texto:</label>
+                    <textarea id="waPreviewText" rows="5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 font-mono text-[11px] leading-relaxed"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button onclick="copyWaText()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg flex items-center gap-1.5">
+                        <i data-lucide="copy" class="w-4 h-4"></i> Copiar
+                    </button>
+                    <button onclick="openWhatsAppDirect()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg shadow-emerald-600/20">
+                        <i data-lucide="send" class="w-4 h-4"></i> Abrir WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGICA JAVASCRIPT INTEGRADA -->
+    <script>
+        // Função para obter datas relativas para os dados demonstrativos
+        function getRelativeDate(daysOffset) {
+            const d = new Date();
+            d.setDate(d.getDate() + daysOffset);
+            return d.toISOString().split('T')[0];
+        }
+
+        // Dados Iniciais de Teste
+        const sampleClients = [
+            { id: "101", name: "João Silva", phone: "21998765432", plan: "Mensal Premium", price: 149.90, expiration: getRelativeDate(-2), renewal: "Automática", notes: "Contato prévio realizado" },
+            { id: "102", name: "Maria Oliveira", phone: "21987654321", plan: "Trimestral VIP", price: 399.00, expiration: getRelativeDate(3), renewal: "Manual", notes: "Enviar comprovante PIX" },
+            { id: "103", name: "Carlos Eduardo", phone: "21976543210", plan: "Anual VIP", price: 1200.00, expiration: getRelativeDate(15), renewal: "Automática", notes: "" },
+            { id: "104", name: "Ana Beatriz", phone: "21965432109", plan: "Mensal VIP", price: 199.90, expiration: getRelativeDate(0), renewal: "Automática", notes: "Vence hoje" },
+            { id: "105", name: "Lucas Mendes", phone: "21954321098", plan: "Semestral Standard", price: 699.00, expiration: getRelativeDate(5), renewal: "Manual", notes: "" },
+            { id: "106", name: "Fernanda Santos", phone: "21943210987", plan: "Mensal Padrão", price: 99.90, expiration: getRelativeDate(30), renewal: "Automática", notes: "" },
+            { id: "107", name: "Rodrigo Lima", phone: "21932109876", plan: "Anual Padrão", price: 899.00, expiration: getRelativeDate(-10), renewal: "Manual", notes: "Pendente confirmação" }
+        ];
+
+        let clients = [];
+        let currentWaClient = null;
+        let chartInstance = null;
+
+        // Ao carregar a página
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            checkAuthSession();
+            loadClientsData();
+            initChart();
+        });
+
+        // 1. Gestão de Autenticação
+        function checkAuthSession() {
+            const isAuth = localStorage.getItem('mundoplay_authenticated');
+            if (isAuth === 'true') {
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+            } else {
+                document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('hidden');
+            }
+        }
+
+        function handleAuthLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const pwd = document.getElementById('loginPassword').value;
+
+            if (username === 'Bruno.Sampaio' && pwd === '190285') {
+                document.getElementById('loginErrorAlert').classList.add('hidden');
+                const btn = document.getElementById('loginSubmitBtn');
+                btn.disabled = true;
+                btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Acessando...</span>`;
+                lucide.createIcons();
+
+                setTimeout(() => {
+                    localStorage.setItem('mundoplay_authenticated', 'true');
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>Entrar no Painel</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+                    checkAuthSession();
+                    renderAll();
+                }, 600);
+            } else {
+                document.getElementById('loginErrorAlert').classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('mundoplay_authenticated');
+            checkAuthSession();
+        }
+
+        function togglePasswordVisibility() {
+            const pwd = document.getElementById('loginPassword');
+            const icon = document.getElementById('eyeIcon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                pwd.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        // 2. Carregar e Salvar Dados
+        function loadClientsData() {
+            const stored = localStorage.getItem('mundoplay_clients') || localStorage.getItem('subskrita_clients');
+            if (stored) {
+                try {
+                    clients = JSON.parse(stored);
+                } catch(e) {
+                    clients = sampleClients;
+                }
+            } else {
+                clients = sampleClients;
+                saveClientsData();
+            }
+            renderAll();
+        }
+
+        function saveClientsData() {
+            localStorage.setItem('mundoplay_clients', JSON.stringify(clients));
+            renderAll();
+        }
+
+        // Cálculo de Status do Cliente
+        function getClientStatus(expDateStr) {
+            if (!expDateStr) return { code: 'ACTIVE', label: '🟢 Ativa', class: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' };
+            
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const exp = new Date(expDateStr + 'T00:00:00');
+            const diffTime = exp.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 0) {
+                return { code: 'EXPIRED', label: '🔴 Vencida', days: Math.abs(diffDays), class: 'bg-rose-500/10 text-rose-400 border-rose-500/20' };
+            } else if (diffDays <= 7) {
+                return { code: 'EXPIRING', label: `🟡 Vence em ${diffDays === 0 ? 'hoje' : diffDays + 'd'}`, days: diffDays, class: 'bg-amber-500/10 text-amber-400 border-amber-500/20' };
+            } else {
+                return { code: 'ACTIVE', label: '🟢 Ativa', days: diffDays, class: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' };
+            }
+        }
+
+        // 3. Renderização da Interface
+        function renderAll() {
+            renderKPIs();
+            renderTable();
+            renderUrgentList();
+            renderAlertsTab();
+            updateChart();
+            lucide.createIcons();
+        }
+
+        function renderKPIs() {
+            const total = clients.length;
+            let active = 0, expiring = 0, expired = 0, revenue = 0;
+
+            clients.forEach(c => {
+                const st = getClientStatus(c.expiration);
+                if (st.code === 'ACTIVE') {
+                    active++;
+                    revenue += parseFloat(c.price || 0);
+                } else if (st.code === 'EXPIRING') {
+                    expiring++;
+                    revenue += parseFloat(c.price || 0);
+                } else if (st.code === 'EXPIRED') {
+                    expired++;
+                }
+            });
+
+            document.getElementById('kpiTotal').innerText = total;
+            document.getElementById('countTotalTab').innerText = total;
+            document.getElementById('kpiActive').innerText = active;
+            document.getElementById('kpiActivePct').innerText = total > 0 ? `${Math.round((active/total)*100)}% do total` : '0%';
+            document.getElementById('kpiExpiring').innerText = expiring;
+            document.getElementById('kpiExpired').innerText = expired;
+            document.getElementById('countAlertsTab').innerText = expiring + expired;
+
+            document.getElementById('kpiRevenue').innerText = revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('clientsTableBody');
+            const mobileContainer = document.getElementById('clientsMobileContainer');
+            
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filterStatus = document.getElementById('filterStatus').value;
+            const filterRenewal = document.getElementById('filterRenewal').value;
+
+            tbody.innerHTML = '';
+            mobileContainer.innerHTML = '';
+
+            const filtered = clients.filter(c => {
+                const st = getClientStatus(c.expiration);
+                const matchesSearch = c.name.toLowerCase().includes(searchTerm) || 
+                                      c.phone.includes(searchTerm) || 
+                                      c.plan.toLowerCase().includes(searchTerm);
+                
+                const matchesStatus = filterStatus === 'ALL' || st.code === filterStatus;
+                const matchesRenewal = filterRenewal === 'ALL' || c.renewal === filterRenewal;
+
+                return matchesSearch && matchesStatus && matchesRenewal;
+            });
+
+            if (filtered.length === 0) {
+                document.getElementById('emptyState').classList.remove('hidden');
+            } else {
+                document.getElementById('emptyState').classList.add('hidden');
+            }
+
+            filtered.forEach(c => {
+                const st = getClientStatus(c.expiration);
+                const formattedPrice = parseFloat(c.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                const formattedDate = c.expiration ? new Date(c.expiration + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+
+                // Linha Desktop
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition border-b border-slate-800/40";
+                tr.innerHTML = `
+                    <td class="p-3.5 font-mono text-[11px] text-slate-500">#${c.id}</td>
+                    <td class="p-3.5 font-medium text-white">
+                        <div>${c.name}</div>
+                        <div class="text-[10px] text-slate-500 font-mono">${c.phone}</div>
+                    </td>
+                    <td class="p-3.5 text-slate-300">${c.plan}</td>
+                    <td class="p-3.5 font-semibold text-slate-200">${formattedPrice}</td>
+                    <td class="p-3.5 text-slate-300">${formattedDate}</td>
+                    <td class="p-3.5">
+                        <span class="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">${c.renewal || 'Manual'}</span>
+                    </td>
+                    <td class="p-3.5">
+                        <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full border ${st.class}">${st.label}</span>
+                    </td>
+                    <td class="p-3.5 text-right">
+                        <div class="flex items-center justify-end gap-1.5">
+                            <button onclick="openWaModal('${c.id}')" class="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition" title="WhatsApp">
+                                <i data-lucide="message-square" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="editClient('${c.id}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition" title="Editar">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteClient('${c.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg transition" title="Excluir">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+
+                // Card Mobile
+                const card = document.createElement('div');
+                card.className = "p-4 space-y-3";
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-[10px] font-mono text-slate-500">#${c.id}</span>
+                            <h4 class="text-sm font-bold text-white">${c.name}</h4>
+                            <p class="text-xs text-slate-400">${c.plan} • <span class="font-semibold text-slate-200">${formattedPrice}</span></p>
+                        </div>
+                        <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full border ${st.class}">${st.label}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-800/60">
+                        <span>Vencimento: <strong class="text-slate-200">${formattedDate}</strong></span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openWaModal('${c.id}')" class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg font-medium text-[11px] flex items-center gap-1">
+                                <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Zap
+                            </button>
+                            <button onclick="editClient('${c.id}')" class="p-1 bg-slate-800 text-slate-300 rounded-lg">
+                                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="deleteClient('${c.id}')" class="p-1 bg-rose-500/10 text-rose-400 rounded-lg">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                mobileContainer.appendChild(card);
+            });
+        }
+
+        function renderUrgentList() {
+            const urgentContainer = document.getElementById('urgentList');
+            urgentContainer.innerHTML = '';
+
+            const urgentClients = clients.filter(c => {
+                const st = getClientStatus(c.expiration);
+                return st.code === 'EXPIRING' || st.code === 'EXPIRED';
+            }).slice(0, 5);
+
+            if (urgentClients.length === 0) {
+                urgentContainer.innerHTML = `<p class="text-xs text-slate-500 py-4 text-center">Nenhuma cobrança pendente no momento ✨</p>`;
+                return;
+            }
+
+            urgentClients.forEach(c => {
+                const st = getClientStatus(c.expiration);
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between p-2.5 bg-slate-950/60 border border-slate-800/80 rounded-xl text-xs";
+                item.innerHTML = `
+                    <div class="truncate pr-2">
+                        <div class="font-medium text-white truncate">${c.name}</div>
+                        <div class="text-[10px] text-slate-500">${c.plan}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[9px] font-semibold px-2 py-0.5 rounded-full border ${st.class}">${st.label}</span>
+                        <button onclick="openWaModal('${c.id}')" class="p-1.5 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg transition">
+                            <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+                urgentContainer.appendChild(item);
+            });
+        }
+
+        function renderAlertsTab() {
+            const container = document.getElementById('alertsList');
+            container.innerHTML = '';
+
+            const alertClients = clients.filter(c => {
+                const st = getClientStatus(c.expiration);
+                return st.code === 'EXPIRING' || st.code === 'EXPIRED';
+            });
+
+            if (alertClients.length === 0) {
+                container.innerHTML = `<div class="col-span-2 text-center py-12 text-slate-500"><p>Todos os pagamentos estão em dia!</p></div>`;
+                return;
+            }
+
+            alertClients.forEach(c => {
+                const st = getClientStatus(c.expiration);
+                const formattedDate = c.expiration ? new Date(c.expiration + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+                const formattedPrice = parseFloat(c.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-900/80 border border-slate-800 rounded-2xl p-4 space-y-3 relative";
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border ${st.class}">${st.label}</span>
+                            <h3 class="text-sm font-bold text-white mt-2">${c.name}</h3>
+                            <p class="text-xs text-slate-400">${c.plan} • <strong class="text-slate-200">${formattedPrice}</strong></p>
+                        </div>
+                        <button onclick="openWaModal('${c.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
+                            <i data-lucide="send" class="w-3.5 h-3.5"></i> Notificar
+                        </button>
+                    </div>
+
+                    <div class="text-xs text-slate-400 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
+                        <span>Vencimento: <strong class="text-slate-200">${formattedDate}</strong></span>
+                        <span>Tel: <span class="font-mono text-slate-300">${c.phone}</span></span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Gráfico
+        function initChart() {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ativas', 'Vence em 7 dias', 'Vencidas'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#22c55e', '#f59e0b', '#f43f5e'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8', font: { size: 11 } }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+            updateChart();
+        }
+
+        function updateChart() {
+            if(!chartInstance) return;
+            let active = 0, expiring = 0, expired = 0;
+            clients.forEach(c => {
+                const st = getClientStatus(c.expiration);
+                if (st.code === 'ACTIVE') active++;
+                else if (st.code === 'EXPIRING') expiring++;
+                else if (st.code === 'EXPIRED') expired++;
+            });
+            chartInstance.data.datasets[0].data = [active, expiring, expired];
+            chartInstance.update();
+        }
+
+        // Troca de Abas
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove(
+                    'active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600',
+                    'text-white', 'shadow-lg', 'shadow-brand-500/25', 'border-brand-400/30',
+                    'scale-[1.02]', 'font-bold'
+                );
+                btn.classList.add('text-slate-400', 'hover:text-slate-100', 'hover:bg-slate-800/70', 'border-transparent', 'font-semibold');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if(activeBtn) {
+                activeBtn.classList.add(
+                    'active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600',
+                    'text-white', 'shadow-lg', 'shadow-brand-500/25', 'border-brand-400/30',
+                    'scale-[1.02]', 'font-bold'
+                );
+                activeBtn.classList.remove('text-slate-400', 'hover:bg-slate-800/70', 'border-transparent', 'font-semibold');
+            }
+
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-clients').classList.add('hidden');
+            document.getElementById('view-alerts').classList.add('hidden');
+            document.getElementById('view-sheets').classList.add('hidden');
+
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+        }
+
+        // Modais e Ações de Clientes
+        function openClientModal(id = null) {
+            const form = document.getElementById('clientForm');
+            form.reset();
+
+            if (id) {
+                const c = clients.find(item => item.id === id);
+                if (c) {
+                    document.getElementById('modalTitle').innerText = "Editar Cliente";
+                    document.getElementById('clientId').value = c.id;
+                    document.getElementById('clientName').value = c.name;
+                    document.getElementById('clientPhone').value = c.phone;
+                    document.getElementById('clientPlan').value = c.plan;
+                    document.getElementById('clientPrice').value = c.price;
+                    document.getElementById('clientExpiration').value = c.expiration;
+                    document.getElementById('clientRenewal').value = c.renewal || 'Automática';
+                    document.getElementById('clientNotes').value = c.notes || '';
+                }
+            } else {
+                document.getElementById('modalTitle').innerText = "Cadastrar Novo Cliente";
+                document.getElementById('clientId').value = '';
+                document.getElementById('clientExpiration').value = getRelativeDate(30);
+            }
+
+            document.getElementById('clientModal').classList.remove('hidden');
+        }
+
+        function closeClientModal() {
+            document.getElementById('clientModal').classList.add('hidden');
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('clientId').value;
+            
+            const clientData = {
+                id: id || Date.now().toString().slice(-4),
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value.replace(/\D/g, ''),
+                plan: document.getElementById('clientPlan').value,
+                price: parseFloat(document.getElementById('clientPrice').value || 0),
+                expiration: document.getElementById('clientExpiration').value,
+                renewal: document.getElementById('clientRenewal').value,
+                notes: document.getElementById('clientNotes').value
+            };
+
+            if (id) {
+                const index = clients.findIndex(c => c.id === id);
+                if (index !== -1) clients[index] = clientData;
+            } else {
+                clients.unshift(clientData);
+            }
+
+            saveClientsData();
+            closeClientModal();
+        }
+
+        function editClient(id) {
+            openClientModal(id);
+        }
+
+        function deleteClient(id) {
+            clients = clients.filter(c => c.id !== id);
+            saveClientsData();
+        }
+
+        function filterClients() {
+            renderTable();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterStatus').value = 'ALL';
+            document.getElementById('filterRenewal').value = 'ALL';
+            renderTable();
+        }
+
+        // Mensagens WhatsApp
+        function openWaModal(id) {
+            currentWaClient = clients.find(c => c.id === id);
+            if(!currentWaClient) return;
+
+            document.getElementById('waTargetName').innerText = `${currentWaClient.name} (${currentWaClient.phone})`;
+            
+            const st = getClientStatus(currentWaClient.expiration);
+            const select = document.getElementById('waTemplate');
+            if (st.code === 'EXPIRED') select.value = 'EXPIRED';
+            else if (st.code === 'EXPIRING') select.value = 'EXPIRING';
+            else select.value = 'RENEWED';
+
+            updateWaPreview();
+            document.getElementById('waModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeWaModal() {
+            document.getElementById('waModal').classList.add('hidden');
+        }
+
+        function updateWaPreview() {
+            if(!currentWaClient) return;
+            const tpl = document.getElementById('waTemplate').value;
+            const formattedDate = currentWaClient.expiration ? new Date(currentWaClient.expiration + 'T00:00:00').toLocaleDateString('pt-BR') : '';
+            const formattedPrice = parseFloat(currentWaClient.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            let msg = "";
+            if (tpl === 'EXPIRING') {
+                msg = `Olá ${currentWaClient.name}! 👋 Passando para lembrar que sua assinatura do plano *${currentWaClient.plan}* vence em breve (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nDeseja realizar a renovação para manter seu acesso ativo?`;
+            } else if (tpl === 'EXPIRED') {
+                msg = `Olá ${currentWaClient.name}! ⚠️ Sua assinatura do plano *${currentWaClient.plan}* venceu no dia ${formattedDate}.\n\nPara reativar seu acesso, o valor é de ${formattedPrice}.\n\nPodemos enviar a chave PIX para pagamento?`;
+            } else {
+                msg = `Olá ${currentWaClient.name}! 🎉 Sua assinatura do plano *${currentWaClient.plan}* foi renovada com sucesso!\n\n📅 Próximo vencimento: ${formattedDate}\n\nObrigado pela preferência!`;
+            }
+
+            document.getElementById('waPreviewText').value = msg;
+        }
+
+        function openWhatsAppDirect() {
+            if(!currentWaClient) return;
+            const text = encodeURIComponent(document.getElementById('waPreviewText').value);
+            window.open(`https://wa.me/${currentWaClient.phone}?text=${text}`, '_blank');
+        }
+
+        function copyWaText() {
+            const textarea = document.getElementById('waPreviewText');
+            textarea.select();
+            document.execCommand('copy');
+        }
+
+        // Cópia de Segurança e Sheets
+        function saveSheetsUrl() {
+            const url = document.getElementById('sheetApiUrl').value.trim();
+            if(url) {
+                localStorage.setItem('mundoplay_sheets_url', url);
+                document.getElementById('syncStatusBadge').innerText = "Sheets Conectado";
+                document.getElementById('syncStatusBadge').classList.add("text-emerald-400");
+            }
+        }
+
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(clients, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `mundoplay_backup_${new Date().toISOString().split('T')[0]}.json`);
+            dlAnchorElem.click();
+        }
+
+        function importJSON(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (Array.isArray(parsed)) {
+                        clients = parsed;
+                        saveClientsData();
+                    }
+                } catch(err) {
+                    console.error(err);
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+        }
+    </script>
+</body>
+</html>
