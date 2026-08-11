@@ -49,7 +49,6 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #475569;
         }
-        /* Ocultar scrollbar nos menus horizontalmente */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -61,20 +60,22 @@
 </head>
 <body class="h-full text-slate-100 bg-slate-950 flex flex-col antialiased selection:bg-brand-500 selection:text-white">
 
+    <!-- Toast Notification Banner -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+        <i data-lucide="info" id="toastIcon" class="w-5 h-5 text-brand-400"></i>
+        <span id="toastMessage" class="text-xs font-semibold">Mensagem do sistema</span>
+    </div>
+
     <!-- ========================================== -->
     <!-- 1. TELA DE LOGIN                           -->
     <!-- ========================================== -->
     <section id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950">
-        <!-- Efeitos de iluminação de fundo -->
         <div class="fixed inset-0 overflow-hidden pointer-events-none">
             <div class="absolute -top-40 -left-40 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl"></div>
             <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
         </div>
 
-        <!-- Card de Login -->
         <div class="w-full max-w-md bg-slate-900/90 border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative z-10 space-y-6">
-            
-            <!-- Logotipo e Título -->
             <div class="text-center space-y-2">
                 <div class="inline-flex p-3 bg-brand-500/10 border border-brand-500/20 text-brand-500 rounded-2xl shadow-lg shadow-brand-500/10 mb-1">
                     <i data-lucide="tv" class="w-8 h-8"></i>
@@ -85,13 +86,11 @@
                 <p class="text-xs text-slate-400">Entre para gerenciar suas assinaturas e clientes</p>
             </div>
 
-            <!-- Alerta de Erro -->
             <div id="loginErrorAlert" class="hidden p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-400 flex items-center gap-2">
                 <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
                 <span>Usuário ou senha incorretos.</span>
             </div>
 
-            <!-- Formulário de Login -->
             <form id="loginForm" onsubmit="handleAuthLogin(event)" class="space-y-4 text-xs">
                 <div class="space-y-1.5">
                     <label for="loginUsername" class="block font-semibold text-slate-300">Usuário de Acesso</label>
@@ -102,9 +101,7 @@
                 </div>
 
                 <div class="space-y-1.5">
-                    <div class="flex items-center justify-between">
-                        <label for="loginPassword" class="block font-semibold text-slate-300">Senha</label>
-                    </div>
+                    <label for="loginPassword" class="block font-semibold text-slate-300">Senha</label>
                     <div class="relative">
                         <i data-lucide="lock" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
                         <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-10 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-500 transition-all">
@@ -186,8 +183,6 @@
 
         <!-- ABA 1: DASHBOARD -->
         <main id="view-dashboard" class="space-y-6">
-            
-            <!-- Grid de Indicadores KPI -->
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
                 <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between hover:border-slate-700 transition-all shadow-sm">
                     <div class="flex items-center justify-between text-slate-400">
@@ -257,7 +252,6 @@
 
             <!-- Gráficos e Ações Rápidas -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Gráfico de Status -->
                 <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 shadow-sm">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-sm font-semibold text-white flex items-center gap-2">
@@ -270,7 +264,6 @@
                     </div>
                 </div>
 
-                <!-- Lista de Ações Rápidas -->
                 <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
                     <div>
                         <div class="flex items-center justify-between mb-3">
@@ -292,13 +285,10 @@
                     </button>
                 </div>
             </div>
-
         </main>
 
         <!-- ABA 2: LISTA DE CLIENTES -->
         <main id="view-clients" class="hidden space-y-4">
-            
-            <!-- Barra de Ferramentas e Pesquisa -->
             <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-lg">
                 <div class="relative flex-1">
                     <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
@@ -325,9 +315,7 @@
                 </div>
             </div>
 
-            <!-- Tabela de Clientes -->
             <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl overflow-hidden shadow-sm">
-                <!-- Visão Desktop -->
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left text-xs text-slate-300">
                         <thead class="bg-slate-950/80 text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-800">
@@ -343,23 +331,18 @@
                             </tr>
                         </thead>
                         <tbody id="clientsTableBody" class="divide-y divide-slate-800/60">
-                            <!-- Preenchido via JS -->
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Visão Mobile (Cards) -->
                 <div id="clientsMobileContainer" class="md:hidden divide-y divide-slate-800/80">
-                    <!-- Preenchido via JS -->
                 </div>
 
-                <!-- Estado Vazio -->
                 <div id="emptyState" class="hidden py-12 text-center text-slate-500">
                     <i data-lucide="user-x" class="w-10 h-10 mx-auto mb-2 opacity-40"></i>
                     <p class="text-sm font-medium">Nenhum cliente encontrado.</p>
                 </div>
             </div>
-
         </main>
 
         <!-- ABA 3: ALERTAS URGENTES -->
@@ -377,7 +360,6 @@
             </div>
 
             <div id="alertsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Preenchido via JS -->
             </div>
         </main>
 
@@ -389,8 +371,8 @@
                         <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h2 class="text-base font-bold text-white">Integração com o Google Planilhas</h2>
-                        <p class="text-xs text-slate-400">Salve e sincronize os dados do seu aplicativo com a nuvem do Google Sheets.</p>
+                        <h2 class="text-base font-bold text-white">Integração Direta com o Google Planilhas</h2>
+                        <p class="text-xs text-slate-400">Sincronize e salve seus clientes automaticamente na nuvem do Google Sheets.</p>
                     </div>
                 </div>
 
@@ -401,19 +383,22 @@
                             URL do Web App (Google Apps Script)
                         </h3>
                         <p class="text-slate-400 leading-relaxed">
-                            Insira o endereço publicado do seu Google Apps Script para sincronizar alterações automaticamente:
+                            Insira a URL criada no Apps Script para que todos os cadastros novos ou alterações sejam salvos direto na planilha:
                         </p>
-                        <div class="flex gap-2">
+                        <div class="flex flex-col sm:flex-row gap-2">
                             <input type="url" id="sheetApiUrl" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500">
-                            <button onclick="saveSheetsUrl()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition-all">
-                                Sincronizar
+                            <button onclick="saveSheetsUrl()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5">
+                                <i data-lucide="check" class="w-4 h-4"></i> Salvar e Sincronizar
                             </button>
                         </div>
                     </div>
 
                     <div class="flex flex-wrap gap-3 pt-2">
+                        <button onclick="fetchFromGoogleSheets()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-semibold flex items-center gap-2 shadow-lg shadow-brand-600/20 transition-all">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Baixar Dados da Planilha
+                        </button>
                         <button onclick="exportJSON()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs flex items-center gap-2 border border-slate-700 transition-all">
-                            <i data-lucide="download" class="w-4 h-4"></i> Exportar Cópia de Segurança (JSON)
+                            <i data-lucide="download" class="w-4 h-4"></i> Backup (JSON)
                         </button>
                         <button onclick="document.getElementById('importFile').click()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs flex items-center gap-2 border border-slate-700 transition-all">
                             <i data-lucide="upload" class="w-4 h-4"></i> Importar Arquivo
@@ -536,37 +521,67 @@
 
     <!-- LOGICA JAVASCRIPT INTEGRADA -->
     <script>
-        // Função para obter datas relativas para os dados demonstrativos
         function getRelativeDate(daysOffset) {
             const d = new Date();
             d.setDate(d.getDate() + daysOffset);
             return d.toISOString().split('T')[0];
         }
 
-        // Dados Iniciais de Teste
         const sampleClients = [
             { id: "101", name: "João Silva", phone: "21998765432", plan: "Mensal Premium", price: 149.90, expiration: getRelativeDate(-2), renewal: "Automática", notes: "Contato prévio realizado" },
             { id: "102", name: "Maria Oliveira", phone: "21987654321", plan: "Trimestral VIP", price: 399.00, expiration: getRelativeDate(3), renewal: "Manual", notes: "Enviar comprovante PIX" },
             { id: "103", name: "Carlos Eduardo", phone: "21976543210", plan: "Anual VIP", price: 1200.00, expiration: getRelativeDate(15), renewal: "Automática", notes: "" },
             { id: "104", name: "Ana Beatriz", phone: "21965432109", plan: "Mensal VIP", price: 199.90, expiration: getRelativeDate(0), renewal: "Automática", notes: "Vence hoje" },
-            { id: "105", name: "Lucas Mendes", phone: "21954321098", plan: "Semestral Standard", price: 699.00, expiration: getRelativeDate(5), renewal: "Manual", notes: "" },
-            { id: "106", name: "Fernanda Santos", phone: "21943210987", plan: "Mensal Padrão", price: 99.90, expiration: getRelativeDate(30), renewal: "Automática", notes: "" },
-            { id: "107", name: "Rodrigo Lima", phone: "21932109876", plan: "Anual Padrão", price: 899.00, expiration: getRelativeDate(-10), renewal: "Manual", notes: "Pendente confirmação" }
+            { id: "105", name: "Lucas Mendes", phone: "21954321098", plan: "Semestral Standard", price: 699.00, expiration: getRelativeDate(5), renewal: "Manual", notes: "" }
         ];
 
         let clients = [];
         let currentWaClient = null;
         let chartInstance = null;
 
-        // Ao carregar a página
         window.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             checkAuthSession();
             loadClientsData();
             initChart();
+            
+            const savedUrl = localStorage.getItem('mundoplay_sheets_url');
+            if (savedUrl) {
+                document.getElementById('sheetApiUrl').value = savedUrl;
+                updateSyncBadge(true);
+            }
         });
 
-        // 1. Gestão de Autenticação
+        function showToast(msg, isSuccess = true) {
+            const toast = document.getElementById('toastNotification');
+            const toastMsg = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.innerText = msg;
+            toastIcon.setAttribute('data-lucide', isSuccess ? 'check-circle' : 'alert-circle');
+            toastIcon.className = `w-5 h-5 ${isSuccess ? 'text-brand-400' : 'text-rose-400'}`;
+            lucide.createIcons();
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        function updateSyncBadge(connected) {
+            const badge = document.getElementById('syncStatusBadge');
+            if (connected) {
+                badge.innerText = "Sheets Conectado";
+                badge.classList.add("text-emerald-400");
+            } else {
+                badge.innerText = "Google Sheets";
+                badge.classList.remove("text-emerald-400");
+            }
+        }
+
         function checkAuthSession() {
             const isAuth = localStorage.getItem('mundoplay_authenticated');
             if (isAuth === 'true') {
@@ -620,9 +635,8 @@
             lucide.createIcons();
         }
 
-        // 2. Carregar e Salvar Dados
         function loadClientsData() {
-            const stored = localStorage.getItem('mundoplay_clients') || localStorage.getItem('subskrita_clients');
+            const stored = localStorage.getItem('mundoplay_clients');
             if (stored) {
                 try {
                     clients = JSON.parse(stored);
@@ -639,9 +653,52 @@
         function saveClientsData() {
             localStorage.setItem('mundoplay_clients', JSON.stringify(clients));
             renderAll();
+            syncToGoogleSheetsIfConfigured();
         }
 
-        // Cálculo de Status do Cliente
+        async function syncToGoogleSheetsIfConfigured() {
+            const url = localStorage.getItem('mundoplay_sheets_url');
+            if (!url) return;
+
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(clients)
+                });
+                showToast("Dados sincronizados com o Google Sheets!");
+            } catch (err) {
+                console.error("Erro de sincronização:", err);
+                showToast("Falha na conexão com Google Sheets", false);
+            }
+        }
+
+        async function fetchFromGoogleSheets() {
+            const url = localStorage.getItem('mundoplay_sheets_url');
+            if (!url) {
+                alert("Por favor, cole e salve a URL do Web App primeiro!");
+                return;
+            }
+
+            showToast("Buscando dados da planilha...");
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    clients = data;
+                    localStorage.setItem('mundoplay_clients', JSON.stringify(clients));
+                    renderAll();
+                    showToast("Clientes carregados do Google Sheets!");
+                } else {
+                    showToast("Planilha vazia ou em formato diferente.", false);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Erro ao ler dados da planilha.", false);
+            }
+        }
+
         function getClientStatus(expDateStr) {
             if (!expDateStr) return { code: 'ACTIVE', label: '🟢 Ativa', class: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' };
             
@@ -661,7 +718,6 @@
             }
         }
 
-        // 3. Renderização da Interface
         function renderAll() {
             renderKPIs();
             renderTable();
@@ -712,9 +768,9 @@
 
             const filtered = clients.filter(c => {
                 const st = getClientStatus(c.expiration);
-                const matchesSearch = c.name.toLowerCase().includes(searchTerm) || 
-                                      c.phone.includes(searchTerm) || 
-                                      c.plan.toLowerCase().includes(searchTerm);
+                const matchesSearch = (c.name || '').toLowerCase().includes(searchTerm) || 
+                                      (c.phone || '').includes(searchTerm) || 
+                                      (c.plan || '').toLowerCase().includes(searchTerm);
                 
                 const matchesStatus = filterStatus === 'ALL' || st.code === filterStatus;
                 const matchesRenewal = filterRenewal === 'ALL' || c.renewal === filterRenewal;
@@ -733,7 +789,6 @@
                 const formattedPrice = parseFloat(c.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                 const formattedDate = c.expiration ? new Date(c.expiration + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
 
-                // Linha Desktop
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-800/40 transition border-b border-slate-800/40";
                 tr.innerHTML = `
@@ -767,7 +822,6 @@
                 `;
                 tbody.appendChild(tr);
 
-                // Card Mobile
                 const card = document.createElement('div');
                 card.className = "p-4 space-y-3";
                 card.innerHTML = `
@@ -875,7 +929,6 @@
             });
         }
 
-        // Gráfico
         function initChart() {
             const ctx = document.getElementById('statusChart').getContext('2d');
             chartInstance = new Chart(ctx, {
@@ -916,7 +969,6 @@
             chartInstance.update();
         }
 
-        // Troca de Abas
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove(
@@ -945,7 +997,6 @@
             document.getElementById(`view-${tabId}`).classList.remove('hidden');
         }
 
-        // Modais e Ações de Clientes
         function openClientModal(id = null) {
             const form = document.getElementById('clientForm');
             form.reset();
@@ -1022,7 +1073,6 @@
             renderTable();
         }
 
-        // Mensagens WhatsApp
         function openWaModal(id) {
             currentWaClient = clients.find(c => c.id === id);
             if(!currentWaClient) return;
@@ -1072,15 +1122,20 @@
             const textarea = document.getElementById('waPreviewText');
             textarea.select();
             document.execCommand('copy');
+            showToast("Texto copiado!");
         }
 
-        // Cópia de Segurança e Sheets
         function saveSheetsUrl() {
             const url = document.getElementById('sheetApiUrl').value.trim();
-            if(url) {
+            if (url) {
                 localStorage.setItem('mundoplay_sheets_url', url);
-                document.getElementById('syncStatusBadge').innerText = "Sheets Conectado";
-                document.getElementById('syncStatusBadge').classList.add("text-emerald-400");
+                updateSyncBadge(true);
+                showToast("URL salva com sucesso!");
+                syncToGoogleSheetsIfConfigured();
+            } else {
+                localStorage.removeItem('mundoplay_sheets_url');
+                updateSyncBadge(false);
+                showToast("Conexão com Google Sheets removida.");
             }
         }
 
@@ -1100,9 +1155,11 @@
                     if (Array.isArray(parsed)) {
                         clients = parsed;
                         saveClientsData();
+                        showToast("Arquivo importado!");
                     }
                 } catch(err) {
                     console.error(err);
+                    showToast("Erro ao ler arquivo", false);
                 }
             };
             fileReader.readAsText(event.target.files[0]);
