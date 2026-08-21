@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mundo Play Digital - Gestão de Assinaturas</title>
-    <!-- Tailwind CSS CDN (Carregado antes de configurar) -->
+    <title>Mundo Play Digital - Gestão, Alertas e Financeiro</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -45,7 +45,7 @@
     <!-- Toast Notification Banner -->
     <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
         <i data-lucide="info" id="toastIcon" class="w-5 h-5 text-brand-400"></i>
-        <span id="toastMessage" class="text-xs font-semibold">Notificação do sistema</span>
+        <span id="toastMessage" class="text-xs font-semibold">Mensagem do sistema</span>
     </div>
 
     <!-- 1. TELA DE LOGIN -->
@@ -63,7 +63,7 @@
                 <h1 class="text-2xl font-bold tracking-tight text-white flex items-center justify-center gap-2">
                     Mundo Play <span class="text-xs px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 font-extrabold tracking-wider">DIGITAL</span>
                 </h1>
-                <p class="text-xs text-slate-400">Gestão de Assinaturas e Alertas de Vencimento</p>
+                <p class="text-xs text-slate-400">Gestão de Clientes, Vencimentos e Lucros</p>
             </div>
 
             <div id="loginErrorAlert" class="hidden p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-400 flex items-center gap-2">
@@ -102,7 +102,7 @@
     <!-- 2. APLICAÇÃO PRINCIPAL -->
     <div id="mainApp" class="hidden flex-1 flex flex-col min-h-screen max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8 pb-20 md:pb-10">
 
-        <!-- Topo -->
+        <!-- Header -->
         <header class="py-4 border-b border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sticky top-0 bg-slate-950/95 backdrop-blur-md z-30">
             <div class="flex items-center gap-3.5">
                 <div class="p-3 bg-brand-500/10 border border-brand-500/25 text-brand-400 rounded-2xl shadow-lg shadow-brand-500/10">
@@ -112,7 +112,7 @@
                     <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
                         Mundo Play <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 tracking-wider">DIGITAL</span>
                     </h1>
-                    <p class="text-xs text-slate-400 font-medium">Controle e Alertas de Assinaturas</p>
+                    <p class="text-xs text-slate-400 font-medium">Controle de Clientes, Alertas e Ganhos</p>
                 </div>
             </div>
 
@@ -144,6 +144,9 @@
                 <button onclick="switchTab('alerts')" id="tab-alerts" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent">
                     <i data-lucide="bell-ring" class="w-5 h-5 text-amber-400"></i> Alertas (7d, 5d, 3d, Vencidos)
                     <span id="countAlertsTab" class="ml-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/30">0</span>
+                </button>
+                <button onclick="switchTab('earnings')" id="tab-earnings" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent">
+                    <i data-lucide="trending-up" class="w-5 h-5 text-emerald-400"></i> Ganhos & Financeiro
                 </button>
                 <button onclick="switchTab('sheets')" id="tab-sheets" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent">
                     <i data-lucide="database" class="w-5 h-5 text-emerald-400"></i> Google Planilha
@@ -218,18 +221,25 @@
             <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-lg">
                 <div class="relative flex-1">
                     <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="searchInput" oninput="filterClients()" placeholder="Pesquisar cliente, telefone ou plano..." class="w-full pl-11 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500">
+                    <input type="text" id="searchInput" oninput="filterClients()" placeholder="Pesquisar cliente, fornecedor, telefone ou telas..." class="w-full pl-11 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500">
                 </div>
 
                 <div class="flex items-center gap-2.5 overflow-x-auto pb-1 md:pb-0">
                     <select id="filterStatus" onchange="filterClients()" class="bg-slate-950 border border-slate-800 text-xs text-slate-200 font-medium rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500">
-                        <option value="ALL">Todos os Status</option>
+                        <option value="ALL">Todos os Status de Vencimento</option>
                         <option value="ACTIVE">🟢 Ativas (>7 dias)</option>
                         <option value="ALERT_7">🔵 Vence em 7 Dias</option>
                         <option value="ALERT_5">🟡 Vence em 5 Dias</option>
                         <option value="ALERT_3">🟠 Vence em 3 Dias</option>
                         <option value="EXPIRED_TODAY">🚨 Vence Hoje</option>
                         <option value="EXPIRED">🔴 Vencidas</option>
+                    </select>
+
+                    <select id="filterRenewal" onchange="filterClients()" class="bg-slate-950 border border-slate-800 text-xs text-slate-200 font-medium rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500">
+                        <option value="ALL">Todos os Status de Renovação</option>
+                        <option value="Aguardando pagamento">Aguardando pagamento</option>
+                        <option value="Notificado do Vencimento">Notificado do Vencimento</option>
+                        <option value="Cancelamento">Cancelamento</option>
                     </select>
 
                     <button onclick="resetFilters()" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700/70" title="Limpar Filtros">
@@ -245,10 +255,12 @@
                             <tr>
                                 <th class="p-3.5">ID</th>
                                 <th class="p-3.5">Cliente</th>
-                                <th class="p-3.5">Plano</th>
+                                <th class="p-3.5">Fornecedor</th>
+                                <th class="p-3.5">Nº de Telas</th>
                                 <th class="p-3.5">Valor (R$)</th>
                                 <th class="p-3.5">Vencimento</th>
-                                <th class="p-3.5">Status / Alerta</th>
+                                <th class="p-3.5">Status Renovação</th>
+                                <th class="p-3.5">Status Alerta</th>
                                 <th class="p-3.5 text-right">Ações</th>
                             </tr>
                         </thead>
@@ -279,7 +291,158 @@
             <div id="alertsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </main>
 
-        <!-- ABA 4: GOOGLE SHEETS -->
+        <!-- ABA 4: GANHOS & FINANCEIRO (NOVA) -->
+        <main id="view-earnings" class="hidden space-y-6">
+            <!-- KPIs Financeiros -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-xs font-medium">Faturamento Bruto (Mês)</span>
+                        <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl">
+                            <i data-lucide="wallet" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div id="kpiGrossEarnings" class="text-2xl font-bold text-white">R$ 0,00</div>
+                        <span class="text-[10px] text-slate-500 block mt-0.5">Soma dos clientes ativos/renovados</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-rose-400">
+                        <span class="text-xs font-medium">Despesas Totais (Mês)</span>
+                        <div class="p-2 bg-rose-500/10 text-rose-400 rounded-xl">
+                            <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div id="kpiTotalExpenses" class="text-2xl font-bold text-rose-400">R$ 0,00</div>
+                        <span class="text-[10px] text-slate-500 block mt-0.5">Gastos com servidores/painéis</span>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-emerald-950/60 to-slate-900 border border-emerald-500/30 rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-emerald-400">
+                        <span class="text-xs font-bold">Lucro Líquido Real</span>
+                        <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl">
+                            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div id="kpiNetProfit" class="text-2xl font-black text-emerald-400">R$ 0,00</div>
+                        <span class="text-[10px] text-emerald-500/80 block mt-0.5">Bruto (-) Despesas Lançadas</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-blue-400">
+                        <span class="text-xs font-medium">Projeção 6 Meses</span>
+                        <div class="p-2 bg-blue-500/10 text-blue-400 rounded-xl">
+                            <i data-lucide="trending-up" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div id="kpi6MonthsProjection" class="text-2xl font-bold text-blue-400">R$ 0,00</div>
+                        <span class="text-[10px] text-slate-500 block mt-0.5">Acumulado em 6 meses</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-indigo-400">
+                        <span class="text-xs font-medium">Projeção 1 Ano</span>
+                        <div class="p-2 bg-indigo-500/10 text-indigo-400 rounded-xl">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div id="kpi12MonthsProjection" class="text-2xl font-bold text-indigo-400">R$ 0,00</div>
+                        <span class="text-[10px] text-slate-500 block mt-0.5">Acumulado em 12 meses</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico + Formulário de Lançamento de Despesas -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Gráfico Financeiro -->
+                <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5">
+                    <h2 class="text-sm font-semibold text-white flex items-center gap-2 mb-4">
+                        <i data-lucide="line-chart" class="w-4 h-4 text-emerald-400"></i>
+                        Evolução Financeira e Projeção de Ganhos
+                    </h2>
+                    <div class="h-64 relative">
+                        <canvas id="financialChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Formulário de Lançar Despesa -->
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+                                <i data-lucide="minus-circle" class="w-4 h-4 text-rose-400"></i>
+                                Lançar Nova Despesa
+                            </h2>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">Adicione gastos com painéis, servidores ou anúncios para abater dos lucros:</p>
+
+                        <form id="expenseForm" onsubmit="handleExpenseSubmit(event)" class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1">Descrição / Servidor *</label>
+                                <input type="text" id="expenseDesc" required placeholder="Ex: Custo Servidor Principal" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-rose-500">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-slate-400 mb-1">Valor (R$) *</label>
+                                    <input type="number" step="0.01" id="expenseAmount" required placeholder="150.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-rose-500">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-400 mb-1">Data *</label>
+                                    <input type="date" id="expenseDate" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-rose-500">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-400 mb-1">Fornecedor / Categoria</label>
+                                <input type="text" id="expenseSupplier" placeholder="Ex: Servidor X" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-rose-500">
+                            </div>
+
+                            <button type="submit" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl text-center transition-all shadow-lg shadow-rose-600/20 mt-2 flex items-center justify-center gap-2">
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i> Registar Despesa
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de Histórico de Despesas -->
+            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl overflow-hidden p-5 space-y-4">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-lucide="receipt" class="w-4 h-4 text-slate-400"></i>
+                    Histórico de Despesas Registradas
+                </h3>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-950/80 text-slate-400 uppercase text-[10px] font-bold border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Data</th>
+                                <th class="p-3">Descrição</th>
+                                <th class="p-3">Fornecedor/Categoria</th>
+                                <th class="p-3">Valor (R$)</th>
+                                <th class="p-3 text-right">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expensesTableBody" class="divide-y divide-slate-800/60"></tbody>
+                    </table>
+                </div>
+                <div id="emptyExpensesState" class="hidden py-6 text-center text-slate-500 text-xs">
+                    Nenhuma despesa registrada até o momento.
+                </div>
+            </div>
+        </main>
+
+        <!-- ABA 5: GOOGLE SHEETS -->
         <main id="view-sheets" class="hidden space-y-6">
             <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-6">
                 <div class="flex items-center gap-3 mb-4">
@@ -341,12 +504,16 @@
                         <input type="tel" id="clientPhone" required placeholder="Ex: 5521998765432" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <div>
-                        <label class="block text-slate-400 mb-1">Plano / Serviço *</label>
-                        <input type="text" id="clientPlan" required placeholder="Ex: Mensal Premium" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                        <label class="block text-slate-400 mb-1">Fornecedor / Servidor *</label>
+                        <input type="text" id="clientSupplier" required placeholder="Ex: Servidor Alfa" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Número de Telas *</label>
+                        <input type="text" id="clientScreens" required placeholder="Ex: 1 Tela, 2 Telas..." class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                    </div>
                     <div>
                         <label class="block text-slate-400 mb-1">Valor (R$) *</label>
                         <input type="number" step="0.01" id="clientPrice" required placeholder="149.90" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
@@ -355,13 +522,15 @@
                         <label class="block text-slate-400 mb-1">Data Vencimento *</label>
                         <input type="date" id="clientExpiration" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
                     </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Renovação</label>
-                        <select id="clientRenewal" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
-                            <option value="Automática">Automática</option>
-                            <option value="Manual">Manual</option>
-                        </select>
-                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 mb-1">Status de Renovação *</label>
+                    <select id="clientRenewal" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                        <option value="Aguardando pagamento">Aguardando pagamento</option>
+                        <option value="Notificado do Vencimento">Notificado do Vencimento</option>
+                        <option value="Cancelamento">Cancelamento</option>
+                    </select>
                 </div>
 
                 <div>
@@ -433,28 +602,36 @@
         }
 
         const sampleClients = [
-            { id: "101", name: "João Silva", phone: "5521998765432", plan: "Mensal Premium", price: 149.90, expiration: getRelativeDate(-2), renewal: "Automática", notes: "Aguardando PIX" },
-            { id: "102", name: "Maria Oliveira", phone: "5521987654321", plan: "Trimestral VIP", price: 399.00, expiration: getRelativeDate(3), renewal: "Manual", notes: "Alerta 3d enviado" },
-            { id: "103", name: "Carlos Eduardo", phone: "5521976543210", plan: "Anual VIP", price: 1200.00, expiration: getRelativeDate(5), renewal: "Automática", notes: "" },
-            { id: "104", name: "Ana Beatriz", phone: "5521965432109", plan: "Mensal VIP", price: 199.90, expiration: getRelativeDate(7), renewal: "Automática", notes: "" },
-            { id: "105", name: "Lucas Mendes", phone: "5521954321098", plan: "Semestral Standard", price: 699.00, expiration: getRelativeDate(0), renewal: "Manual", notes: "Vence Hoje" }
+            { id: "101", name: "João Silva", phone: "5521998765432", supplier: "Servidor Alfa", screens: "1 Tela", price: 149.90, expiration: getRelativeDate(-2), renewal: "Aguardando pagamento", notes: "Aguardando PIX" },
+            { id: "102", name: "Maria Oliveira", phone: "5521987654321", supplier: "Servidor Beta", screens: "2 Telas", price: 399.00, expiration: getRelativeDate(3), renewal: "Notificado do Vencimento", notes: "Alerta 3d enviado" },
+            { id: "103", name: "Carlos Eduardo", phone: "5521976543210", supplier: "Servidor Alfa", screens: "1 Tela", price: 1200.00, expiration: getRelativeDate(5), renewal: "Aguardando pagamento", notes: "" },
+            { id: "104", name: "Ana Beatriz", phone: "5521965432109", supplier: "Servidor Gamma", screens: "3 Telas", price: 199.90, expiration: getRelativeDate(7), renewal: "Aguardando pagamento", notes: "" },
+            { id: "105", name: "Lucas Mendes", phone: "5521954321098", supplier: "Servidor Beta", screens: "1 Tela", price: 699.00, expiration: getRelativeDate(0), renewal: "Cancelamento", notes: "Vence Hoje" }
+        ];
+
+        const sampleExpenses = [
+            { id: "e1", description: "Painel IPTV Servidor Alfa", supplier: "Servidor Alfa", amount: 250.00, date: getRelativeDate(-5) },
+            { id: "e2", description: "Anúncios Meta Ads", supplier: "Facebook", amount: 100.00, date: getRelativeDate(-10) }
         ];
 
         let clients = [];
+        let expenses = [];
         let currentWaClient = null;
         let chartInstance = null;
+        let financialChartInstance = null;
 
         window.addEventListener('DOMContentLoaded', () => {
             if (window.lucide) lucide.createIcons();
             checkAuthSession();
             loadClientsData();
+            loadExpensesData();
             initChart();
+            initFinancialChart();
             
             const savedUrl = localStorage.getItem('mundoplay_sheets_url');
             if (savedUrl) {
                 document.getElementById('sheetApiUrl').value = savedUrl;
                 updateSyncBadge(true);
-                // Busca os dados da planilha automaticamente em segundo plano ao abrir o site
                 fetchFromGoogleSheets(true);
             }
         });
@@ -553,10 +730,27 @@
             syncToGoogleSheetsIfConfigured();
         }
 
+        function loadExpensesData() {
+            const stored = localStorage.getItem('mundoplay_expenses');
+            if (stored) {
+                try { expenses = JSON.parse(stored); } catch(e) { expenses = sampleExpenses; }
+            } else {
+                expenses = sampleExpenses;
+                localStorage.setItem('mundoplay_expenses', JSON.stringify(expenses));
+            }
+            renderExpenses();
+        }
+
+        function saveExpensesData() {
+            localStorage.setItem('mundoplay_expenses', JSON.stringify(expenses));
+            renderExpenses();
+            renderEarnings();
+        }
+
         async function syncToGoogleSheetsIfConfigured(manualTrigger = false) {
             const url = localStorage.getItem('mundoplay_sheets_url');
             if (!url) {
-                if (manualTrigger) alert("Cole e salve a URL do Google Apps Script primeiro!");
+                if (manualTrigger) showToast("Cole e salve a URL do Google Apps Script primeiro!", false);
                 return;
             }
 
@@ -578,7 +772,7 @@
         async function fetchFromGoogleSheets(silent = false) {
             const url = localStorage.getItem('mundoplay_sheets_url');
             if (!url) {
-                if (!silent) alert("Por favor, cole e salve a URL do Web App primeiro!");
+                if (!silent) showToast("Cole e salve a URL do Web App primeiro!", false);
                 return;
             }
 
@@ -597,7 +791,7 @@
                     localStorage.setItem('mundoplay_clients', JSON.stringify(clients));
                     renderAll();
                 } else {
-                    if (!silent) showToast("Planilha vazia ou em formato diferente.", false);
+                    if (!silent) showToast("Planilha vazia ou formato diferente.", false);
                 }
             } catch (err) {
                 console.error(err);
@@ -635,6 +829,7 @@
             renderTable();
             renderUrgentList();
             renderAlertsTab();
+            renderEarnings();
             updateChart();
             if (window.lucide) lucide.createIcons();
         }
@@ -669,6 +864,7 @@
             
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatus').value;
+            const filterRenewal = document.getElementById('filterRenewal').value;
 
             tbody.innerHTML = '';
             mobileContainer.innerHTML = '';
@@ -677,10 +873,12 @@
                 const st = getClientStatus(c.expiration);
                 const matchesSearch = (c.name || '').toLowerCase().includes(searchTerm) || 
                                       (c.phone || '').includes(searchTerm) || 
-                                      (c.plan || '').toLowerCase().includes(searchTerm);
+                                      (c.supplier || '').toLowerCase().includes(searchTerm) ||
+                                      (c.screens || '').toLowerCase().includes(searchTerm);
                 
                 const matchesStatus = filterStatus === 'ALL' || st.code === filterStatus;
-                return matchesSearch && matchesStatus;
+                const matchesRenewal = filterRenewal === 'ALL' || (c.renewal || '') === filterRenewal;
+                return matchesSearch && matchesStatus && matchesRenewal;
             });
 
             if (filtered.length === 0) {
@@ -694,6 +892,11 @@
                 const formattedPrice = parseFloat(c.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                 const formattedDate = c.expiration ? new Date(c.expiration + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
 
+                let renewalClass = "bg-slate-800 text-slate-300 border-slate-700";
+                if(c.renewal === 'Aguardando pagamento') renewalClass = "bg-amber-500/10 text-amber-400 border-amber-500/30";
+                else if(c.renewal === 'Notificado do Vencimento') renewalClass = "bg-blue-500/10 text-blue-400 border-blue-500/30";
+                else if(c.renewal === 'Cancelamento') renewalClass = "bg-rose-500/10 text-rose-400 border-rose-500/30";
+
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-800/40 transition border-b border-slate-800/40";
                 tr.innerHTML = `
@@ -702,9 +905,13 @@
                         <div>${c.name}</div>
                         <div class="text-[10px] text-slate-500 font-mono">${c.phone}</div>
                     </td>
-                    <td class="p-3.5 text-slate-300">${c.plan}</td>
+                    <td class="p-3.5 text-slate-300 font-semibold">${c.supplier || '-'}</td>
+                    <td class="p-3.5 text-slate-300">${c.screens || c.plan || '-'}</td>
                     <td class="p-3.5 font-semibold text-slate-200">${formattedPrice}</td>
                     <td class="p-3.5 text-slate-300">${formattedDate}</td>
+                    <td class="p-3.5">
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border ${renewalClass}">${c.renewal || 'Aguardando pagamento'}</span>
+                    </td>
                     <td class="p-3.5">
                         <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full border ${st.class}">${st.label}</span>
                     </td>
@@ -734,9 +941,13 @@
                         <div>
                             <span class="text-[10px] font-mono text-slate-500">#${c.id}</span>
                             <h4 class="text-sm font-bold text-white">${c.name}</h4>
-                            <p class="text-xs text-slate-400">${c.plan} • <span class="font-semibold text-slate-200">${formattedPrice}</span></p>
+                            <p class="text-xs text-slate-400">Fornecedor: <span class="text-slate-200 font-medium">${c.supplier || '-'}</span> | Telas: ${c.screens || c.plan || '-'}</p>
+                            <p class="text-xs font-semibold text-slate-200 mt-0.5">${formattedPrice}</p>
                         </div>
-                        <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full border ${st.class}">${st.label}</span>
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full border ${st.class}">${st.label}</span>
+                            <span class="text-[9px] font-semibold px-2 py-0.5 rounded-full border ${renewalClass}">${c.renewal || 'Aguardando'}</span>
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-800/60">
@@ -782,7 +993,7 @@
                 item.innerHTML = `
                     <div class="truncate pr-2">
                         <div class="font-medium text-white truncate">${c.name}</div>
-                        <div class="text-[10px] text-slate-500">${c.plan}</div>
+                        <div class="text-[10px] text-slate-500">${c.supplier || 'Sem fornecedor'} • ${c.screens || c.plan || ''}</div>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-[9px] font-semibold px-2 py-0.5 rounded-full border ${st.class}">${st.label}</span>
@@ -821,7 +1032,7 @@
                         <div>
                             <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${st.class}">${st.label}</span>
                             <h3 class="text-sm font-bold text-white mt-2">${c.name}</h3>
-                            <p class="text-xs text-slate-400">${c.plan} • <strong class="text-slate-200">${formattedPrice}</strong></p>
+                            <p class="text-xs text-slate-400">${c.supplier || ''} (${c.screens || c.plan || ''}) • <strong class="text-slate-200">${formattedPrice}</strong></p>
                         </div>
                         <div class="flex items-center gap-1.5">
                             <button onclick="quickRenew('${c.id}')" class="px-2.5 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-lg text-xs font-semibold" title="Adicionar +30 dias de validade">
@@ -840,6 +1051,109 @@
                 `;
                 container.appendChild(card);
             });
+        }
+
+        function renderEarnings() {
+            // 1. Faturamento Bruto (Soma dos clientes ativos ou que não estão cancelados)
+            let grossEarnings = 0;
+            clients.forEach(c => {
+                if(c.renewal !== 'Cancelamento') {
+                    grossEarnings += parseFloat(c.price || 0);
+                }
+            });
+
+            // 2. Total de Despesas do mês atual
+            const currentMonthStr = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+            let totalExpenses = 0;
+            expenses.forEach(e => {
+                if(e.date && e.date.startsWith(currentMonthStr)) {
+                    totalExpenses += parseFloat(e.amount || 0);
+                } else if(!e.date) {
+                    totalExpenses += parseFloat(e.amount || 0);
+                }
+            });
+
+            // 3. Lucro Líquido Real = Faturamento Bruto - Despesas
+            const netProfit = grossEarnings - totalExpenses;
+
+            // 4. Projeções
+            const proj6Months = netProfit * 6;
+            const proj12Months = netProfit * 12;
+
+            // Atualizar elementos da interface
+            document.getElementById('kpiGrossEarnings').innerText = grossEarnings.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('kpiTotalExpenses').innerText = totalExpenses.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            
+            const netElem = document.getElementById('kpiNetProfit');
+            netElem.innerText = netProfit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            if(netProfit < 0) netElem.className = "text-2xl font-black text-rose-500";
+            else netElem.className = "text-2xl font-black text-emerald-400";
+
+            document.getElementById('kpi6MonthsProjection').innerText = proj6Months.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('kpi12MonthsProjection').innerText = proj12Months.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            updateFinancialChart(grossEarnings, totalExpenses, netProfit, proj6Months, proj12Months);
+        }
+
+        function renderExpenses() {
+            const tbody = document.getElementById('expensesTableBody');
+            const emptyState = document.getElementById('emptyExpensesState');
+            tbody.innerHTML = '';
+
+            if (expenses.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            expenses.forEach(e => {
+                const formattedPrice = parseFloat(e.amount || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                const formattedDate = e.date ? new Date(e.date + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition border-b border-slate-800/40";
+                tr.innerHTML = `
+                    <td class="p-3 text-slate-400">${formattedDate}</td>
+                    <td class="p-3 font-medium text-white">${e.description}</td>
+                    <td class="p-3 text-slate-300 font-semibold">${e.supplier || '-'}</td>
+                    <td class="p-3 font-bold text-rose-400">${formattedPrice}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="deleteExpense('${e.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg transition" title="Excluir despesa">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function handleExpenseSubmit(evt) {
+            evt.preventDefault();
+            const desc = document.getElementById('expenseDesc').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value || 0);
+            const date = document.getElementById('expenseDate').value;
+            const supplier = document.getElementById('expenseSupplier').value;
+
+            const newExpense = {
+                id: "exp_" + Date.now(),
+                description: desc,
+                amount: amount,
+                date: date,
+                supplier: supplier
+            };
+
+            expenses.unshift(newExpense);
+            saveExpensesData();
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            showToast("Despesa lançada e abatida dos lucros!");
+        }
+
+        function deleteExpense(id) {
+            expenses = expenses.filter(e => e.id !== id);
+            saveExpensesData();
+            showToast("Despesa removida.");
         }
 
         function initChart() {
@@ -884,6 +1198,39 @@
             chartInstance.update();
         }
 
+        function initFinancialChart() {
+            const ctx = document.getElementById('financialChart').getContext('2d');
+            financialChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Este Mês (Bruto)', 'Despesas (Mês)', 'Lucro Líquido', 'Acumulado 6 Meses', 'Acumulado 1 Ano'],
+                    datasets: [{
+                        label: 'Valores em R$',
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: ['#22c55e', '#f43f5e', '#10b981', '#3b82f6', '#6366f1'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+                        x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function updateFinancialChart(gross, exp, net, p6, p12) {
+            if(!financialChartInstance) return;
+            financialChartInstance.data.datasets[0].data = [gross, exp, net, p6, p12];
+            financialChartInstance.update();
+        }
+
         function quickRenew(id) {
             const index = clients.findIndex(c => c.id === id);
             if (index !== -1) {
@@ -892,6 +1239,7 @@
                 baseDate.setDate(baseDate.getDate() + 30);
                 
                 clients[index].expiration = baseDate.toISOString().split('T')[0];
+                clients[index].renewal = "Aguardando pagamento";
                 saveClientsData();
                 showToast(`Assinatura de ${clients[index].name} renovada por +30 dias!`);
             }
@@ -912,6 +1260,7 @@
             document.getElementById('view-dashboard').classList.add('hidden');
             document.getElementById('view-clients').classList.add('hidden');
             document.getElementById('view-alerts').classList.add('hidden');
+            document.getElementById('view-earnings').classList.add('hidden');
             document.getElementById('view-sheets').classList.add('hidden');
 
             document.getElementById(`view-${tabId}`).classList.remove('hidden');
@@ -928,16 +1277,18 @@
                     document.getElementById('clientId').value = c.id;
                     document.getElementById('clientName').value = c.name;
                     document.getElementById('clientPhone').value = c.phone;
-                    document.getElementById('clientPlan').value = c.plan;
+                    document.getElementById('clientSupplier').value = c.supplier || '';
+                    document.getElementById('clientScreens').value = c.screens || c.plan || '';
                     document.getElementById('clientPrice').value = c.price;
                     document.getElementById('clientExpiration').value = c.expiration;
-                    document.getElementById('clientRenewal').value = c.renewal || 'Automática';
+                    document.getElementById('clientRenewal').value = c.renewal || 'Aguardando pagamento';
                     document.getElementById('clientNotes').value = c.notes || '';
                 }
             } else {
                 document.getElementById('modalTitle').innerText = "Cadastrar Novo Cliente";
                 document.getElementById('clientId').value = '';
                 document.getElementById('clientExpiration').value = getRelativeDate(30);
+                document.getElementById('clientRenewal').value = 'Aguardando pagamento';
             }
 
             document.getElementById('clientModal').classList.remove('hidden');
@@ -955,7 +1306,8 @@
                 id: id || Date.now().toString().slice(-4),
                 name: document.getElementById('clientName').value,
                 phone: document.getElementById('clientPhone').value.replace(/\D/g, ''),
-                plan: document.getElementById('clientPlan').value,
+                supplier: document.getElementById('clientSupplier').value,
+                screens: document.getElementById('clientScreens').value,
                 price: parseFloat(document.getElementById('clientPrice').value || 0),
                 expiration: document.getElementById('clientExpiration').value,
                 renewal: document.getElementById('clientRenewal').value,
@@ -971,6 +1323,7 @@
 
             saveClientsData();
             closeClientModal();
+            showToast("Cliente salvo com sucesso!");
         }
 
         function editClient(id) { openClientModal(id); }
@@ -979,6 +1332,7 @@
             if(confirm("Tem certeza que deseja excluir este cliente?")) {
                 clients = clients.filter(c => c.id !== id);
                 saveClientsData();
+                showToast("Cliente excluído.");
             }
         }
 
@@ -987,6 +1341,7 @@
         function resetFilters() {
             document.getElementById('searchInput').value = '';
             document.getElementById('filterStatus').value = 'ALL';
+            document.getElementById('filterRenewal').value = 'ALL';
             renderTable();
         }
 
@@ -1014,20 +1369,21 @@
             const tpl = document.getElementById('waTemplate').value;
             const formattedDate = currentWaClient.expiration ? new Date(currentWaClient.expiration + 'T00:00:00').toLocaleDateString('pt-BR') : '';
             const formattedPrice = parseFloat(currentWaClient.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            const telasStr = currentWaClient.screens ? ` (${currentWaClient.screens})` : '';
 
             let msg = "";
             if (tpl === 'ALERT_7') {
-                msg = `Olá ${currentWaClient.name}! 👋 Passando para avisar que sua assinatura do plano *${currentWaClient.plan}* vencerá em *7 dias* (${formattedDate}).\n\n💰 Valor para renovação: ${formattedPrice}\n\nDeseja antecipar sua renovação?`;
+                msg = `Olá ${currentWaClient.name}! 👋 Passando para avisar que sua assinatura${telasStr} vencerá em *7 dias* (${formattedDate}).\n\n💰 Valor para renovação: ${formattedPrice}\n\nDeseja antecipar sua renovação?`;
             } else if (tpl === 'ALERT_5') {
-                msg = `Olá ${currentWaClient.name}! 🟡 Lembramos que faltam apenas *5 dias* para o vencimento do seu plano *${currentWaClient.plan}* (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nPodemos enviar a chave PIX?`;
+                msg = `Olá ${currentWaClient.name}! 🟡 Lembramos que faltam apenas *5 dias* para o vencimento do seu plano${telasStr} (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nPodemos enviar a chave PIX?`;
             } else if (tpl === 'ALERT_3') {
-                msg = `Olá ${currentWaClient.name}! 🟠 *Aviso Urgente*: Faltam apenas *3 dias* para o vencimento da sua assinatura (${formattedDate}).\n\nGaranta a renovação do plano *${currentWaClient.plan}* para não perder o acesso!\n\n💰 Valor: ${formattedPrice}`;
+                msg = `Olá ${currentWaClient.name}! 🟠 *Aviso Urgente*: Faltam apenas *3 dias* para o vencimento da sua assinatura${telasStr} (${formattedDate}).\n\nGaranta a renovação para não perder o acesso!\n\n💰 Valor: ${formattedPrice}`;
             } else if (tpl === 'EXPIRED_TODAY') {
-                msg = `Olá ${currentWaClient.name}! 🚨 Sua assinatura do plano *${currentWaClient.plan}* vence *HOJE* (${formattedDate}).\n\nRenove agora por ${formattedPrice} para continuar aproveitando sem interrupções!`;
+                msg = `Olá ${currentWaClient.name}! 🚨 Sua assinatura${telasStr} vence *HOJE* (${formattedDate}).\n\nRenove agora por ${formattedPrice} para continuar aproveitando sem interrupções!`;
             } else if (tpl === 'EXPIRED') {
-                msg = `Olá ${currentWaClient.name}! 🔴 Sua assinatura do plano *${currentWaClient.plan}* VENCEU no dia ${formattedDate}.\n\nPara reativar seu acesso imediato, o valor é de ${formattedPrice}.\n\nPodemos gerar a chave PIX?`;
+                msg = `Olá ${currentWaClient.name}! 🔴 Sua assinatura${telasStr} VENCEU no dia ${formattedDate}.\n\nPara reativar seu acesso imediato, o valor é de ${formattedPrice}.\n\nPodemos gerar a chave PIX?`;
             } else {
-                msg = `Olá ${currentWaClient.name}! 🎉 Sua assinatura do plano *${currentWaClient.plan}* foi renovada com sucesso!\n\n📅 Novo vencimento: ${formattedDate}\n\nObrigado pela preferência!`;
+                msg = `Olá ${currentWaClient.name}! 🎉 Sua assinatura${telasStr} foi renovada com sucesso!\n\n📅 Novo vencimento: ${formattedDate}\n\nObrigado pela preferência!`;
             }
 
             document.getElementById('waPreviewText').value = msg;
