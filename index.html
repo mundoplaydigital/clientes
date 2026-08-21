@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mundo Play Digital - Gestão e Controle de Assinaturas</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Mundo Play Digital - Gestão de Assinaturas</title>
+    <!-- Tailwind CSS CDN (Carregado antes de configurar) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -31,31 +31,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        /* Personalização do Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="h-full text-slate-100 bg-slate-950 flex flex-col antialiased selection:bg-brand-500 selection:text-white">
@@ -63,12 +45,10 @@
     <!-- Toast Notification Banner -->
     <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
         <i data-lucide="info" id="toastIcon" class="w-5 h-5 text-brand-400"></i>
-        <span id="toastMessage" class="text-xs font-semibold">Mensagem do sistema</span>
+        <span id="toastMessage" class="text-xs font-semibold">Notificação do sistema</span>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 1. TELA DE LOGIN                           -->
-    <!-- ========================================== -->
+    <!-- 1. TELA DE LOGIN -->
     <section id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950">
         <div class="fixed inset-0 overflow-hidden pointer-events-none">
             <div class="absolute -top-40 -left-40 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl"></div>
@@ -83,7 +63,7 @@
                 <h1 class="text-2xl font-bold tracking-tight text-white flex items-center justify-center gap-2">
                     Mundo Play <span class="text-xs px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 font-extrabold tracking-wider">DIGITAL</span>
                 </h1>
-                <p class="text-xs text-slate-400">Entre para gerenciar suas assinaturas e clientes</p>
+                <p class="text-xs text-slate-400">Gestão de Assinaturas e Alertas de Vencimento</p>
             </div>
 
             <div id="loginErrorAlert" class="hidden p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-400 flex items-center gap-2">
@@ -111,13 +91,6 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between pt-1">
-                    <label class="flex items-center gap-2 cursor-pointer text-slate-400 text-xs">
-                        <input type="checkbox" id="rememberMe" checked class="w-4 h-4 bg-slate-950 border-slate-800 rounded text-brand-500 focus:ring-brand-500/20">
-                        <span>Lembrar sessão neste dispositivo</span>
-                    </label>
-                </div>
-
                 <button type="submit" id="loginSubmitBtn" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-600/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
                     <span>Entrar no Painel</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
@@ -126,12 +99,10 @@
         </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- 2. APLICAÇÃO PRINCIPAL (SISTEMA)           -->
-    <!-- ========================================== -->
+    <!-- 2. APLICAÇÃO PRINCIPAL -->
     <div id="mainApp" class="hidden flex-1 flex flex-col min-h-screen max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8 pb-20 md:pb-10">
 
-        <!-- Barra de Cabeçalho Superior -->
+        <!-- Topo -->
         <header class="py-4 border-b border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sticky top-0 bg-slate-950/95 backdrop-blur-md z-30">
             <div class="flex items-center gap-3.5">
                 <div class="p-3 bg-brand-500/10 border border-brand-500/25 text-brand-400 rounded-2xl shadow-lg shadow-brand-500/10">
@@ -141,277 +112,211 @@
                     <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
                         Mundo Play <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 tracking-wider">DIGITAL</span>
                     </h1>
-                    <p class="text-xs text-slate-400 font-medium">Painel de Controle de Assinaturas</p>
+                    <p class="text-xs text-slate-400 font-medium">Controle e Alertas de Assinaturas</p>
                 </div>
             </div>
 
-            <!-- Botões de Ação do Topo -->
             <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
-                <button onclick="switchTab('sheets')" class="flex items-center gap-2 px-4 py-2.5 text-xs md:text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-xl border border-slate-700/80 shadow-md transition-all active:scale-95">
+                <button onclick="switchTab('sheets')" class="flex items-center gap-2 px-4 py-2.5 text-xs md:text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-xl border border-slate-700/80 shadow-md transition-all">
                     <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i>
                     <span id="syncStatusBadge">Google Sheets</span>
                 </button>
-                <button onclick="openClientModal()" class="flex items-center justify-center gap-2 px-5 py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white rounded-xl shadow-lg shadow-brand-600/25 transition-all active:scale-95">
+                <button onclick="openClientModal()" class="flex items-center justify-center gap-2 px-5 py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white rounded-xl shadow-lg shadow-brand-600/25 transition-all">
                     <i data-lucide="user-plus" class="w-4.5 h-4.5"></i>
                     <span>Novo Cliente</span>
                 </button>
-                <button onclick="handleLogout()" class="p-2.5 bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl border border-slate-800 transition-all shadow-md" title="Sair da Conta">
+                <button onclick="handleLogout()" class="p-2.5 bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl border border-slate-800 transition-all" title="Sair da Conta">
                     <i data-lucide="log-out" class="w-4.5 h-4.5"></i>
                 </button>
             </div>
         </header>
 
-        <!-- Menu de Navegação por Abas -->
+        <!-- Navegação por Abas -->
         <div class="my-5 bg-slate-900/90 border border-slate-800/90 p-1.5 rounded-2xl shadow-xl backdrop-blur-md">
             <nav class="flex items-center space-x-2 overflow-x-auto text-sm no-scrollbar">
-                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-5 py-3 font-bold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap transition-all bg-gradient-to-r from-brand-600 to-emerald-600 text-white shadow-lg shadow-brand-500/25 border border-brand-400/30 scale-[1.02]">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-5 py-3 font-bold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap bg-gradient-to-r from-brand-600 to-emerald-600 text-white shadow-lg border border-brand-400/30">
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
                 </button>
-                <button onclick="switchTab('clients')" id="tab-clients" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent transition-all">
-                    <i data-lucide="users" class="w-5 h-5"></i> Lista de Clientes 
+                <button onclick="switchTab('clients')" id="tab-clients" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent">
+                    <i data-lucide="users" class="w-5 h-5"></i> Clientes 
                     <span id="countTotalTab" class="ml-1 px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700/60">0</span>
                 </button>
-                <button onclick="switchTab('alerts')" id="tab-alerts" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent transition-all">
-                    <i data-lucide="bell-ring" class="w-5 h-5 text-amber-400"></i> Alertas Urgentes 
+                <button onclick="switchTab('alerts')" id="tab-alerts" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent">
+                    <i data-lucide="bell-ring" class="w-5 h-5 text-amber-400"></i> Alertas (7d, 5d, 3d, Vencidos)
                     <span id="countAlertsTab" class="ml-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/30">0</span>
                 </button>
-                <button onclick="switchTab('sheets')" id="tab-sheets" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent transition-all">
-                    <i data-lucide="database" class="w-5 h-5 text-emerald-400"></i> Conexão Sheets
+                <button onclick="switchTab('sheets')" id="tab-sheets" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent">
+                    <i data-lucide="database" class="w-5 h-5 text-emerald-400"></i> Google Planilha
                 </button>
             </nav>
         </div>
 
         <!-- ABA 1: DASHBOARD -->
         <main id="view-dashboard" class="space-y-6">
-            <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between hover:border-slate-700 transition-all shadow-sm">
-                    <div class="flex items-center justify-between text-slate-400">
-                        <span class="text-xs font-medium">Total de Clientes</span>
-                        <div class="p-2 bg-slate-800 rounded-xl text-slate-300">
-                            <i data-lucide="users" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <span id="kpiTotal" class="text-2xl font-bold text-white">0</span>
-                        <span class="text-[10px] text-slate-500 block mt-0.5">Capacidade: 500+ registros</span>
-                    </div>
+            <!-- KPIs -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4">
+                    <span class="text-xs font-medium text-slate-400">Total Clientes</span>
+                    <div id="kpiTotal" class="text-2xl font-bold text-white mt-2">0</div>
                 </div>
-
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between hover:border-emerald-500/30 transition-all shadow-sm">
-                    <div class="flex items-center justify-between text-emerald-400">
-                        <span class="text-xs font-medium">Assinaturas Ativas</span>
-                        <div class="p-2 bg-emerald-500/10 rounded-xl">
-                            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <span id="kpiActive" class="text-2xl font-bold text-emerald-400">0</span>
-                        <span id="kpiActivePct" class="text-[10px] text-emerald-500/80 block mt-0.5">0% do total</span>
-                    </div>
+                <div class="bg-slate-900/80 border border-emerald-500/20 rounded-2xl p-4">
+                    <span class="text-xs font-medium text-emerald-400">🟢 Ativas (>7d)</span>
+                    <div id="kpiActive" class="text-2xl font-bold text-emerald-400 mt-2">0</div>
                 </div>
-
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between hover:border-amber-500/30 transition-all shadow-sm">
-                    <div class="flex items-center justify-between text-amber-400">
-                        <span class="text-xs font-medium">Vence em 7d</span>
-                        <div class="p-2 bg-amber-500/10 rounded-xl">
-                            <i data-lucide="clock" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <span id="kpiExpiring" class="text-2xl font-bold text-amber-400">0</span>
-                        <span class="text-[10px] text-amber-500/80 block mt-0.5">Requer notificação</span>
-                    </div>
+                <div class="bg-slate-900/80 border border-blue-500/20 rounded-2xl p-4">
+                    <span class="text-xs font-medium text-blue-400">🔵 Vence em 7d</span>
+                    <div id="kpi7Days" class="text-2xl font-bold text-blue-400 mt-2">0</div>
                 </div>
-
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between hover:border-rose-500/30 transition-all shadow-sm">
-                    <div class="flex items-center justify-between text-rose-400">
-                        <span class="text-xs font-medium">Assinaturas Vencidas</span>
-                        <div class="p-2 bg-rose-500/10 rounded-xl">
-                            <i data-lucide="alert-circle" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <span id="kpiExpired" class="text-2xl font-bold text-rose-400">0</span>
-                        <span class="text-[10px] text-rose-500/80 block mt-0.5">Cobrança pendente</span>
-                    </div>
+                <div class="bg-slate-900/80 border border-amber-500/20 rounded-2xl p-4">
+                    <span class="text-xs font-medium text-amber-400">🟡 Vence em 5d</span>
+                    <div id="kpi5Days" class="text-2xl font-bold text-amber-400 mt-2">0</div>
                 </div>
-
-                <div class="col-span-2 lg:col-span-1 bg-gradient-to-br from-slate-900 to-slate-900/90 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
-                    <div class="flex items-center justify-between text-brand-400">
-                        <span class="text-xs font-medium">Receita Estimada</span>
-                        <div class="p-2 bg-brand-500/10 rounded-xl">
-                            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <span id="kpiRevenue" class="text-2xl font-bold text-white">R$ 0,00</span>
-                        <span class="text-[10px] text-slate-400 block mt-0.5">Soma de contratos válidos</span>
-                    </div>
+                <div class="bg-slate-900/80 border border-orange-500/20 rounded-2xl p-4">
+                    <span class="text-xs font-medium text-orange-400">🟠 Vence em 3d</span>
+                    <div id="kpi3Days" class="text-2xl font-bold text-orange-400 mt-2">0</div>
+                </div>
+                <div class="bg-slate-900/80 border border-rose-500/20 rounded-2xl p-4">
+                    <span class="text-xs font-medium text-rose-400">🔴 Vencidas / Hoje</span>
+                    <div id="kpiExpired" class="text-2xl font-bold text-rose-400 mt-2">0</div>
                 </div>
             </div>
 
-            <!-- Gráficos e Ações Rápidas -->
+            <!-- Gráfico + Lista Rápida -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 shadow-sm">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-sm font-semibold text-white flex items-center gap-2">
-                            <i data-lucide="pie-chart" class="w-4 h-4 text-brand-400"></i>
-                            Visão Geral das Assinaturas
-                        </h2>
-                    </div>
+                <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5">
+                    <h2 class="text-sm font-semibold text-white flex items-center gap-2 mb-4">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-brand-400"></i>
+                        Distribuição de Status das Assinaturas
+                    </h2>
                     <div class="h-64 relative">
                         <canvas id="statusChart"></canvas>
                     </div>
                 </div>
 
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
+                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <h2 class="text-sm font-semibold text-white flex items-center gap-2">
-                                <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
-                                Cobranças Iminentes
+                                <i data-lucide="bell" class="w-4 h-4 text-amber-400"></i>
+                                Alertas Iminentes
                             </h2>
-                            <span class="text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full">Alertas do Dia</span>
+                            <span class="text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full">Requer Ação</span>
                         </div>
-                        <p class="text-xs text-slate-400 mb-4">Clientes que requerem aviso imediato via WhatsApp.</p>
-
-                        <div id="urgentList" class="space-y-2.5 max-h-56 overflow-y-auto pr-1">
-                            <!-- Preenchido dinamicamente -->
-                        </div>
+                        <p class="text-xs text-slate-400 mb-4">Clientes com 7, 5, 3 dias restantes e vencidos:</p>
+                        <div id="urgentList" class="space-y-2 max-h-56 overflow-y-auto pr-1"></div>
                     </div>
 
-                    <button onclick="switchTab('alerts')" class="mt-4 w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl text-center transition-all shadow-sm">
-                        Ver Todos os Alertas
+                    <button onclick="switchTab('alerts')" class="mt-4 w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl text-center">
+                        Abrir Central de Alertas Completa
                     </button>
                 </div>
             </div>
         </main>
 
-        <!-- ABA 2: LISTA DE CLIENTES -->
+        <!-- ABA 2: CLIENTES -->
         <main id="view-clients" class="hidden space-y-4">
             <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-lg">
                 <div class="relative flex-1">
                     <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="searchInput" oninput="filterClients()" placeholder="Pesquisar por cliente, telefone ou plano..." class="w-full pl-11 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                    <input type="text" id="searchInput" oninput="filterClients()" placeholder="Pesquisar cliente, telefone ou plano..." class="w-full pl-11 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500">
                 </div>
 
                 <div class="flex items-center gap-2.5 overflow-x-auto pb-1 md:pb-0">
-                    <select id="filterStatus" onchange="filterClients()" class="bg-slate-950 border border-slate-800 text-sm text-slate-200 font-medium rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all cursor-pointer">
+                    <select id="filterStatus" onchange="filterClients()" class="bg-slate-950 border border-slate-800 text-xs text-slate-200 font-medium rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500">
                         <option value="ALL">Todos os Status</option>
-                        <option value="ACTIVE">🟢 Ativas</option>
-                        <option value="EXPIRING">🟡 Vence em 7 Dias</option>
+                        <option value="ACTIVE">🟢 Ativas (>7 dias)</option>
+                        <option value="ALERT_7">🔵 Vence em 7 Dias</option>
+                        <option value="ALERT_5">🟡 Vence em 5 Dias</option>
+                        <option value="ALERT_3">🟠 Vence em 3 Dias</option>
+                        <option value="EXPIRED_TODAY">🚨 Vence Hoje</option>
                         <option value="EXPIRED">🔴 Vencidas</option>
                     </select>
 
-                    <select id="filterRenewal" onchange="filterClients()" class="bg-slate-950 border border-slate-800 text-sm text-slate-200 font-medium rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all cursor-pointer">
-                        <option value="ALL">Todas Renovações</option>
-                        <option value="Automática">Automática</option>
-                        <option value="Manual">Manual</option>
-                    </select>
-
-                    <button onclick="resetFilters()" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700/70 transition-all shadow-sm" title="Limpar Filtros">
-                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                    <button onclick="resetFilters()" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700/70" title="Limpar Filtros">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl overflow-hidden shadow-sm">
+            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl overflow-hidden">
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left text-xs text-slate-300">
-                        <thead class="bg-slate-950/80 text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-800">
+                        <thead class="bg-slate-950/80 text-slate-400 uppercase text-[10px] font-bold border-b border-slate-800">
                             <tr>
                                 <th class="p-3.5">ID</th>
                                 <th class="p-3.5">Cliente</th>
-                                <th class="p-3.5">Plano / Serviço</th>
+                                <th class="p-3.5">Plano</th>
                                 <th class="p-3.5">Valor (R$)</th>
                                 <th class="p-3.5">Vencimento</th>
-                                <th class="p-3.5">Renovação</th>
-                                <th class="p-3.5">Status</th>
+                                <th class="p-3.5">Status / Alerta</th>
                                 <th class="p-3.5 text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="clientsTableBody" class="divide-y divide-slate-800/60">
-                        </tbody>
+                        <tbody id="clientsTableBody" class="divide-y divide-slate-800/60"></tbody>
                     </table>
                 </div>
 
-                <div id="clientsMobileContainer" class="md:hidden divide-y divide-slate-800/80">
-                </div>
-
+                <div id="clientsMobileContainer" class="md:hidden divide-y divide-slate-800/80"></div>
                 <div id="emptyState" class="hidden py-12 text-center text-slate-500">
                     <i data-lucide="user-x" class="w-10 h-10 mx-auto mb-2 opacity-40"></i>
-                    <p class="text-sm font-medium">Nenhum cliente encontrado.</p>
+                    <p class="text-sm">Nenhum cliente encontrado.</p>
                 </div>
             </div>
         </main>
 
-        <!-- ABA 3: ALERTAS URGENTES -->
+        <!-- ABA 3: CENTRAL DE ALERTAS -->
         <main id="view-alerts" class="hidden space-y-4">
-            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 shadow-sm">
-                <div class="flex items-center justify-between mb-2">
-                    <h2 class="text-base font-semibold text-white flex items-center gap-2">
-                        <i data-lucide="bell" class="w-5 h-5 text-amber-400"></i>
-                        Central de Notificação WhatsApp
-                    </h2>
-                </div>
+            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5">
+                <h2 class="text-base font-semibold text-white flex items-center gap-2 mb-1">
+                    <i data-lucide="bell-ring" class="w-5 h-5 text-amber-400"></i>
+                    Central de Disparo de Alertas
+                </h2>
                 <p class="text-xs text-slate-400">
-                    Clique no botão de notificação para disparar uma mensagem pré-formatada direta para o WhatsApp do cliente.
+                    Notificações ordenadas por gravidade (7, 5, 3 dias, Vence Hoje e Vencidos). Clique para enviar no WhatsApp.
                 </p>
             </div>
 
-            <div id="alertsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            </div>
+            <div id="alertsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </main>
 
-        <!-- ABA 4: CONEXÃO GOOGLE SHEETS -->
+        <!-- ABA 4: GOOGLE SHEETS -->
         <main id="view-sheets" class="hidden space-y-6">
-            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-6 shadow-sm">
+            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-6">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
                         <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h2 class="text-base font-bold text-white">Integração Direta com o Google Planilhas</h2>
-                        <p class="text-xs text-slate-400">Sincronize e salve seus clientes automaticamente na nuvem do Google Sheets.</p>
+                        <h2 class="text-base font-bold text-white">Conexão com Google Planilhas</h2>
+                        <p class="text-xs text-slate-400">Integração bidirecional com a planilha via Google Apps Script.</p>
                     </div>
                 </div>
 
-                <div class="space-y-4 text-xs text-slate-300">
+                <div class="space-y-4 text-xs">
                     <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
-                        <h3 class="font-semibold text-emerald-400 flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">1</span>
-                            URL do Web App (Google Apps Script)
-                        </h3>
-                        <p class="text-slate-400 leading-relaxed">
-                            Insira a URL criada no Apps Script para que todos os cadastros novos ou alterações sejam salvos direto na planilha:
-                        </p>
+                        <label class="font-semibold text-emerald-400 block">URL do App da Web (Google Apps Script):</label>
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="url" id="sheetApiUrl" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500">
-                            <button onclick="saveSheetsUrl()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5">
-                                <i data-lucide="check" class="w-4 h-4"></i> Salvar e Sincronizar
+                            <input type="url" id="sheetApiUrl" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500">
+                            <button onclick="saveSheetsUrl()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg flex items-center justify-center gap-1.5">
+                                <i data-lucide="check" class="w-4 h-4"></i> Salvar e Conectar
                             </button>
                         </div>
                     </div>
 
                     <div class="flex flex-wrap gap-3 pt-2">
-                        <button onclick="fetchFromGoogleSheets()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-semibold flex items-center gap-2 shadow-lg shadow-brand-600/20 transition-all">
+                        <button onclick="fetchFromGoogleSheets()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-semibold flex items-center gap-2 shadow-lg shadow-brand-600/20">
                             <i data-lucide="refresh-cw" class="w-4 h-4"></i> Baixar Dados da Planilha
                         </button>
-                        <button onclick="exportJSON()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs flex items-center gap-2 border border-slate-700 transition-all">
-                            <i data-lucide="download" class="w-4 h-4"></i> Backup (JSON)
+                        <button onclick="syncToGoogleSheetsIfConfigured(true)" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-2">
+                            <i data-lucide="upload-cloud" class="w-4 h-4"></i> Enviar Dados Atuais
                         </button>
-                        <button onclick="document.getElementById('importFile').click()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs flex items-center gap-2 border border-slate-700 transition-all">
-                            <i data-lucide="upload" class="w-4 h-4"></i> Importar Arquivo
-                        </button>
-                        <input type="file" id="importFile" class="hidden" accept=".json" onchange="importJSON(event)">
                     </div>
                 </div>
             </div>
         </main>
-
     </div>
 
-    <!-- MODAL 1: CADASTRAR / EDITAR CLIENTE -->
+    <!-- MODAL CLIENTE -->
     <div id="clientModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
             <button onclick="closeClientModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
@@ -432,10 +337,9 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-slate-400 mb-1">WhatsApp / Contato *</label>
-                        <input type="tel" id="clientPhone" required placeholder="Ex: 21998765432" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                        <label class="block text-slate-400 mb-1">WhatsApp / Telefone *</label>
+                        <input type="tel" id="clientPhone" required placeholder="Ex: 5521998765432" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
                     </div>
-
                     <div>
                         <label class="block text-slate-400 mb-1">Plano / Serviço *</label>
                         <input type="text" id="clientPlan" required placeholder="Ex: Mensal Premium" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
@@ -447,12 +351,10 @@
                         <label class="block text-slate-400 mb-1">Valor (R$) *</label>
                         <input type="number" step="0.01" id="clientPrice" required placeholder="149.90" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
                     </div>
-
                     <div>
                         <label class="block text-slate-400 mb-1">Data Vencimento *</label>
                         <input type="date" id="clientExpiration" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
                     </div>
-
                     <div>
                         <label class="block text-slate-400 mb-1">Renovação</label>
                         <select id="clientRenewal" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
@@ -464,18 +366,18 @@
 
                 <div>
                     <label class="block text-slate-400 mb-1">Observações</label>
-                    <textarea id="clientNotes" rows="2" placeholder="Notas adicionais sobre o cliente..." class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500"></textarea>
+                    <textarea id="clientNotes" rows="2" placeholder="Observações adicionais..." class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500"></textarea>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
                     <button type="button" onclick="closeClientModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-lg shadow-lg shadow-brand-600/20">Salvar Cliente</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-lg shadow-lg">Salvar Cliente</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 2: DISPARADOR WHATSAPP -->
+    <!-- MODAL WHATSAPP -->
     <div id="waModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeWaModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
@@ -487,24 +389,27 @@
                     <i data-lucide="message-square" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h3 class="text-base font-bold text-white">Enviar Mensagem WhatsApp</h3>
+                    <h3 class="text-base font-bold text-white">Notificação WhatsApp</h3>
                     <p id="waTargetName" class="text-xs text-slate-400"></p>
                 </div>
             </div>
 
             <div class="space-y-3 text-xs">
                 <div>
-                    <label class="block text-slate-400 mb-1">Modelo de Mensagem:</label>
+                    <label class="block text-slate-400 mb-1">Modelo do Alerta:</label>
                     <select id="waTemplate" onchange="updateWaPreview()" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white">
-                        <option value="EXPIRING">🟡 Lembrete: Vence em breve</option>
-                        <option value="EXPIRED">🔴 Cobrança: Assinatura Vencida</option>
-                        <option value="RENEWED">🟢 Confirmação: Renovada com sucesso</option>
+                        <option value="ALERT_7">🔵 Alerta: 7 Dias para vencer</option>
+                        <option value="ALERT_5">🟡 Alerta: 5 Dias para vencer</option>
+                        <option value="ALERT_3">🟠 Alerta: 3 Dias para vencer (Urgente)</option>
+                        <option value="EXPIRED_TODAY">🚨 Alerta: Vence Hoje!</option>
+                        <option value="EXPIRED">🔴 Alerta: Assinatura Vencida</option>
+                        <option value="RENEWED">🟢 Confirmação de Renovação</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-slate-400 mb-1">Pré-visualização do Texto:</label>
-                    <textarea id="waPreviewText" rows="5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 font-mono text-[11px] leading-relaxed"></textarea>
+                    <label class="block text-slate-400 mb-1">Pré-visualização da Mensagem:</label>
+                    <textarea id="waPreviewText" rows="6" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 font-mono text-[11px] leading-relaxed"></textarea>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2">
@@ -512,14 +417,14 @@
                         <i data-lucide="copy" class="w-4 h-4"></i> Copiar
                     </button>
                     <button onclick="openWhatsAppDirect()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg shadow-emerald-600/20">
-                        <i data-lucide="send" class="w-4 h-4"></i> Abrir WhatsApp
+                        <i data-lucide="send" class="w-4 h-4"></i> Enviar pelo WhatsApp
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- LOGICA JAVASCRIPT INTEGRADA -->
+    <!-- JAVASCRIPT PRINCIPAL -->
     <script>
         function getRelativeDate(daysOffset) {
             const d = new Date();
@@ -528,11 +433,11 @@
         }
 
         const sampleClients = [
-            { id: "101", name: "João Silva", phone: "21998765432", plan: "Mensal Premium", price: 149.90, expiration: getRelativeDate(-2), renewal: "Automática", notes: "Contato prévio realizado" },
-            { id: "102", name: "Maria Oliveira", phone: "21987654321", plan: "Trimestral VIP", price: 399.00, expiration: getRelativeDate(3), renewal: "Manual", notes: "Enviar comprovante PIX" },
-            { id: "103", name: "Carlos Eduardo", phone: "21976543210", plan: "Anual VIP", price: 1200.00, expiration: getRelativeDate(15), renewal: "Automática", notes: "" },
-            { id: "104", name: "Ana Beatriz", phone: "21965432109", plan: "Mensal VIP", price: 199.90, expiration: getRelativeDate(0), renewal: "Automática", notes: "Vence hoje" },
-            { id: "105", name: "Lucas Mendes", phone: "21954321098", plan: "Semestral Standard", price: 699.00, expiration: getRelativeDate(5), renewal: "Manual", notes: "" }
+            { id: "101", name: "João Silva", phone: "5521998765432", plan: "Mensal Premium", price: 149.90, expiration: getRelativeDate(-2), renewal: "Automática", notes: "Aguardando PIX" },
+            { id: "102", name: "Maria Oliveira", phone: "5521987654321", plan: "Trimestral VIP", price: 399.00, expiration: getRelativeDate(3), renewal: "Manual", notes: "Alerta 3d enviado" },
+            { id: "103", name: "Carlos Eduardo", phone: "5521976543210", plan: "Anual VIP", price: 1200.00, expiration: getRelativeDate(5), renewal: "Automática", notes: "" },
+            { id: "104", name: "Ana Beatriz", phone: "5521965432109", plan: "Mensal VIP", price: 199.90, expiration: getRelativeDate(7), renewal: "Automática", notes: "" },
+            { id: "105", name: "Lucas Mendes", phone: "5521954321098", plan: "Semestral Standard", price: 699.00, expiration: getRelativeDate(0), renewal: "Manual", notes: "Vence Hoje" }
         ];
 
         let clients = [];
@@ -540,7 +445,7 @@
         let chartInstance = null;
 
         window.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
             checkAuthSession();
             loadClientsData();
             initChart();
@@ -549,6 +454,8 @@
             if (savedUrl) {
                 document.getElementById('sheetApiUrl').value = savedUrl;
                 updateSyncBadge(true);
+                // Busca os dados da planilha automaticamente em segundo plano ao abrir o site
+                fetchFromGoogleSheets(true);
             }
         });
 
@@ -557,10 +464,12 @@
             const toastMsg = document.getElementById('toastMessage');
             const toastIcon = document.getElementById('toastIcon');
 
+            if (!toast || !toastMsg || !toastIcon) return;
+
             toastMsg.innerText = msg;
             toastIcon.setAttribute('data-lucide', isSuccess ? 'check-circle' : 'alert-circle');
             toastIcon.className = `w-5 h-5 ${isSuccess ? 'text-brand-400' : 'text-rose-400'}`;
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
 
             toast.classList.remove('translate-y-20', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
@@ -573,6 +482,7 @@
 
         function updateSyncBadge(connected) {
             const badge = document.getElementById('syncStatusBadge');
+            if (!badge) return;
             if (connected) {
                 badge.innerText = "Sheets Conectado";
                 badge.classList.add("text-emerald-400");
@@ -600,18 +510,9 @@
 
             if (username === 'Bruno.Sampaio' && pwd === '190285') {
                 document.getElementById('loginErrorAlert').classList.add('hidden');
-                const btn = document.getElementById('loginSubmitBtn');
-                btn.disabled = true;
-                btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Acessando...</span>`;
-                lucide.createIcons();
-
-                setTimeout(() => {
-                    localStorage.setItem('mundoplay_authenticated', 'true');
-                    btn.disabled = false;
-                    btn.innerHTML = `<span>Entrar no Painel</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
-                    checkAuthSession();
-                    renderAll();
-                }, 600);
+                localStorage.setItem('mundoplay_authenticated', 'true');
+                checkAuthSession();
+                renderAll();
             } else {
                 document.getElementById('loginErrorAlert').classList.remove('hidden');
             }
@@ -632,17 +533,13 @@
                 pwd.type = 'password';
                 icon.setAttribute('data-lucide', 'eye');
             }
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
 
         function loadClientsData() {
             const stored = localStorage.getItem('mundoplay_clients');
             if (stored) {
-                try {
-                    clients = JSON.parse(stored);
-                } catch(e) {
-                    clients = sampleClients;
-                }
+                try { clients = JSON.parse(stored); } catch(e) { clients = sampleClients; }
             } else {
                 clients = sampleClients;
                 saveClientsData();
@@ -656,32 +553,36 @@
             syncToGoogleSheetsIfConfigured();
         }
 
-        async function syncToGoogleSheetsIfConfigured() {
-            const url = localStorage.getItem('mundoplay_sheets_url');
-            if (!url) return;
-
-            try {
-                await fetch(url, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(clients)
-                });
-                showToast("Dados sincronizados com o Google Sheets!");
-            } catch (err) {
-                console.error("Erro de sincronização:", err);
-                showToast("Falha na conexão com Google Sheets", false);
-            }
-        }
-
-        async function fetchFromGoogleSheets() {
+        async function syncToGoogleSheetsIfConfigured(manualTrigger = false) {
             const url = localStorage.getItem('mundoplay_sheets_url');
             if (!url) {
-                alert("Por favor, cole e salve a URL do Web App primeiro!");
+                if (manualTrigger) alert("Cole e salve a URL do Google Apps Script primeiro!");
                 return;
             }
 
-            showToast("Buscando dados da planilha...");
+            try {
+                if(manualTrigger) showToast("Enviando para o Google Sheets...");
+                await fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(clients)
+                });
+                showToast("Dados salvos na planilha!");
+            } catch (err) {
+                console.error("Erro ao sincronizar:", err);
+                showToast("Erro ao conectar com Google Sheets", false);
+            }
+        }
+
+        async function fetchFromGoogleSheets(silent = false) {
+            const url = localStorage.getItem('mundoplay_sheets_url');
+            if (!url) {
+                if (!silent) alert("Por favor, cole e salve a URL do Web App primeiro!");
+                return;
+            }
+
+            if (!silent) showToast("Buscando dados da planilha...");
             try {
                 const response = await fetch(url);
                 const data = await response.json();
@@ -689,19 +590,24 @@
                     clients = data;
                     localStorage.setItem('mundoplay_clients', JSON.stringify(clients));
                     renderAll();
-                    showToast("Clientes carregados do Google Sheets!");
+                    if (!silent) showToast("Clientes carregados da planilha!");
+                    else showToast("Dados atualizados da nuvem ✨");
+                } else if (Array.isArray(data) && data.length === 0) {
+                    clients = [];
+                    localStorage.setItem('mundoplay_clients', JSON.stringify(clients));
+                    renderAll();
                 } else {
-                    showToast("Planilha vazia ou em formato diferente.", false);
+                    if (!silent) showToast("Planilha vazia ou em formato diferente.", false);
                 }
             } catch (err) {
                 console.error(err);
-                showToast("Erro ao ler dados da planilha.", false);
+                if (!silent) showToast("Erro ao ler dados da planilha.", false);
             }
         }
 
         function getClientStatus(expDateStr) {
-            if (!expDateStr) return { code: 'ACTIVE', label: '🟢 Ativa', class: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' };
-            
+            if (!expDateStr) return { code: 'ACTIVE', label: '🟢 Ativa', days: 99, class: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' };
+
             const today = new Date();
             today.setHours(0,0,0,0);
 
@@ -710,9 +616,15 @@
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
             if (diffDays < 0) {
-                return { code: 'EXPIRED', label: '🔴 Vencida', days: Math.abs(diffDays), class: 'bg-rose-500/10 text-rose-400 border-rose-500/20' };
+                return { code: 'EXPIRED', label: `🔴 Vencida (${Math.abs(diffDays)}d)`, days: diffDays, class: 'bg-rose-500/10 text-rose-400 border-rose-500/20' };
+            } else if (diffDays === 0) {
+                return { code: 'EXPIRED_TODAY', label: '🚨 Vence HOJE!', days: 0, class: 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse' };
+            } else if (diffDays <= 3) {
+                return { code: 'ALERT_3', label: `🟠 Vence em ${diffDays}d`, days: diffDays, class: 'bg-orange-500/10 text-orange-400 border-orange-500/20' };
+            } else if (diffDays <= 5) {
+                return { code: 'ALERT_5', label: `🟡 Vence em ${diffDays}d`, days: diffDays, class: 'bg-amber-500/10 text-amber-400 border-amber-500/20' };
             } else if (diffDays <= 7) {
-                return { code: 'EXPIRING', label: `🟡 Vence em ${diffDays === 0 ? 'hoje' : diffDays + 'd'}`, days: diffDays, class: 'bg-amber-500/10 text-amber-400 border-amber-500/20' };
+                return { code: 'ALERT_7', label: `🔵 Vence em ${diffDays}d`, days: diffDays, class: 'bg-blue-500/10 text-blue-400 border-blue-500/20' };
             } else {
                 return { code: 'ACTIVE', label: '🟢 Ativa', days: diffDays, class: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' };
             }
@@ -724,35 +636,31 @@
             renderUrgentList();
             renderAlertsTab();
             updateChart();
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
 
         function renderKPIs() {
             const total = clients.length;
-            let active = 0, expiring = 0, expired = 0, revenue = 0;
+            let active = 0, alert7 = 0, alert5 = 0, alert3 = 0, expired = 0;
 
             clients.forEach(c => {
                 const st = getClientStatus(c.expiration);
-                if (st.code === 'ACTIVE') {
-                    active++;
-                    revenue += parseFloat(c.price || 0);
-                } else if (st.code === 'EXPIRING') {
-                    expiring++;
-                    revenue += parseFloat(c.price || 0);
-                } else if (st.code === 'EXPIRED') {
-                    expired++;
-                }
+                if (st.code === 'ACTIVE') active++;
+                else if (st.code === 'ALERT_7') alert7++;
+                else if (st.code === 'ALERT_5') alert5++;
+                else if (st.code === 'ALERT_3') alert3++;
+                else if (st.code === 'EXPIRED_TODAY' || st.code === 'EXPIRED') expired++;
             });
 
             document.getElementById('kpiTotal').innerText = total;
             document.getElementById('countTotalTab').innerText = total;
             document.getElementById('kpiActive').innerText = active;
-            document.getElementById('kpiActivePct').innerText = total > 0 ? `${Math.round((active/total)*100)}% do total` : '0%';
-            document.getElementById('kpiExpiring').innerText = expiring;
+            document.getElementById('kpi7Days').innerText = alert7;
+            document.getElementById('kpi5Days').innerText = alert5;
+            document.getElementById('kpi3Days').innerText = alert3;
             document.getElementById('kpiExpired').innerText = expired;
-            document.getElementById('countAlertsTab').innerText = expiring + expired;
-
-            document.getElementById('kpiRevenue').innerText = revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            
+            document.getElementById('countAlertsTab').innerText = alert7 + alert5 + alert3 + expired;
         }
 
         function renderTable() {
@@ -761,7 +669,6 @@
             
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatus').value;
-            const filterRenewal = document.getElementById('filterRenewal').value;
 
             tbody.innerHTML = '';
             mobileContainer.innerHTML = '';
@@ -773,9 +680,7 @@
                                       (c.plan || '').toLowerCase().includes(searchTerm);
                 
                 const matchesStatus = filterStatus === 'ALL' || st.code === filterStatus;
-                const matchesRenewal = filterRenewal === 'ALL' || c.renewal === filterRenewal;
-
-                return matchesSearch && matchesStatus && matchesRenewal;
+                return matchesSearch && matchesStatus;
             });
 
             if (filtered.length === 0) {
@@ -801,14 +706,14 @@
                     <td class="p-3.5 font-semibold text-slate-200">${formattedPrice}</td>
                     <td class="p-3.5 text-slate-300">${formattedDate}</td>
                     <td class="p-3.5">
-                        <span class="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">${c.renewal || 'Manual'}</span>
-                    </td>
-                    <td class="p-3.5">
                         <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full border ${st.class}">${st.label}</span>
                     </td>
                     <td class="p-3.5 text-right">
                         <div class="flex items-center justify-end gap-1.5">
-                            <button onclick="openWaModal('${c.id}')" class="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition" title="WhatsApp">
+                            <button onclick="quickRenew('${c.id}')" class="p-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition" title="Renovar +30 Dias">
+                                <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="openWaModal('${c.id}')" class="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition" title="Notificar WhatsApp">
                                 <i data-lucide="message-square" class="w-4 h-4"></i>
                             </button>
                             <button onclick="editClient('${c.id}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition" title="Editar">
@@ -836,9 +741,12 @@
 
                     <div class="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-800/60">
                         <span>Vencimento: <strong class="text-slate-200">${formattedDate}</strong></span>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="quickRenew('${c.id}')" class="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg font-medium text-[10px]">
+                                +30d
+                            </button>
                             <button onclick="openWaModal('${c.id}')" class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg font-medium text-[11px] flex items-center gap-1">
-                                <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Zap
+                                Zap
                             </button>
                             <button onclick="editClient('${c.id}')" class="p-1 bg-slate-800 text-slate-300 rounded-lg">
                                 <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
@@ -859,11 +767,11 @@
 
             const urgentClients = clients.filter(c => {
                 const st = getClientStatus(c.expiration);
-                return st.code === 'EXPIRING' || st.code === 'EXPIRED';
-            }).slice(0, 5);
+                return st.code !== 'ACTIVE';
+            }).sort((a,b) => new Date(a.expiration) - new Date(b.expiration)).slice(0, 5);
 
             if (urgentClients.length === 0) {
-                urgentContainer.innerHTML = `<p class="text-xs text-slate-500 py-4 text-center">Nenhuma cobrança pendente no momento ✨</p>`;
+                urgentContainer.innerHTML = `<p class="text-xs text-slate-500 py-4 text-center">Nenhum alerta pendente no momento ✨</p>`;
                 return;
             }
 
@@ -893,11 +801,11 @@
 
             const alertClients = clients.filter(c => {
                 const st = getClientStatus(c.expiration);
-                return st.code === 'EXPIRING' || st.code === 'EXPIRED';
-            });
+                return st.code !== 'ACTIVE';
+            }).sort((a,b) => new Date(a.expiration) - new Date(b.expiration));
 
             if (alertClients.length === 0) {
-                container.innerHTML = `<div class="col-span-2 text-center py-12 text-slate-500"><p>Todos os pagamentos estão em dia!</p></div>`;
+                container.innerHTML = `<div class="col-span-2 text-center py-12 text-slate-500"><p>Todas as assinaturas estão em dia com prazo superior a 7 dias!</p></div>`;
                 return;
             }
 
@@ -911,18 +819,23 @@
                 card.innerHTML = `
                     <div class="flex items-start justify-between">
                         <div>
-                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border ${st.class}">${st.label}</span>
+                            <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${st.class}">${st.label}</span>
                             <h3 class="text-sm font-bold text-white mt-2">${c.name}</h3>
                             <p class="text-xs text-slate-400">${c.plan} • <strong class="text-slate-200">${formattedPrice}</strong></p>
                         </div>
-                        <button onclick="openWaModal('${c.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
-                            <i data-lucide="send" class="w-3.5 h-3.5"></i> Notificar
-                        </button>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="quickRenew('${c.id}')" class="px-2.5 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-lg text-xs font-semibold" title="Adicionar +30 dias de validade">
+                                +30d
+                            </button>
+                            <button onclick="openWaModal('${c.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
+                                <i data-lucide="send" class="w-3.5 h-3.5"></i> Alertas
+                            </button>
+                        </div>
                     </div>
 
                     <div class="text-xs text-slate-400 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
                         <span>Vencimento: <strong class="text-slate-200">${formattedDate}</strong></span>
-                        <span>Tel: <span class="font-mono text-slate-300">${c.phone}</span></span>
+                        <span>Zap: <span class="font-mono text-slate-300">${c.phone}</span></span>
                     </div>
                 `;
                 container.appendChild(card);
@@ -934,10 +847,10 @@
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Ativas', 'Vence em 7 dias', 'Vencidas'],
+                    labels: ['Ativas (>7d)', 'Vence em 7d', 'Vence em 5d', 'Vence em 3d', 'Vencidas / Hoje'],
                     datasets: [{
-                        data: [0, 0, 0],
-                        backgroundColor: ['#22c55e', '#f59e0b', '#f43f5e'],
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#f97316', '#f43f5e'],
                         borderWidth: 0
                     }]
                 },
@@ -947,10 +860,10 @@
                     plugins: {
                         legend: {
                             position: 'bottom',
-                            labels: { color: '#94a3b8', font: { size: 11 } }
+                            labels: { color: '#94a3b8', font: { size: 10 } }
                         }
                     },
-                    cutout: '70%'
+                    cutout: '65%'
                 }
             });
             updateChart();
@@ -958,34 +871,41 @@
 
         function updateChart() {
             if(!chartInstance) return;
-            let active = 0, expiring = 0, expired = 0;
+            let active = 0, a7 = 0, a5 = 0, a3 = 0, exp = 0;
             clients.forEach(c => {
                 const st = getClientStatus(c.expiration);
                 if (st.code === 'ACTIVE') active++;
-                else if (st.code === 'EXPIRING') expiring++;
-                else if (st.code === 'EXPIRED') expired++;
+                else if (st.code === 'ALERT_7') a7++;
+                else if (st.code === 'ALERT_5') a5++;
+                else if (st.code === 'ALERT_3') a3++;
+                else if (st.code === 'EXPIRED_TODAY' || st.code === 'EXPIRED') exp++;
             });
-            chartInstance.data.datasets[0].data = [active, expiring, expired];
+            chartInstance.data.datasets[0].data = [active, a7, a5, a3, exp];
             chartInstance.update();
+        }
+
+        function quickRenew(id) {
+            const index = clients.findIndex(c => c.id === id);
+            if (index !== -1) {
+                const currExp = new Date(clients[index].expiration || new Date());
+                const baseDate = currExp < new Date() ? new Date() : currExp;
+                baseDate.setDate(baseDate.getDate() + 30);
+                
+                clients[index].expiration = baseDate.toISOString().split('T')[0];
+                saveClientsData();
+                showToast(`Assinatura de ${clients[index].name} renovada por +30 dias!`);
+            }
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove(
-                    'active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600',
-                    'text-white', 'shadow-lg', 'shadow-brand-500/25', 'border-brand-400/30',
-                    'scale-[1.02]', 'font-bold'
-                );
+                btn.classList.remove('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30', 'font-bold');
                 btn.classList.add('text-slate-400', 'hover:text-slate-100', 'hover:bg-slate-800/70', 'border-transparent', 'font-semibold');
             });
 
             const activeBtn = document.getElementById(`tab-${tabId}`);
             if(activeBtn) {
-                activeBtn.classList.add(
-                    'active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600',
-                    'text-white', 'shadow-lg', 'shadow-brand-500/25', 'border-brand-400/30',
-                    'scale-[1.02]', 'font-bold'
-                );
+                activeBtn.classList.add('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30', 'font-bold');
                 activeBtn.classList.remove('text-slate-400', 'hover:bg-slate-800/70', 'border-transparent', 'font-semibold');
             }
 
@@ -1053,23 +973,20 @@
             closeClientModal();
         }
 
-        function editClient(id) {
-            openClientModal(id);
-        }
+        function editClient(id) { openClientModal(id); }
 
         function deleteClient(id) {
-            clients = clients.filter(c => c.id !== id);
-            saveClientsData();
+            if(confirm("Tem certeza que deseja excluir este cliente?")) {
+                clients = clients.filter(c => c.id !== id);
+                saveClientsData();
+            }
         }
 
-        function filterClients() {
-            renderTable();
-        }
+        function filterClients() { renderTable(); }
 
         function resetFilters() {
             document.getElementById('searchInput').value = '';
             document.getElementById('filterStatus').value = 'ALL';
-            document.getElementById('filterRenewal').value = 'ALL';
             renderTable();
         }
 
@@ -1081,13 +998,11 @@
             
             const st = getClientStatus(currentWaClient.expiration);
             const select = document.getElementById('waTemplate');
-            if (st.code === 'EXPIRED') select.value = 'EXPIRED';
-            else if (st.code === 'EXPIRING') select.value = 'EXPIRING';
-            else select.value = 'RENEWED';
+            select.value = st.code !== 'ACTIVE' ? st.code : 'RENEWED';
 
             updateWaPreview();
             document.getElementById('waModal').classList.remove('hidden');
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
 
         function closeWaModal() {
@@ -1101,12 +1016,18 @@
             const formattedPrice = parseFloat(currentWaClient.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
             let msg = "";
-            if (tpl === 'EXPIRING') {
-                msg = `Olá ${currentWaClient.name}! 👋 Passando para lembrar que sua assinatura do plano *${currentWaClient.plan}* vence em breve (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nDeseja realizar a renovação para manter seu acesso ativo?`;
+            if (tpl === 'ALERT_7') {
+                msg = `Olá ${currentWaClient.name}! 👋 Passando para avisar que sua assinatura do plano *${currentWaClient.plan}* vencerá em *7 dias* (${formattedDate}).\n\n💰 Valor para renovação: ${formattedPrice}\n\nDeseja antecipar sua renovação?`;
+            } else if (tpl === 'ALERT_5') {
+                msg = `Olá ${currentWaClient.name}! 🟡 Lembramos que faltam apenas *5 dias* para o vencimento do seu plano *${currentWaClient.plan}* (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nPodemos enviar a chave PIX?`;
+            } else if (tpl === 'ALERT_3') {
+                msg = `Olá ${currentWaClient.name}! 🟠 *Aviso Urgente*: Faltam apenas *3 dias* para o vencimento da sua assinatura (${formattedDate}).\n\nGaranta a renovação do plano *${currentWaClient.plan}* para não perder o acesso!\n\n💰 Valor: ${formattedPrice}`;
+            } else if (tpl === 'EXPIRED_TODAY') {
+                msg = `Olá ${currentWaClient.name}! 🚨 Sua assinatura do plano *${currentWaClient.plan}* vence *HOJE* (${formattedDate}).\n\nRenove agora por ${formattedPrice} para continuar aproveitando sem interrupções!`;
             } else if (tpl === 'EXPIRED') {
-                msg = `Olá ${currentWaClient.name}! ⚠️ Sua assinatura do plano *${currentWaClient.plan}* venceu no dia ${formattedDate}.\n\nPara reativar seu acesso, o valor é de ${formattedPrice}.\n\nPodemos enviar a chave PIX para pagamento?`;
+                msg = `Olá ${currentWaClient.name}! 🔴 Sua assinatura do plano *${currentWaClient.plan}* VENCEU no dia ${formattedDate}.\n\nPara reativar seu acesso imediato, o valor é de ${formattedPrice}.\n\nPodemos gerar a chave PIX?`;
             } else {
-                msg = `Olá ${currentWaClient.name}! 🎉 Sua assinatura do plano *${currentWaClient.plan}* foi renovada com sucesso!\n\n📅 Próximo vencimento: ${formattedDate}\n\nObrigado pela preferência!`;
+                msg = `Olá ${currentWaClient.name}! 🎉 Sua assinatura do plano *${currentWaClient.plan}* foi renovada com sucesso!\n\n📅 Novo vencimento: ${formattedDate}\n\nObrigado pela preferência!`;
             }
 
             document.getElementById('waPreviewText').value = msg;
@@ -1122,7 +1043,7 @@
             const textarea = document.getElementById('waPreviewText');
             textarea.select();
             document.execCommand('copy');
-            showToast("Texto copiado!");
+            showToast("Mensagem copiada!");
         }
 
         function saveSheetsUrl() {
@@ -1131,38 +1052,12 @@
                 localStorage.setItem('mundoplay_sheets_url', url);
                 updateSyncBadge(true);
                 showToast("URL salva com sucesso!");
-                syncToGoogleSheetsIfConfigured();
+                syncToGoogleSheetsIfConfigured(true);
             } else {
                 localStorage.removeItem('mundoplay_sheets_url');
                 updateSyncBadge(false);
-                showToast("Conexão com Google Sheets removida.");
+                showToast("URL removida.");
             }
-        }
-
-        function exportJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(clients, null, 2));
-            const dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `mundoplay_backup_${new Date().toISOString().split('T')[0]}.json`);
-            dlAnchorElem.click();
-        }
-
-        function importJSON(event) {
-            const fileReader = new FileReader();
-            fileReader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if (Array.isArray(parsed)) {
-                        clients = parsed;
-                        saveClientsData();
-                        showToast("Arquivo importado!");
-                    }
-                } catch(err) {
-                    console.error(err);
-                    showToast("Erro ao ler arquivo", false);
-                }
-            };
-            fileReader.readAsText(event.target.files[0]);
         }
     </script>
 </body>
