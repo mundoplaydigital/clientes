@@ -57,7 +57,6 @@
 
         <div class="w-full max-w-md bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative z-10 space-y-6">
             <div class="text-center space-y-3">
-                <!-- Logomarca com Brilho Neon na Tela de Login -->
                 <div class="relative inline-block mx-auto group">
                     <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-600 to-cyan-400 blur-md opacity-80 group-hover:opacity-100 transition duration-300"></div>
                     <img id="loginLogoImg" src="logo.png" alt="Mundo Play Digital Logo" 
@@ -109,7 +108,6 @@
         <!-- Header -->
         <header class="py-4 border-b border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sticky top-0 bg-slate-100/95 dark:bg-slate-950/95 backdrop-blur-md z-30 transition-colors duration-300">
             <div class="flex items-center gap-3.5">
-                <!-- Logomarca com Moldura Neon no Topo -->
                 <div class="relative shrink-0">
                     <div class="absolute -inset-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 blur opacity-75"></div>
                     <img id="headerLogoImg" src="logo.png" alt="Mundo Play Digital" 
@@ -125,6 +123,8 @@
             </div>
 
             <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
+                <span id="userRoleBadge" class="hidden text-xs font-bold px-3 py-1.5 rounded-xl border transition-all"></span>
+
                 <button onclick="toggleTheme()" id="themeToggleBtn" class="p-2.5 bg-white dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl border border-slate-300 dark:border-slate-800 transition-all shadow-md" title="Alternar Tema Claro / Escuro">
                     <i data-lucide="sun" id="themeIcon" class="w-4.5 h-4.5"></i>
                 </button>
@@ -132,7 +132,7 @@
                     <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
                     <span id="syncStatusBadge">Google Sheets</span>
                 </button>
-                <button onclick="openClientModal()" class="flex items-center justify-center gap-2 px-5 py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white rounded-xl shadow-lg shadow-brand-600/25 transition-all">
+                <button id="headerBtnNewClient" onclick="openClientModal()" class="flex items-center justify-center gap-2 px-5 py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white rounded-xl shadow-lg shadow-brand-600/25 transition-all">
                     <i data-lucide="user-plus" class="w-4.5 h-4.5"></i>
                     <span>Novo Cliente</span>
                 </button>
@@ -428,9 +428,36 @@
 
             <!-- Tabela de Histórico de Despesas -->
             <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl overflow-hidden p-5 space-y-4 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i data-lucide="receipt" class="w-4 h-4 text-rose-500"></i>
+                        Histórico de Despesas Lançadas
+                    </h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+                        <thead class="bg-slate-50 dark:bg-slate-950/80 text-slate-500 dark:text-slate-400 uppercase text-[10px] font-bold border-b border-slate-200 dark:border-slate-800">
+                            <tr>
+                                <th class="p-3">Data</th>
+                                <th class="p-3">Descrição / Servidor</th>
+                                <th class="p-3">Fornecedor / Categoria</th>
+                                <th class="p-3">Valor</th>
+                                <th class="p-3 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expensesTableBody" class="divide-y divide-slate-200 dark:divide-slate-800/60"></tbody>
+                    </table>
+                </div>
+                <div id="emptyExpensesState" class="hidden py-8 text-center text-slate-400 dark:text-slate-500">
+                    <i data-lucide="receipt" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
+                    <p class="text-xs">Nenhuma despesa lançada até o momento.</p>
+                </div>
+            </div>
+        </main>
+
         <!-- ABA 5: GOOGLE SHEETS & LOGO -->
         <main id="view-sheets" class="hidden space-y-6">
-            <!-- Opção de Personazalização da Logo -->
+            <!-- Personalização da Logo -->
             <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-6 shadow-sm">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="p-3 bg-blue-500/10 text-blue-600 dark:text-cyan-400 rounded-xl border border-blue-500/20">
@@ -607,10 +634,68 @@
 
     <!-- JAVASCRIPT PRINCIPAL -->
     <script>
+        function isReader() {
+            return localStorage.getItem('mundoplay_user_role') === 'reader';
+        }
+
         function getRelativeDate(daysOffset) {
             const d = new Date();
             d.setDate(d.getDate() + daysOffset);
             return d.toISOString().split('T')[0];
+        }
+
+        function showToast(msg, isSuccess = true) {
+            const toast = document.getElementById('toastNotification');
+            const toastMsg = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            if (!toast || !toastMsg || !toastIcon) return;
+
+            toastMsg.innerText = msg;
+            toastIcon.setAttribute('data-lucide', isSuccess ? 'info' : 'alert-circle');
+            toastIcon.className = `w-5 h-5 ${isSuccess ? 'text-brand-500 dark:text-brand-400' : 'text-rose-500 dark:text-rose-400'}`;
+            if (window.lucide) lucide.createIcons();
+
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 3500);
+        }
+
+        function updateSyncBadge(connected) {
+            const badge = document.getElementById('syncStatusBadge');
+            if (!badge) return;
+            if (connected) {
+                badge.innerText = "Sheets Conectado";
+                badge.classList.add("text-emerald-600", "dark:text-emerald-400");
+            } else {
+                badge.innerText = "Google Sheets";
+                badge.classList.remove("text-emerald-600", "dark:text-emerald-400");
+            }
+        }
+
+        function switchTab(tabId) {
+            ['dashboard', 'clients', 'alerts', 'earnings', 'sheets'].forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+            });
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30');
+                btn.classList.add('text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-100', 'hover:bg-slate-200/60', 'dark:hover:bg-slate-800/70', 'border-transparent');
+            });
+
+            const targetView = document.getElementById(`view-${tabId}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30');
+                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-100', 'hover:bg-slate-200/60', 'dark:hover:bg-slate-800/70', 'border-transparent');
+            }
         }
 
         const sampleClients = [
@@ -650,7 +735,6 @@
             }
         });
 
-        // LOGOMARCA PERSONALIZADA
         function loadCustomLogo() {
             const savedLogo = localStorage.getItem('mundoplay_logo_url') || 'logo.png';
             document.getElementById('logoUrlInput').value = savedLogo;
@@ -658,6 +742,10 @@
         }
 
         function saveCustomLogoUrl() {
+            if (isReader()) {
+                showToast("Acesso somente leitura! Você não pode alterar a logomarca.", false);
+                return;
+            }
             const url = document.getElementById('logoUrlInput').value.trim();
             const logoToSave = url || 'logo.png';
             localStorage.setItem('mundoplay_logo_url', logoToSave);
@@ -685,7 +773,6 @@
             }
         }
 
-        // TEMA CLARO E ESCURO
         function initTheme() {
             const savedTheme = localStorage.getItem('mundoplay_theme') || 'dark';
             applyTheme(savedTheme);
@@ -734,6 +821,29 @@
             if (isAuth === 'true') {
                 document.getElementById('authScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
+
+                const userRole = localStorage.getItem('mundoplay_user_role') || 'admin';
+                const roleBadge = document.getElementById('userRoleBadge');
+                const btnNewClient = document.getElementById('headerBtnNewClient');
+
+                if (roleBadge) {
+                    roleBadge.classList.remove('hidden', 'bg-blue-500/10', 'text-blue-600', 'border-blue-500/30', 'bg-amber-500/10', 'text-amber-600', 'border-amber-500/30');
+                    if (userRole === 'reader') {
+                        roleBadge.innerText = '👁️ Leitor (Somente Leitura)';
+                        roleBadge.classList.add('bg-amber-500/10', 'text-amber-600', 'dark:text-amber-400', 'border-amber-500/30');
+                    } else {
+                        roleBadge.innerText = '⚡ Admin';
+                        roleBadge.classList.add('bg-blue-500/10', 'text-blue-600', 'dark:text-blue-400', 'border-blue-500/30');
+                    }
+                }
+
+                if (btnNewClient) {
+                    if (userRole === 'reader') {
+                        btnNewClient.classList.add('hidden');
+                    } else {
+                        btnNewClient.classList.remove('hidden');
+                    }
+                }
             } else {
                 document.getElementById('authScreen').classList.remove('hidden');
                 document.getElementById('mainApp').classList.add('hidden');
@@ -748,8 +858,17 @@
             if (username === 'Bruno.Sampaio' && pwd === '190285') {
                 document.getElementById('loginErrorAlert').classList.add('hidden');
                 localStorage.setItem('mundoplay_authenticated', 'true');
+                localStorage.setItem('mundoplay_user_role', 'admin');
                 checkAuthSession();
                 renderAll();
+                showToast("Bem-vindo, Administrador!");
+            } else if (username.toLowerCase() === 'leitor' && pwd === 'leitor') {
+                document.getElementById('loginErrorAlert').classList.add('hidden');
+                localStorage.setItem('mundoplay_authenticated', 'true');
+                localStorage.setItem('mundoplay_user_role', 'reader');
+                checkAuthSession();
+                renderAll();
+                showToast("Bem-vindo! Acesso em modo Somente Leitura.");
             } else {
                 document.getElementById('loginErrorAlert').classList.remove('hidden');
             }
@@ -757,6 +876,7 @@
 
         function handleLogout() {
             localStorage.removeItem('mundoplay_authenticated');
+            localStorage.removeItem('mundoplay_user_role');
             checkAuthSession();
         }
 
@@ -859,8 +979,26 @@
             }
         }
 
+        function saveSheetsUrl() {
+            if (isReader()) {
+                showToast("Acesso somente leitura! Você não pode alterar configurações do Sheets.", false);
+                return;
+            }
+            const url = document.getElementById('sheetApiUrl').value.trim();
+            if (url) {
+                localStorage.setItem('mundoplay_sheets_url', url);
+                updateSyncBadge(true);
+                showToast("URL salva com sucesso!");
+                syncToGoogleSheetsIfConfigured(true);
+            } else {
+                localStorage.removeItem('mundoplay_sheets_url');
+                updateSyncBadge(false);
+                showToast("URL removida.");
+            }
+        }
+
         function getClientStatus(expDateStr) {
-            if (!expDateStr) return { code: 'ACTIVE', label: '🟢 Ativa', days: 99, class: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' };
+            if (!expDateStr) return { code: 'ACTIVE', label: '🟢 Ativa', days: 99, class: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30' };
 
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -870,17 +1008,17 @@
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
             if (diffDays < 0) {
-                return { code: 'EXPIRED', label: `🔴 Vencida (${Math.abs(diffDays)}d)`, days: diffDays, class: 'bg-rose-500/10 text-rose-400 border-rose-500/20' };
+                return { code: 'EXPIRED', label: `🔴 Vencida (${Math.abs(diffDays)}d)`, days: diffDays, class: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30' };
             } else if (diffDays === 0) {
-                return { code: 'EXPIRED_TODAY', label: '🚨 Vence HOJE!', days: 0, class: 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse' };
+                return { code: 'EXPIRED_TODAY', label: '🚨 Vence HOJE!', days: 0, class: 'bg-rose-500/20 text-rose-800 dark:text-rose-300 border-rose-500/40 animate-pulse font-bold' };
             } else if (diffDays <= 3) {
-                return { code: 'ALERT_3', label: `🟠 Vence em ${diffDays}d`, days: diffDays, class: 'bg-orange-500/10 text-orange-400 border-orange-500/20' };
+                return { code: 'ALERT_3', label: `🟠 Vence em ${diffDays}d`, days: diffDays, class: 'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/30' };
             } else if (diffDays <= 5) {
-                return { code: 'ALERT_5', label: `🟡 Vence em ${diffDays}d`, days: diffDays, class: 'bg-amber-500/10 text-amber-400 border-amber-500/20' };
+                return { code: 'ALERT_5', label: `🟡 Vence em ${diffDays}d`, days: diffDays, class: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30' };
             } else if (diffDays <= 7) {
-                return { code: 'ALERT_7', label: `🔵 Vence em ${diffDays}d`, days: diffDays, class: 'bg-blue-500/10 text-blue-400 border-blue-500/20' };
+                return { code: 'ALERT_7', label: `🔵 Vence em ${diffDays}d`, days: diffDays, class: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30' };
             } else {
-                return { code: 'ACTIVE', label: '🟢 Ativa', days: diffDays, class: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' };
+                return { code: 'ACTIVE', label: '🟢 Ativa', days: diffDays, class: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30' };
             }
         }
 
@@ -947,6 +1085,8 @@
                 document.getElementById('emptyState').classList.add('hidden');
             }
 
+            const readerMode = isReader();
+
             filtered.forEach(c => {
                 const st = getClientStatus(c.expiration);
                 const formattedPrice = parseFloat(c.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -956,6 +1096,25 @@
                 if(c.renewal === 'Aguardando pagamento') renewalClass = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
                 else if(c.renewal === 'Notificado do Vencimento') renewalClass = "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30";
                 else if(c.renewal === 'Cancelamento') renewalClass = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30";
+
+                const desktopActions = readerMode ? `
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500 italic">Somente leitura</span>
+                ` : `
+                    <div class="flex items-center justify-end gap-1.5">
+                        <button onclick="quickRenew('${c.id}')" class="p-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-lg transition" title="Renovar +30 Dias">
+                            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="openWaModal('${c.id}')" class="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg transition" title="Notificar WhatsApp">
+                            <i data-lucide="message-square" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="editClient('${c.id}')" class="p-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition" title="Editar">
+                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="deleteClient('${c.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg transition" title="Excluir">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-200/50 dark:hover:bg-slate-800/40 transition border-b border-slate-200 dark:border-slate-800/40";
@@ -976,23 +1135,29 @@
                         <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full border ${st.class}">${st.label}</span>
                     </td>
                     <td class="p-3.5 text-right">
-                        <div class="flex items-center justify-end gap-1.5">
-                            <button onclick="quickRenew('${c.id}')" class="p-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-lg transition" title="Renovar +30 Dias">
-                                <i data-lucide="rotate-cw" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="openWaModal('${c.id}')" class="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg transition" title="Notificar WhatsApp">
-                                <i data-lucide="message-square" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="editClient('${c.id}')" class="p-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition" title="Editar">
-                                <i data-lucide="pencil" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="deleteClient('${c.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg transition" title="Excluir">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
+                        ${desktopActions}
                     </td>
                 `;
                 tbody.appendChild(tr);
+
+                const mobileActions = readerMode ? `
+                    <span class="text-[10px] text-slate-400 italic">Somente leitura</span>
+                ` : `
+                    <div class="flex items-center gap-1">
+                        <button onclick="quickRenew('${c.id}')" class="px-2 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg font-medium text-[10px]">
+                            +30d
+                        </button>
+                        <button onclick="openWaModal('${c.id}')" class="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg font-medium text-[11px] flex items-center gap-1">
+                            Zap
+                        </button>
+                        <button onclick="editClient('${c.id}')" class="p-1 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg">
+                            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="deleteClient('${c.id}')" class="p-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-lg">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
 
                 const card = document.createElement('div');
                 card.className = "p-4 space-y-3";
@@ -1012,20 +1177,7 @@
 
                     <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-800/60">
                         <span>Vencimento: <strong class="text-slate-800 dark:text-slate-200">${formattedDate}</strong></span>
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="quickRenew('${c.id}')" class="px-2 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg font-medium text-[10px]">
-                                +30d
-                            </button>
-                            <button onclick="openWaModal('${c.id}')" class="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg font-medium text-[11px] flex items-center gap-1">
-                                Zap
-                            </button>
-                            <button onclick="editClient('${c.id}')" class="p-1 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg">
-                                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-                            </button>
-                            <button onclick="deleteClient('${c.id}')" class="p-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-lg">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            </button>
-                        </div>
+                        ${mobileActions}
                     </div>
                 `;
                 mobileContainer.appendChild(card);
@@ -1042,22 +1194,22 @@
             }).sort((a,b) => new Date(a.expiration) - new Date(b.expiration)).slice(0, 5);
 
             if (urgentClients.length === 0) {
-                urgentContainer.innerHTML = `<p class="text-xs text-slate-500 py-4 text-center">Nenhum alerta pendente no momento ✨</p>`;
+                urgentContainer.innerHTML = `<p class="text-xs text-slate-500 dark:text-slate-400 py-4 text-center">Nenhum alerta pendente no momento ✨</p>`;
                 return;
             }
 
             urgentClients.forEach(c => {
                 const st = getClientStatus(c.expiration);
                 const item = document.createElement('div');
-                item.className = "flex items-center justify-between p-2.5 bg-slate-950/60 border border-slate-800/80 rounded-xl text-xs";
+                item.className = "flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 rounded-xl text-xs shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition";
                 item.innerHTML = `
                     <div class="truncate pr-2">
-                        <div class="font-medium text-white truncate">${c.name}</div>
-                        <div class="text-[10px] text-slate-500">${c.supplier || 'Sem fornecedor'} • ${c.screens || c.plan || ''}</div>
+                        <div class="font-bold text-slate-900 dark:text-white truncate">${c.name}</div>
+                        <div class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">${c.supplier || 'Sem fornecedor'} • ${c.screens || c.plan || ''}</div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[9px] font-semibold px-2 py-0.5 rounded-full border ${st.class}">${st.label}</span>
-                        <button onclick="openWaModal('${c.id}')" class="p-1.5 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg transition">
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${st.class}">${st.label}</span>
+                        <button onclick="openWaModal('${c.id}')" class="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg transition" title="Notificar no WhatsApp">
                             <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
@@ -1076,7 +1228,7 @@
             }).sort((a,b) => new Date(a.expiration) - new Date(b.expiration));
 
             if (alertClients.length === 0) {
-                container.innerHTML = `<div class="col-span-2 text-center py-12 text-slate-500"><p>Todas as assinaturas estão em dia com prazo superior a 7 dias!</p></div>`;
+                container.innerHTML = `<div class="col-span-1 md:col-span-2 text-center py-12 text-slate-500 dark:text-slate-400 font-medium"><p>Todas as assinaturas estão em dia com prazo superior a 7 dias!</p></div>`;
                 return;
             }
 
@@ -1086,27 +1238,27 @@
                 const formattedPrice = parseFloat(c.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
                 const card = document.createElement('div');
-                card.className = "bg-slate-900/80 border border-slate-800 rounded-2xl p-4 space-y-3 relative";
+                card.className = "bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-4 space-y-3 relative shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition";
                 card.innerHTML = `
-                    <div class="flex items-start justify-between">
+                    <div class="flex items-start justify-between gap-2">
                         <div>
-                            <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${st.class}">${st.label}</span>
-                            <h3 class="text-sm font-bold text-white mt-2">${c.name}</h3>
-                            <p class="text-xs text-slate-400">${c.supplier || ''} (${c.screens || c.plan || ''}) • <strong class="text-slate-200">${formattedPrice}</strong></p>
+                            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${st.class}">${st.label}</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white mt-2">${c.name}</h3>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5">${c.supplier || 'Sem fornecedor'} (${c.screens || c.plan || ''}) • <strong class="text-slate-900 dark:text-slate-200">${formattedPrice}</strong></p>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="quickRenew('${c.id}')" class="px-2.5 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-lg text-xs font-semibold" title="Adicionar +30 dias de validade">
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button onclick="quickRenew('${c.id}')" class="px-2.5 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 rounded-lg text-xs font-bold transition" title="Adicionar +30 dias de validade">
                                 +30d
                             </button>
-                            <button onclick="openWaModal('${c.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
+                            <button onclick="openWaModal('${c.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md transition">
                                 <i data-lucide="send" class="w-3.5 h-3.5"></i> Alertas
                             </button>
                         </div>
                     </div>
 
-                    <div class="text-xs text-slate-400 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
-                        <span>Vencimento: <strong class="text-slate-200">${formattedDate}</strong></span>
-                        <span>Zap: <span class="font-mono text-slate-300">${c.phone}</span></span>
+                    <div class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800/80 flex items-center justify-between flex-wrap gap-2">
+                        <span>Vencimento: <strong class="text-slate-900 dark:text-white font-bold">${formattedDate}</strong></span>
+                        <span>Zap: <span class="font-mono text-slate-900 dark:text-slate-200 font-bold">${c.phone}</span></span>
                     </div>
                 `;
                 container.appendChild(card);
@@ -1114,7 +1266,6 @@
         }
 
         function renderEarnings() {
-            // 1. Faturamento Bruto (Soma dos clientes ativos ou que não estão cancelados)
             let grossEarnings = 0;
             clients.forEach(c => {
                 if(c.renewal !== 'Cancelamento') {
@@ -1122,8 +1273,7 @@
                 }
             });
 
-            // 2. Total de Despesas do mês atual
-            const currentMonthStr = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+            const currentMonthStr = new Date().toISOString().slice(0, 7);
             let totalExpenses = 0;
             expenses.forEach(e => {
                 if(e.date && e.date.startsWith(currentMonthStr)) {
@@ -1133,14 +1283,10 @@
                 }
             });
 
-            // 3. Lucro Líquido Real = Faturamento Bruto - Despesas
             const netProfit = grossEarnings - totalExpenses;
-
-            // 4. Projeções
             const proj6Months = netProfit * 6;
             const proj12Months = netProfit * 12;
 
-            // Atualizar elementos da interface
             document.getElementById('kpiGrossEarnings').innerText = grossEarnings.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             document.getElementById('kpiTotalExpenses').innerText = totalExpenses.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             
@@ -1158,6 +1304,8 @@
         function renderExpenses() {
             const tbody = document.getElementById('expensesTableBody');
             const emptyState = document.getElementById('emptyExpensesState');
+            if (!tbody || !emptyState) return;
+
             tbody.innerHTML = '';
 
             if (expenses.length === 0) {
@@ -1166,21 +1314,27 @@
             }
             emptyState.classList.add('hidden');
 
+            const readerMode = isReader();
+
             expenses.forEach(e => {
                 const formattedPrice = parseFloat(e.amount || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                 const formattedDate = e.date ? new Date(e.date + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
 
+                const deleteBtn = readerMode ? `-` : `
+                    <button onclick="deleteExpense('${e.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg transition" title="Excluir despesa">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                `;
+
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition border-b border-slate-800/40";
+                tr.className = "hover:bg-slate-100 dark:hover:bg-slate-800/40 transition border-b border-slate-200 dark:border-slate-800/40";
                 tr.innerHTML = `
-                    <td class="p-3 text-slate-400">${formattedDate}</td>
-                    <td class="p-3 font-medium text-white">${e.description}</td>
-                    <td class="p-3 text-slate-300 font-semibold">${e.supplier || '-'}</td>
-                    <td class="p-3 font-bold text-rose-400">${formattedPrice}</td>
+                    <td class="p-3 text-slate-600 dark:text-slate-400">${formattedDate}</td>
+                    <td class="p-3 font-medium text-slate-900 dark:text-white">${e.description}</td>
+                    <td class="p-3 text-slate-700 dark:text-slate-300 font-semibold">${e.supplier || '-'}</td>
+                    <td class="p-3 font-bold text-rose-600 dark:text-rose-400">${formattedPrice}</td>
                     <td class="p-3 text-right">
-                        <button onclick="deleteExpense('${e.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg transition" title="Excluir despesa">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
+                        ${deleteBtn}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -1190,6 +1344,10 @@
 
         function handleExpenseSubmit(evt) {
             evt.preventDefault();
+            if (isReader()) {
+                showToast("Acesso somente leitura! Você não pode cadastrar despesas.", false);
+                return;
+            }
             const desc = document.getElementById('expenseDesc').value;
             const amount = parseFloat(document.getElementById('expenseAmount').value || 0);
             const date = document.getElementById('expenseDate').value;
@@ -1211,6 +1369,10 @@
         }
 
         function deleteExpense(id) {
+            if (isReader()) {
+                showToast("Acesso somente leitura! Você não pode excluir despesas.", false);
+                return;
+            }
             expenses = expenses.filter(e => e.id !== id);
             saveExpensesData();
             showToast("Despesa removida.");
@@ -1297,6 +1459,10 @@
         }
 
         function quickRenew(id) {
+            if (isReader()) {
+                showToast("Acesso somente leitura! Ação não permitida.", false);
+                return;
+            }
             const index = clients.findIndex(c => c.id === id);
             if (index !== -1) {
                 const currExp = new Date(clients[index].expiration || new Date());
@@ -1310,28 +1476,11 @@
             }
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30', 'font-bold');
-                btn.classList.add('text-slate-400', 'hover:text-slate-100', 'hover:bg-slate-800/70', 'border-transparent', 'font-semibold');
-            });
-
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            if(activeBtn) {
-                activeBtn.classList.add('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30', 'font-bold');
-                activeBtn.classList.remove('text-slate-400', 'hover:bg-slate-800/70', 'border-transparent', 'font-semibold');
-            }
-
-            document.getElementById('view-dashboard').classList.add('hidden');
-            document.getElementById('view-clients').classList.add('hidden');
-            document.getElementById('view-alerts').classList.add('hidden');
-            document.getElementById('view-earnings').classList.add('hidden');
-            document.getElementById('view-sheets').classList.add('hidden');
-
-            document.getElementById(`view-${tabId}`).classList.remove('hidden');
-        }
-
         function openClientModal(id = null) {
+            if (isReader()) {
+                showToast("Acesso somente leitura! Você não pode adicionar ou editar clientes.", false);
+                return;
+            }
             const form = document.getElementById('clientForm');
             form.reset();
 
@@ -1353,10 +1502,10 @@
                 document.getElementById('modalTitle').innerText = "Cadastrar Novo Cliente";
                 document.getElementById('clientId').value = '';
                 document.getElementById('clientExpiration').value = getRelativeDate(30);
-                document.getElementById('clientRenewal').value = 'Aguardando pagamento';
             }
 
             document.getElementById('clientModal').classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
         }
 
         function closeClientModal() {
@@ -1365,6 +1514,10 @@
 
         function handleFormSubmit(e) {
             e.preventDefault();
+            if (isReader()) {
+                showToast("Acesso somente leitura! Você não tem permissão para salvar ou alterar clientes.", false);
+                return;
+            }
             const id = document.getElementById('clientId').value;
             
             const clientData = {
@@ -1391,9 +1544,15 @@
             showToast("Cliente salvo com sucesso!");
         }
 
-        function editClient(id) { openClientModal(id); }
+        function editClient(id) {
+            openClientModal(id);
+        }
 
         function deleteClient(id) {
+            if (isReader()) {
+                showToast("Acesso somente leitura! Você não pode excluir clientes.", false);
+                return;
+            }
             if(confirm("Tem certeza que deseja excluir este cliente?")) {
                 clients = clients.filter(c => c.id !== id);
                 saveClientsData();
@@ -1401,7 +1560,9 @@
             }
         }
 
-        function filterClients() { renderTable(); }
+        function filterClients() {
+            renderTable();
+        }
 
         function resetFilters() {
             document.getElementById('searchInput').value = '';
@@ -1418,7 +1579,13 @@
             
             const st = getClientStatus(currentWaClient.expiration);
             const select = document.getElementById('waTemplate');
-            select.value = st.code !== 'ACTIVE' ? st.code : 'RENEWED';
+            
+            if (st.code === 'EXPIRED') select.value = 'EXPIRED';
+            else if (st.code === 'EXPIRED_TODAY') select.value = 'EXPIRED_TODAY';
+            else if (st.code === 'ALERT_3') select.value = 'ALERT_3';
+            else if (st.code === 'ALERT_5') select.value = 'ALERT_5';
+            else if (st.code === 'ALERT_7') select.value = 'ALERT_7';
+            else select.value = 'RENEWED';
 
             updateWaPreview();
             document.getElementById('waModal').classList.remove('hidden');
@@ -1434,21 +1601,20 @@
             const tpl = document.getElementById('waTemplate').value;
             const formattedDate = currentWaClient.expiration ? new Date(currentWaClient.expiration + 'T00:00:00').toLocaleDateString('pt-BR') : '';
             const formattedPrice = parseFloat(currentWaClient.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            const telasStr = currentWaClient.screens ? ` (${currentWaClient.screens})` : '';
 
             let msg = "";
             if (tpl === 'ALERT_7') {
-                msg = `Olá ${currentWaClient.name}! 👋 Passando para avisar que sua assinatura${telasStr} vencerá em *7 dias* (${formattedDate}).\n\n💰 Valor para renovação: ${formattedPrice}\n\nDeseja antecipar sua renovação?`;
+                msg = `Olá ${currentWaClient.name}! 👋 Passando para lembrar que sua assinatura (${currentWaClient.screens || 'Telas'}) vence em 7 dias (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nDeseja antecipar a renovação?`;
             } else if (tpl === 'ALERT_5') {
-                msg = `Olá ${currentWaClient.name}! 🟡 Lembramos que faltam apenas *5 dias* para o vencimento do seu plano${telasStr} (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nPodemos enviar a chave PIX?`;
+                msg = `Olá ${currentWaClient.name}! 🟡 Sua assinatura (${currentWaClient.screens || 'Telas'}) vence em 5 dias (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nPodemos confirmar a sua renovação?`;
             } else if (tpl === 'ALERT_3') {
-                msg = `Olá ${currentWaClient.name}! 🟠 *Aviso Urgente*: Faltam apenas *3 dias* para o vencimento da sua assinatura${telasStr} (${formattedDate}).\n\nGaranta a renovação para não perder o acesso!\n\n💰 Valor: ${formattedPrice}`;
+                msg = `Olá ${currentWaClient.name}! 🟠 Lembrete importante: faltam apenas 3 dias para o vencimento da sua assinatura (${currentWaClient.screens || 'Telas'}) no dia ${formattedDate}.\n\n💰 Valor: ${formattedPrice}\n\nEnvie o comprovante assim que realizar o pagamento!`;
             } else if (tpl === 'EXPIRED_TODAY') {
-                msg = `Olá ${currentWaClient.name}! 🚨 Sua assinatura${telasStr} vence *HOJE* (${formattedDate}).\n\nRenove agora por ${formattedPrice} para continuar aproveitando sem interrupções!`;
+                msg = `Olá ${currentWaClient.name}! 🚨 Sua assinatura (${currentWaClient.screens || 'Telas'}) VENCE HOJE (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nRealize o pagamento hoje para evitar o bloqueio do seu acesso!`;
             } else if (tpl === 'EXPIRED') {
-                msg = `Olá ${currentWaClient.name}! 🔴 Sua assinatura${telasStr} VENCEU no dia ${formattedDate}.\n\nPara reativar seu acesso imediato, o valor é de ${formattedPrice}.\n\nPodemos gerar a chave PIX?`;
+                msg = `Olá ${currentWaClient.name}! ⚠️ Sua assinatura (${currentWaClient.screens || 'Telas'}) VENCEU no dia ${formattedDate}.\n\nPara reativar seu acesso imediato, o valor é de ${formattedPrice}.\n\nPodemos enviar a chave PIX para pagamento?`;
             } else {
-                msg = `Olá ${currentWaClient.name}! 🎉 Sua assinatura${telasStr} foi renovada com sucesso!\n\n📅 Novo vencimento: ${formattedDate}\n\nObrigado pela preferência!`;
+                msg = `Olá ${currentWaClient.name}! 🎉 Sua assinatura (${currentWaClient.screens || 'Telas'}) foi renovada com sucesso!\n\n📅 Próximo vencimento: ${formattedDate}\n\nObrigado pela preferência!`;
             }
 
             document.getElementById('waPreviewText').value = msg;
@@ -1464,21 +1630,7 @@
             const textarea = document.getElementById('waPreviewText');
             textarea.select();
             document.execCommand('copy');
-            showToast("Mensagem copiada!");
-        }
-
-        function saveSheetsUrl() {
-            const url = document.getElementById('sheetApiUrl').value.trim();
-            if (url) {
-                localStorage.setItem('mundoplay_sheets_url', url);
-                updateSyncBadge(true);
-                showToast("URL salva com sucesso!");
-                syncToGoogleSheetsIfConfigured(true);
-            } else {
-                localStorage.removeItem('mundoplay_sheets_url');
-                updateSyncBadge(false);
-                showToast("URL removida.");
-            }
+            showToast("Texto copiado!");
         }
     </script>
 </body>
