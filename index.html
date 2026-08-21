@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full bg-slate-950">
+<html lang="pt-BR" class="h-full dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,52 +40,56 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="h-full text-slate-100 bg-slate-950 flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+<body class="h-full text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-950 flex flex-col antialiased selection:bg-brand-500 selection:text-white transition-colors duration-300">
 
     <!-- Toast Notification Banner -->
-    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
-        <i data-lucide="info" id="toastIcon" class="w-5 h-5 text-brand-400"></i>
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+        <i data-lucide="info" id="toastIcon" class="w-5 h-5 text-brand-500 dark:text-brand-400"></i>
         <span id="toastMessage" class="text-xs font-semibold">Mensagem do sistema</span>
     </div>
 
     <!-- 1. TELA DE LOGIN -->
-    <section id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950">
+    <section id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-100 dark:bg-slate-950 transition-colors duration-300">
         <div class="fixed inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute -top-40 -left-40 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl"></div>
-            <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
         </div>
 
-        <div class="w-full max-w-md bg-slate-900/90 border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative z-10 space-y-6">
-            <div class="text-center space-y-2">
-                <div class="inline-flex p-3 bg-brand-500/10 border border-brand-500/20 text-brand-500 rounded-2xl shadow-lg shadow-brand-500/10 mb-1">
-                    <i data-lucide="tv" class="w-8 h-8"></i>
+        <div class="w-full max-w-md bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative z-10 space-y-6">
+            <div class="text-center space-y-3">
+                <!-- Logomarca com Brilho Neon na Tela de Login -->
+                <div class="relative inline-block mx-auto group">
+                    <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-600 to-cyan-400 blur-md opacity-80 group-hover:opacity-100 transition duration-300"></div>
+                    <img id="loginLogoImg" src="logo.png" alt="Mundo Play Digital Logo" 
+                        onerror="this.onerror=null; this.src='logo.jpg';" 
+                        class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-2 border-cyan-400/50 shadow-2xl mx-auto bg-slate-950 p-0.5">
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight text-white flex items-center justify-center gap-2">
-                    Mundo Play <span class="text-xs px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 font-extrabold tracking-wider">DIGITAL</span>
+                <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white flex items-center justify-center gap-2">
+                    Mundo Play <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-600 dark:text-cyan-400 border border-blue-500/30 font-extrabold tracking-wider shadow-sm">DIGITAL</span>
                 </h1>
-                <p class="text-xs text-slate-400">Gestão de Clientes, Vencimentos e Lucros</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Gestão de Clientes, Vencimentos e Lucros</p>
             </div>
 
-            <div id="loginErrorAlert" class="hidden p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-400 flex items-center gap-2">
+            <div id="loginErrorAlert" class="hidden p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-500 dark:text-rose-400 flex items-center gap-2">
                 <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
                 <span>Usuário ou senha incorretos.</span>
             </div>
 
             <form id="loginForm" onsubmit="handleAuthLogin(event)" class="space-y-4 text-xs">
                 <div class="space-y-1.5">
-                    <label for="loginUsername" class="block font-semibold text-slate-300">Usuário de Acesso</label>
+                    <label for="loginUsername" class="block font-semibold text-slate-700 dark:text-slate-300">Usuário de Acesso</label>
                     <div class="relative">
-                        <i data-lucide="user" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                        <input type="text" id="loginUsername" required placeholder="Digite seu usuário" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-500 transition-all">
+                        <i data-lucide="user" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"></i>
+                        <input type="text" id="loginUsername" required placeholder="Digite seu usuário" class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-brand-500 transition-all">
                     </div>
                 </div>
 
                 <div class="space-y-1.5">
-                    <label for="loginPassword" class="block font-semibold text-slate-300">Senha</label>
+                    <label for="loginPassword" class="block font-semibold text-slate-700 dark:text-slate-300">Senha</label>
                     <div class="relative">
-                        <i data-lucide="lock" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                        <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-10 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-500 transition-all">
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                        <i data-lucide="lock" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"></i>
+                        <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-10 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-brand-500 transition-all">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
                             <i data-lucide="eye" id="eyeIcon" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -103,53 +107,60 @@
     <div id="mainApp" class="hidden flex-1 flex flex-col min-h-screen max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8 pb-20 md:pb-10">
 
         <!-- Header -->
-        <header class="py-4 border-b border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sticky top-0 bg-slate-950/95 backdrop-blur-md z-30">
+        <header class="py-4 border-b border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sticky top-0 bg-slate-100/95 dark:bg-slate-950/95 backdrop-blur-md z-30 transition-colors duration-300">
             <div class="flex items-center gap-3.5">
-                <div class="p-3 bg-brand-500/10 border border-brand-500/25 text-brand-400 rounded-2xl shadow-lg shadow-brand-500/10">
-                    <i data-lucide="tv" class="w-7 h-7"></i>
+                <!-- Logomarca com Moldura Neon no Topo -->
+                <div class="relative shrink-0">
+                    <div class="absolute -inset-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 blur opacity-75"></div>
+                    <img id="headerLogoImg" src="logo.png" alt="Mundo Play Digital" 
+                        onerror="this.onerror=null; this.src='logo.jpg';" 
+                        class="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border border-cyan-400/50 shadow-md bg-slate-950 p-0.5">
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-                        Mundo Play <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 tracking-wider">DIGITAL</span>
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                        Mundo Play <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-600 dark:text-cyan-400 border border-blue-500/30 tracking-wider">DIGITAL</span>
                     </h1>
-                    <p class="text-xs text-slate-400 font-medium">Controle de Clientes, Alertas e Ganhos</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Controle de Clientes, Alertas e Ganhos</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
-                <button onclick="switchTab('sheets')" class="flex items-center gap-2 px-4 py-2.5 text-xs md:text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-xl border border-slate-700/80 shadow-md transition-all">
-                    <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i>
+                <button onclick="toggleTheme()" id="themeToggleBtn" class="p-2.5 bg-white dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl border border-slate-300 dark:border-slate-800 transition-all shadow-md" title="Alternar Tema Claro / Escuro">
+                    <i data-lucide="sun" id="themeIcon" class="w-4.5 h-4.5"></i>
+                </button>
+                <button onclick="switchTab('sheets')" class="flex items-center gap-2 px-4 py-2.5 text-xs md:text-sm font-semibold bg-white dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl border border-slate-300 dark:border-slate-700/80 shadow-md transition-all">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
                     <span id="syncStatusBadge">Google Sheets</span>
                 </button>
                 <button onclick="openClientModal()" class="flex items-center justify-center gap-2 px-5 py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white rounded-xl shadow-lg shadow-brand-600/25 transition-all">
                     <i data-lucide="user-plus" class="w-4.5 h-4.5"></i>
                     <span>Novo Cliente</span>
                 </button>
-                <button onclick="handleLogout()" class="p-2.5 bg-slate-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl border border-slate-800 transition-all" title="Sair da Conta">
+                <button onclick="handleLogout()" class="p-2.5 bg-white dark:bg-slate-900 hover:bg-rose-500/20 text-slate-500 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 rounded-xl border border-slate-300 dark:border-slate-800 transition-all" title="Sair da Conta">
                     <i data-lucide="log-out" class="w-4.5 h-4.5"></i>
                 </button>
             </div>
         </header>
 
         <!-- Navegação por Abas -->
-        <div class="my-5 bg-slate-900/90 border border-slate-800/90 p-1.5 rounded-2xl shadow-xl backdrop-blur-md">
+        <div class="my-5 bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/90 p-1.5 rounded-2xl shadow-xl backdrop-blur-md transition-colors duration-300">
             <nav class="flex items-center space-x-2 overflow-x-auto text-sm no-scrollbar">
                 <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-5 py-3 font-bold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap bg-gradient-to-r from-brand-600 to-emerald-600 text-white shadow-lg border border-brand-400/30">
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
                 </button>
-                <button onclick="switchTab('clients')" id="tab-clients" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent">
+                <button onclick="switchTab('clients')" id="tab-clients" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/60 dark:hover:bg-slate-800/70 border border-transparent">
                     <i data-lucide="users" class="w-5 h-5"></i> Clientes 
-                    <span id="countTotalTab" class="ml-1 px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700/60">0</span>
+                    <span id="countTotalTab" class="ml-1 px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold border border-slate-300 dark:border-slate-700/60">0</span>
                 </button>
-                <button onclick="switchTab('alerts')" id="tab-alerts" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent">
-                    <i data-lucide="bell-ring" class="w-5 h-5 text-amber-400"></i> Alertas (7d, 5d, 3d, Vencidos)
-                    <span id="countAlertsTab" class="ml-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/30">0</span>
+                <button onclick="switchTab('alerts')" id="tab-alerts" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/60 dark:hover:bg-slate-800/70 border border-transparent">
+                    <i data-lucide="bell-ring" class="w-5 h-5 text-amber-500 dark:text-amber-400"></i> Alertas (7d, 5d, 3d, Vencidos)
+                    <span id="countAlertsTab" class="ml-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-xs font-bold border border-amber-500/30">0</span>
                 </button>
-                <button onclick="switchTab('earnings')" id="tab-earnings" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent">
-                    <i data-lucide="trending-up" class="w-5 h-5 text-emerald-400"></i> Ganhos & Financeiro
+                <button onclick="switchTab('earnings')" id="tab-earnings" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/60 dark:hover:bg-slate-800/70 border border-transparent">
+                    <i data-lucide="trending-up" class="w-5 h-5 text-emerald-600 dark:text-emerald-400"></i> Ganhos & Financeiro
                 </button>
-                <button onclick="switchTab('sheets')" id="tab-sheets" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 border border-transparent">
-                    <i data-lucide="database" class="w-5 h-5 text-emerald-400"></i> Google Planilha
+                <button onclick="switchTab('sheets')" id="tab-sheets" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/60 dark:hover:bg-slate-800/70 border border-transparent">
+                    <i data-lucide="database" class="w-5 h-5 text-emerald-600 dark:text-emerald-400"></i> Google Planilha
                 </button>
             </nav>
         </div>
@@ -158,37 +169,37 @@
         <main id="view-dashboard" class="space-y-6">
             <!-- KPIs -->
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4">
-                    <span class="text-xs font-medium text-slate-400">Total Clientes</span>
-                    <div id="kpiTotal" class="text-2xl font-bold text-white mt-2">0</div>
+                <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-4 shadow-sm">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Total Clientes</span>
+                    <div id="kpiTotal" class="text-2xl font-bold text-slate-900 dark:text-white mt-2">0</div>
                 </div>
-                <div class="bg-slate-900/80 border border-emerald-500/20 rounded-2xl p-4">
-                    <span class="text-xs font-medium text-emerald-400">🟢 Ativas (>7d)</span>
-                    <div id="kpiActive" class="text-2xl font-bold text-emerald-400 mt-2">0</div>
+                <div class="bg-white dark:bg-slate-900/80 border border-emerald-500/30 dark:border-emerald-500/20 rounded-2xl p-4 shadow-sm">
+                    <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">🟢 Ativas (>7d)</span>
+                    <div id="kpiActive" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">0</div>
                 </div>
-                <div class="bg-slate-900/80 border border-blue-500/20 rounded-2xl p-4">
-                    <span class="text-xs font-medium text-blue-400">🔵 Vence em 7d</span>
-                    <div id="kpi7Days" class="text-2xl font-bold text-blue-400 mt-2">0</div>
+                <div class="bg-white dark:bg-slate-900/80 border border-blue-500/30 dark:border-blue-500/20 rounded-2xl p-4 shadow-sm">
+                    <span class="text-xs font-medium text-blue-600 dark:text-blue-400">🔵 Vence em 7d</span>
+                    <div id="kpi7Days" class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">0</div>
                 </div>
-                <div class="bg-slate-900/80 border border-amber-500/20 rounded-2xl p-4">
-                    <span class="text-xs font-medium text-amber-400">🟡 Vence em 5d</span>
-                    <div id="kpi5Days" class="text-2xl font-bold text-amber-400 mt-2">0</div>
+                <div class="bg-white dark:bg-slate-900/80 border border-amber-500/30 dark:border-amber-500/20 rounded-2xl p-4 shadow-sm">
+                    <span class="text-xs font-medium text-amber-600 dark:text-amber-400">🟡 Vence em 5d</span>
+                    <div id="kpi5Days" class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2">0</div>
                 </div>
-                <div class="bg-slate-900/80 border border-orange-500/20 rounded-2xl p-4">
-                    <span class="text-xs font-medium text-orange-400">🟠 Vence em 3d</span>
-                    <div id="kpi3Days" class="text-2xl font-bold text-orange-400 mt-2">0</div>
+                <div class="bg-white dark:bg-slate-900/80 border border-orange-500/30 dark:border-orange-500/20 rounded-2xl p-4 shadow-sm">
+                    <span class="text-xs font-medium text-orange-600 dark:text-orange-400">🟠 Vence em 3d</span>
+                    <div id="kpi3Days" class="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-2">0</div>
                 </div>
-                <div class="bg-slate-900/80 border border-rose-500/20 rounded-2xl p-4">
-                    <span class="text-xs font-medium text-rose-400">🔴 Vencidas / Hoje</span>
-                    <div id="kpiExpired" class="text-2xl font-bold text-rose-400 mt-2">0</div>
+                <div class="bg-white dark:bg-slate-900/80 border border-rose-500/30 dark:border-rose-500/20 rounded-2xl p-4 shadow-sm">
+                    <span class="text-xs font-medium text-rose-600 dark:text-rose-400">🔴 Vencidas / Hoje</span>
+                    <div id="kpiExpired" class="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-2">0</div>
                 </div>
             </div>
 
             <!-- Gráfico + Lista Rápida -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5">
-                    <h2 class="text-sm font-semibold text-white flex items-center gap-2 mb-4">
-                        <i data-lucide="pie-chart" class="w-4 h-4 text-brand-400"></i>
+                <div class="lg:col-span-2 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-5 shadow-sm">
+                    <h2 class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-brand-500 dark:text-brand-400"></i>
                         Distribuição de Status das Assinaturas
                     </h2>
                     <div class="h-64 relative">
@@ -196,20 +207,20 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between">
+                <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
                     <div>
                         <div class="flex items-center justify-between mb-3">
-                            <h2 class="text-sm font-semibold text-white flex items-center gap-2">
-                                <i data-lucide="bell" class="w-4 h-4 text-amber-400"></i>
+                            <h2 class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i data-lucide="bell" class="w-4 h-4 text-amber-500 dark:text-amber-400"></i>
                                 Alertas Iminentes
                             </h2>
-                            <span class="text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full">Requer Ação</span>
+                            <span class="text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full">Requer Ação</span>
                         </div>
-                        <p class="text-xs text-slate-400 mb-4">Clientes com 7, 5, 3 dias restantes e vencidos:</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Clientes com 7, 5, 3 dias restantes e vencidos:</p>
                         <div id="urgentList" class="space-y-2 max-h-56 overflow-y-auto pr-1"></div>
                     </div>
 
-                    <button onclick="switchTab('alerts')" class="mt-4 w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl text-center">
+                    <button onclick="switchTab('alerts')" class="mt-4 w-full py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl text-center border border-slate-200 dark:border-slate-700 transition">
                         Abrir Central de Alertas Completa
                     </button>
                 </div>
@@ -218,14 +229,14 @@
 
         <!-- ABA 2: CLIENTES -->
         <main id="view-clients" class="hidden space-y-4">
-            <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-lg">
+            <div class="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-lg transition-colors">
                 <div class="relative flex-1">
-                    <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="searchInput" oninput="filterClients()" placeholder="Pesquisar cliente, fornecedor, telefone ou telas..." class="w-full pl-11 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500">
+                    <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-400"></i>
+                    <input type="text" id="searchInput" oninput="filterClients()" placeholder="Pesquisar cliente, fornecedor, telefone ou telas..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-brand-500">
                 </div>
 
                 <div class="flex items-center gap-2.5 overflow-x-auto pb-1 md:pb-0">
-                    <select id="filterStatus" onchange="filterClients()" class="bg-slate-950 border border-slate-800 text-xs text-slate-200 font-medium rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500">
+                    <select id="filterStatus" onchange="filterClients()" class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-200 font-medium rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500">
                         <option value="ALL">Todos os Status de Vencimento</option>
                         <option value="ACTIVE">🟢 Ativas (>7 dias)</option>
                         <option value="ALERT_7">🔵 Vence em 7 Dias</option>
@@ -235,23 +246,23 @@
                         <option value="EXPIRED">🔴 Vencidas</option>
                     </select>
 
-                    <select id="filterRenewal" onchange="filterClients()" class="bg-slate-950 border border-slate-800 text-xs text-slate-200 font-medium rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500">
+                    <select id="filterRenewal" onchange="filterClients()" class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-200 font-medium rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500">
                         <option value="ALL">Todos os Status de Renovação</option>
                         <option value="Aguardando pagamento">Aguardando pagamento</option>
                         <option value="Notificado do Vencimento">Notificado do Vencimento</option>
                         <option value="Cancelamento">Cancelamento</option>
                     </select>
 
-                    <button onclick="resetFilters()" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700/70" title="Limpar Filtros">
+                    <button onclick="resetFilters()" class="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl border border-slate-300 dark:border-slate-700/70" title="Limpar Filtros">
                         <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl overflow-hidden">
+            <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl overflow-hidden shadow-sm">
                 <div class="hidden md:block overflow-x-auto">
-                    <table class="w-full text-left text-xs text-slate-300">
-                        <thead class="bg-slate-950/80 text-slate-400 uppercase text-[10px] font-bold border-b border-slate-800">
+                    <table class="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+                        <thead class="bg-slate-50 dark:bg-slate-950/80 text-slate-500 dark:text-slate-400 uppercase text-[10px] font-bold border-b border-slate-200 dark:border-slate-800">
                             <tr>
                                 <th class="p-3.5">ID</th>
                                 <th class="p-3.5">Cliente</th>
@@ -264,12 +275,12 @@
                                 <th class="p-3.5 text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="clientsTableBody" class="divide-y divide-slate-800/60"></tbody>
+                        <tbody id="clientsTableBody" class="divide-y divide-slate-200 dark:divide-slate-800/60"></tbody>
                     </table>
                 </div>
 
-                <div id="clientsMobileContainer" class="md:hidden divide-y divide-slate-800/80"></div>
-                <div id="emptyState" class="hidden py-12 text-center text-slate-500">
+                <div id="clientsMobileContainer" class="md:hidden divide-y divide-slate-200 dark:divide-slate-800/80"></div>
+                <div id="emptyState" class="hidden py-12 text-center text-slate-400 dark:text-slate-500">
                     <i data-lucide="user-x" class="w-10 h-10 mx-auto mb-2 opacity-40"></i>
                     <p class="text-sm">Nenhum cliente encontrado.</p>
                 </div>
@@ -278,12 +289,12 @@
 
         <!-- ABA 3: CENTRAL DE ALERTAS -->
         <main id="view-alerts" class="hidden space-y-4">
-            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5">
-                <h2 class="text-base font-semibold text-white flex items-center gap-2 mb-1">
-                    <i data-lucide="bell-ring" class="w-5 h-5 text-amber-400"></i>
+            <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-5 shadow-sm">
+                <h2 class="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-1">
+                    <i data-lucide="bell-ring" class="w-5 h-5 text-amber-500 dark:text-amber-400"></i>
                     Central de Disparo de Alertas
                 </h2>
-                <p class="text-xs text-slate-400">
+                <p class="text-xs text-slate-500 dark:text-slate-400">
                     Notificações ordenadas por gravidade (7, 5, 3 dias, Vence Hoje e Vencidos). Clique para enviar no WhatsApp.
                 </p>
             </div>
@@ -291,72 +302,72 @@
             <div id="alertsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </main>
 
-        <!-- ABA 4: GANHOS & FINANCEIRO (NOVA) -->
+        <!-- ABA 4: GANHOS & FINANCEIRO -->
         <main id="view-earnings" class="hidden space-y-6">
             <!-- KPIs Financeiros -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between">
-                    <div class="flex items-center justify-between text-slate-400">
+                <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
                         <span class="text-xs font-medium">Faturamento Bruto (Mês)</span>
-                        <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl">
+                        <div class="p-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl">
                             <i data-lucide="wallet" class="w-4 h-4"></i>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div id="kpiGrossEarnings" class="text-2xl font-bold text-white">R$ 0,00</div>
-                        <span class="text-[10px] text-slate-500 block mt-0.5">Soma dos clientes ativos/renovados</span>
+                        <div id="kpiGrossEarnings" class="text-2xl font-bold text-slate-900 dark:text-white">R$ 0,00</div>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 block mt-0.5">Soma dos clientes ativos/renovados</span>
                     </div>
                 </div>
 
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between">
-                    <div class="flex items-center justify-between text-rose-400">
+                <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+                    <div class="flex items-center justify-between text-rose-500 dark:text-rose-400">
                         <span class="text-xs font-medium">Despesas Totais (Mês)</span>
-                        <div class="p-2 bg-rose-500/10 text-rose-400 rounded-xl">
+                        <div class="p-2 bg-rose-500/10 text-rose-500 dark:text-rose-400 rounded-xl">
                             <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div id="kpiTotalExpenses" class="text-2xl font-bold text-rose-400">R$ 0,00</div>
-                        <span class="text-[10px] text-slate-500 block mt-0.5">Gastos com servidores/painéis</span>
+                        <div id="kpiTotalExpenses" class="text-2xl font-bold text-rose-600 dark:text-rose-400">R$ 0,00</div>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 block mt-0.5">Gastos com servidores/painéis</span>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-br from-emerald-950/60 to-slate-900 border border-emerald-500/30 rounded-2xl p-4 flex flex-col justify-between">
-                    <div class="flex items-center justify-between text-emerald-400">
+                <div class="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 dark:from-emerald-950/60 dark:to-slate-900 border border-emerald-500/30 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+                    <div class="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
                         <span class="text-xs font-bold">Lucro Líquido Real</span>
-                        <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl">
+                        <div class="p-2 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl">
                             <i data-lucide="dollar-sign" class="w-4 h-4"></i>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div id="kpiNetProfit" class="text-2xl font-black text-emerald-400">R$ 0,00</div>
-                        <span class="text-[10px] text-emerald-500/80 block mt-0.5">Bruto (-) Despesas Lançadas</span>
+                        <div id="kpiNetProfit" class="text-2xl font-black text-emerald-600 dark:text-emerald-400">R$ 0,00</div>
+                        <span class="text-[10px] text-emerald-600/80 dark:text-emerald-500/80 block mt-0.5">Bruto (-) Despesas Lançadas</span>
                     </div>
                 </div>
 
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between">
-                    <div class="flex items-center justify-between text-blue-400">
+                <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+                    <div class="flex items-center justify-between text-blue-600 dark:text-blue-400">
                         <span class="text-xs font-medium">Projeção 6 Meses</span>
-                        <div class="p-2 bg-blue-500/10 text-blue-400 rounded-xl">
+                        <div class="p-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl">
                             <i data-lucide="trending-up" class="w-4 h-4"></i>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div id="kpi6MonthsProjection" class="text-2xl font-bold text-blue-400">R$ 0,00</div>
-                        <span class="text-[10px] text-slate-500 block mt-0.5">Acumulado em 6 meses</span>
+                        <div id="kpi6MonthsProjection" class="text-2xl font-bold text-blue-600 dark:text-blue-400">R$ 0,00</div>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 block mt-0.5">Acumulado em 6 meses</span>
                     </div>
                 </div>
 
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between">
-                    <div class="flex items-center justify-between text-indigo-400">
+                <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+                    <div class="flex items-center justify-between text-indigo-600 dark:text-indigo-400">
                         <span class="text-xs font-medium">Projeção 1 Ano</span>
-                        <div class="p-2 bg-indigo-500/10 text-indigo-400 rounded-xl">
+                        <div class="p-2 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl">
                             <i data-lucide="sparkles" class="w-4 h-4"></i>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div id="kpi12MonthsProjection" class="text-2xl font-bold text-indigo-400">R$ 0,00</div>
-                        <span class="text-[10px] text-slate-500 block mt-0.5">Acumulado em 12 meses</span>
+                        <div id="kpi12MonthsProjection" class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">R$ 0,00</div>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 block mt-0.5">Acumulado em 12 meses</span>
                     </div>
                 </div>
             </div>
@@ -364,9 +375,9 @@
             <!-- Gráfico + Formulário de Lançamento de Despesas -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Gráfico Financeiro -->
-                <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5">
-                    <h2 class="text-sm font-semibold text-white flex items-center gap-2 mb-4">
-                        <i data-lucide="line-chart" class="w-4 h-4 text-emerald-400"></i>
+                <div class="lg:col-span-2 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-5 shadow-sm">
+                    <h2 class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+                        <i data-lucide="line-chart" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
                         Evolução Financeira e Projeção de Ganhos
                     </h2>
                     <div class="h-64 relative">
@@ -375,40 +386,40 @@
                 </div>
 
                 <!-- Formulário de Lançar Despesa -->
-                <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between">
+                <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
                     <div>
                         <div class="flex items-center justify-between mb-3">
-                            <h2 class="text-sm font-semibold text-white flex items-center gap-2">
-                                <i data-lucide="minus-circle" class="w-4 h-4 text-rose-400"></i>
+                            <h2 class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i data-lucide="minus-circle" class="w-4 h-4 text-rose-500 dark:text-rose-400"></i>
                                 Lançar Nova Despesa
                             </h2>
                         </div>
-                        <p class="text-xs text-slate-400 mb-4">Adicione gastos com painéis, servidores ou anúncios para abater dos lucros:</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Adicione gastos com painéis, servidores ou anúncios para abater dos lucros:</p>
 
                         <form id="expenseForm" onsubmit="handleExpenseSubmit(event)" class="space-y-3 text-xs">
                             <div>
-                                <label class="block text-slate-400 mb-1">Descrição / Servidor *</label>
-                                <input type="text" id="expenseDesc" required placeholder="Ex: Custo Servidor Principal" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-rose-500">
+                                <label class="block text-slate-600 dark:text-slate-400 mb-1">Descrição / Servidor *</label>
+                                <input type="text" id="expenseDesc" required placeholder="Ex: Custo Servidor Principal" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-rose-500">
                             </div>
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-slate-400 mb-1">Valor (R$) *</label>
-                                    <input type="number" step="0.01" id="expenseAmount" required placeholder="150.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-rose-500">
+                                    <label class="block text-slate-600 dark:text-slate-400 mb-1">Valor (R$) *</label>
+                                    <input type="number" step="0.01" id="expenseAmount" required placeholder="150.00" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-rose-500">
                                 </div>
                                 <div>
-                                    <label class="block text-slate-400 mb-1">Data *</label>
-                                    <input type="date" id="expenseDate" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-rose-500">
+                                    <label class="block text-slate-600 dark:text-slate-400 mb-1">Data *</label>
+                                    <input type="date" id="expenseDate" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-rose-500">
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-slate-400 mb-1">Fornecedor / Categoria</label>
-                                <input type="text" id="expenseSupplier" placeholder="Ex: Servidor X" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-rose-500">
+                                <label class="block text-slate-600 dark:text-slate-400 mb-1">Fornecedor / Categoria</label>
+                                <input type="text" id="expenseSupplier" placeholder="Ex: Servidor X" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-rose-500">
                             </div>
 
                             <button type="submit" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl text-center transition-all shadow-lg shadow-rose-600/20 mt-2 flex items-center justify-center gap-2">
-                                <i data-lucide="plus-circle" class="w-4 h-4"></i> Registar Despesa
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i> Registrar Despesa
                             </button>
                         </form>
                     </div>
@@ -416,50 +427,51 @@
             </div>
 
             <!-- Tabela de Histórico de Despesas -->
-            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl overflow-hidden p-5 space-y-4">
-                <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                    <i data-lucide="receipt" class="w-4 h-4 text-slate-400"></i>
-                    Histórico de Despesas Registradas
-                </h3>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs text-slate-300">
-                        <thead class="bg-slate-950/80 text-slate-400 uppercase text-[10px] font-bold border-b border-slate-800">
-                            <tr>
-                                <th class="p-3">Data</th>
-                                <th class="p-3">Descrição</th>
-                                <th class="p-3">Fornecedor/Categoria</th>
-                                <th class="p-3">Valor (R$)</th>
-                                <th class="p-3 text-right">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="expensesTableBody" class="divide-y divide-slate-800/60"></tbody>
-                    </table>
+            <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl overflow-hidden p-5 space-y-4 shadow-sm">
+        <!-- ABA 5: GOOGLE SHEETS & LOGO -->
+        <main id="view-sheets" class="hidden space-y-6">
+            <!-- Opção de Personazalização da Logo -->
+            <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 bg-blue-500/10 text-blue-600 dark:text-cyan-400 rounded-xl border border-blue-500/20">
+                        <i data-lucide="image" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900 dark:text-white">Personalização da Logomarca</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Defina o caminho ou a URL da sua logo para exibição no login e no cabeçalho.</p>
+                    </div>
                 </div>
-                <div id="emptyExpensesState" class="hidden py-6 text-center text-slate-500 text-xs">
-                    Nenhuma despesa registrada até o momento.
+
+                <div class="space-y-3 text-xs">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+                        <label class="font-semibold text-blue-600 dark:text-cyan-400 block">Link/Caminho da Imagem da Logo:</label>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="logoUrlInput" placeholder="Ex: logo.png, logo.jpg ou https://sua-imagem.com/logo.jpg" class="flex-1 px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-white focus:outline-none focus:border-cyan-500">
+                            <button onclick="saveCustomLogoUrl()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg flex items-center justify-center gap-1.5 shadow-md">
+                                <i data-lucide="save" class="w-4 h-4"></i> Salvar Logomarca
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Dica: Se estiver hospedando localmente, salve a foto do seu logo como <code class="bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded text-cyan-400">logo.png</code> ou <code class="bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded text-cyan-400">logo.jpg</code> na mesma pasta do arquivo <code class="bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded text-cyan-400">index.html</code>.</p>
+                    </div>
                 </div>
             </div>
-        </main>
 
-        <!-- ABA 5: GOOGLE SHEETS -->
-        <main id="view-sheets" class="hidden space-y-6">
-            <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-6">
+            <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-6 shadow-sm">
                 <div class="flex items-center gap-3 mb-4">
-                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+                    <div class="p-3 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl border border-emerald-500/20">
                         <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h2 class="text-base font-bold text-white">Conexão com Google Planilhas</h2>
-                        <p class="text-xs text-slate-400">Integração bidirecional com a planilha via Google Apps Script.</p>
+                        <h2 class="text-base font-bold text-slate-900 dark:text-white">Conexão com Google Planilhas</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Integração bidirecional com a planilha via Google Apps Script.</p>
                     </div>
                 </div>
 
                 <div class="space-y-4 text-xs">
-                    <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
-                        <label class="font-semibold text-emerald-400 block">URL do App da Web (Google Apps Script):</label>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+                        <label class="font-semibold text-emerald-600 dark:text-emerald-400 block">URL do App da Web (Google Apps Script):</label>
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="url" id="sheetApiUrl" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500">
+                            <input type="url" id="sheetApiUrl" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 px-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500">
                             <button onclick="saveSheetsUrl()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg flex items-center justify-center gap-1.5">
                                 <i data-lucide="check" class="w-4 h-4"></i> Salvar e Conectar
                             </button>
@@ -481,52 +493,52 @@
 
     <!-- MODAL CLIENTE -->
     <div id="clientModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
-            <button onclick="closeClientModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+            <button onclick="closeClientModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 dark:hover:text-white">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
-            <h3 id="modalTitle" class="text-base font-bold text-white mb-4 flex items-center gap-2">
-                <i data-lucide="user-plus" class="w-5 h-5 text-brand-400"></i> Cadastrar Novo Cliente
+            <h3 id="modalTitle" class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                <i data-lucide="user-plus" class="w-5 h-5 text-brand-500 dark:text-brand-400"></i> Cadastrar Novo Cliente
             </h3>
 
             <form id="clientForm" onsubmit="handleFormSubmit(event)" class="space-y-4 text-xs">
                 <input type="hidden" id="clientId">
 
                 <div>
-                    <label class="block text-slate-400 mb-1">Nome do Cliente *</label>
-                    <input type="text" id="clientName" required placeholder="Ex: João Silva" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                    <label class="block text-slate-600 dark:text-slate-400 mb-1">Nome do Cliente *</label>
+                    <input type="text" id="clientName" required placeholder="Ex: João Silva" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-brand-500">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-slate-400 mb-1">WhatsApp / Telefone *</label>
-                        <input type="tel" id="clientPhone" required placeholder="Ex: 5521998765432" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                        <label class="block text-slate-600 dark:text-slate-400 mb-1">WhatsApp / Telefone *</label>
+                        <input type="tel" id="clientPhone" required placeholder="Ex: 5521998765432" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <div>
-                        <label class="block text-slate-400 mb-1">Fornecedor / Servidor *</label>
-                        <input type="text" id="clientSupplier" required placeholder="Ex: Servidor Alfa" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                        <label class="block text-slate-600 dark:text-slate-400 mb-1">Fornecedor / Servidor *</label>
+                        <input type="text" id="clientSupplier" required placeholder="Ex: Servidor Alfa" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-brand-500">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-slate-400 mb-1">Número de Telas *</label>
-                        <input type="text" id="clientScreens" required placeholder="Ex: 1 Tela, 2 Telas..." class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                        <label class="block text-slate-600 dark:text-slate-400 mb-1">Número de Telas *</label>
+                        <input type="text" id="clientScreens" required placeholder="Ex: 1 Tela, 2 Telas..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <div>
-                        <label class="block text-slate-400 mb-1">Valor (R$) *</label>
-                        <input type="number" step="0.01" id="clientPrice" required placeholder="149.90" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                        <label class="block text-slate-600 dark:text-slate-400 mb-1">Valor (R$) *</label>
+                        <input type="number" step="0.01" id="clientPrice" required placeholder="149.90" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <div>
-                        <label class="block text-slate-400 mb-1">Data Vencimento *</label>
-                        <input type="date" id="clientExpiration" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                        <label class="block text-slate-600 dark:text-slate-400 mb-1">Data Vencimento *</label>
+                        <input type="date" id="clientExpiration" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-brand-500">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-slate-400 mb-1">Status de Renovação *</label>
-                    <select id="clientRenewal" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500">
+                    <label class="block text-slate-600 dark:text-slate-400 mb-1">Status de Renovação *</label>
+                    <select id="clientRenewal" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-brand-500">
                         <option value="Aguardando pagamento">Aguardando pagamento</option>
                         <option value="Notificado do Vencimento">Notificado do Vencimento</option>
                         <option value="Cancelamento">Cancelamento</option>
@@ -534,12 +546,12 @@
                 </div>
 
                 <div>
-                    <label class="block text-slate-400 mb-1">Observações</label>
-                    <textarea id="clientNotes" rows="2" placeholder="Observações adicionais..." class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-brand-500"></textarea>
+                    <label class="block text-slate-600 dark:text-slate-400 mb-1">Observações</label>
+                    <textarea id="clientNotes" rows="2" placeholder="Observações adicionais..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white focus:outline-none focus:border-brand-500"></textarea>
                 </div>
 
-                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
-                    <button type="button" onclick="closeClientModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium">Cancelar</button>
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                    <button type="button" onclick="closeClientModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium">Cancelar</button>
                     <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-lg shadow-lg">Salvar Cliente</button>
                 </div>
             </form>
@@ -548,25 +560,25 @@
 
     <!-- MODAL WHATSAPP -->
     <div id="waModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeWaModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeWaModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 dark:hover:text-white">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
             <div class="flex items-center gap-3 mb-4">
-                <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl">
+                <div class="p-2.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl">
                     <i data-lucide="message-square" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h3 class="text-base font-bold text-white">Notificação WhatsApp</h3>
-                    <p id="waTargetName" class="text-xs text-slate-400"></p>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white">Notificação WhatsApp</h3>
+                    <p id="waTargetName" class="text-xs text-slate-500 dark:text-slate-400"></p>
                 </div>
             </div>
 
             <div class="space-y-3 text-xs">
                 <div>
-                    <label class="block text-slate-400 mb-1">Modelo do Alerta:</label>
-                    <select id="waTemplate" onchange="updateWaPreview()" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white">
+                    <label class="block text-slate-600 dark:text-slate-400 mb-1">Modelo do Alerta:</label>
+                    <select id="waTemplate" onchange="updateWaPreview()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-white">
                         <option value="ALERT_7">🔵 Alerta: 7 Dias para vencer</option>
                         <option value="ALERT_5">🟡 Alerta: 5 Dias para vencer</option>
                         <option value="ALERT_3">🟠 Alerta: 3 Dias para vencer (Urgente)</option>
@@ -577,12 +589,12 @@
                 </div>
 
                 <div>
-                    <label class="block text-slate-400 mb-1">Pré-visualização da Mensagem:</label>
-                    <textarea id="waPreviewText" rows="6" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 font-mono text-[11px] leading-relaxed"></textarea>
+                    <label class="block text-slate-600 dark:text-slate-400 mb-1">Pré-visualização da Mensagem:</label>
+                    <textarea id="waPreviewText" rows="6" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-slate-200 font-mono text-[11px] leading-relaxed"></textarea>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2">
-                    <button onclick="copyWaText()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg flex items-center gap-1.5">
+                    <button onclick="copyWaText()" class="px-3 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg flex items-center gap-1.5">
                         <i data-lucide="copy" class="w-4 h-4"></i> Copiar
                     </button>
                     <button onclick="openWhatsAppDirect()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg flex items-center gap-2 shadow-lg shadow-emerald-600/20">
@@ -621,6 +633,8 @@
         let financialChartInstance = null;
 
         window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadCustomLogo();
             if (window.lucide) lucide.createIcons();
             checkAuthSession();
             loadClientsData();
@@ -636,36 +650,82 @@
             }
         });
 
-        function showToast(msg, isSuccess = true) {
-            const toast = document.getElementById('toastNotification');
-            const toastMsg = document.getElementById('toastMessage');
-            const toastIcon = document.getElementById('toastIcon');
-
-            if (!toast || !toastMsg || !toastIcon) return;
-
-            toastMsg.innerText = msg;
-            toastIcon.setAttribute('data-lucide', isSuccess ? 'check-circle' : 'alert-circle');
-            toastIcon.className = `w-5 h-5 ${isSuccess ? 'text-brand-400' : 'text-rose-400'}`;
-            if (window.lucide) lucide.createIcons();
-
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3500);
+        // LOGOMARCA PERSONALIZADA
+        function loadCustomLogo() {
+            const savedLogo = localStorage.getItem('mundoplay_logo_url') || 'logo.png';
+            document.getElementById('logoUrlInput').value = savedLogo;
+            applyLogoUrl(savedLogo);
         }
 
-        function updateSyncBadge(connected) {
-            const badge = document.getElementById('syncStatusBadge');
-            if (!badge) return;
-            if (connected) {
-                badge.innerText = "Sheets Conectado";
-                badge.classList.add("text-emerald-400");
+        function saveCustomLogoUrl() {
+            const url = document.getElementById('logoUrlInput').value.trim();
+            const logoToSave = url || 'logo.png';
+            localStorage.setItem('mundoplay_logo_url', logoToSave);
+            applyLogoUrl(logoToSave);
+            showToast("Logomarca atualizada com sucesso!");
+        }
+
+        function applyLogoUrl(url) {
+            const loginImg = document.getElementById('loginLogoImg');
+            const headerImg = document.getElementById('headerLogoImg');
+
+            if (loginImg) {
+                loginImg.src = url;
+                loginImg.onerror = function() {
+                    this.onerror = null;
+                    this.src = 'logo.jpg';
+                };
+            }
+            if (headerImg) {
+                headerImg.src = url;
+                headerImg.onerror = function() {
+                    this.onerror = null;
+                    this.src = 'logo.jpg';
+                };
+            }
+        }
+
+        // TEMA CLARO E ESCURO
+        function initTheme() {
+            const savedTheme = localStorage.getItem('mundoplay_theme') || 'dark';
+            applyTheme(savedTheme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const newTheme = isDark ? 'light' : 'dark';
+            applyTheme(newTheme);
+            localStorage.setItem('mundoplay_theme', newTheme);
+        }
+
+        function applyTheme(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.setAttribute('data-lucide', 'sun');
             } else {
-                badge.innerText = "Google Sheets";
-                badge.classList.remove("text-emerald-400");
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.setAttribute('data-lucide', 'moon');
+            }
+            if (window.lucide) lucide.createIcons();
+            updateChartColors();
+        }
+
+        function updateChartColors() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#475569';
+            const gridColor = isDark ? '#1e293b' : '#e2e8f0';
+
+            if (chartInstance) {
+                chartInstance.options.plugins.legend.labels.color = textColor;
+                chartInstance.update();
+            }
+
+            if (financialChartInstance) {
+                financialChartInstance.options.scales.y.ticks.color = textColor;
+                financialChartInstance.options.scales.y.grid.color = gridColor;
+                financialChartInstance.options.scales.x.ticks.color = textColor;
+                financialChartInstance.update();
             }
         }
 
@@ -892,23 +952,23 @@
                 const formattedPrice = parseFloat(c.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                 const formattedDate = c.expiration ? new Date(c.expiration + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
 
-                let renewalClass = "bg-slate-800 text-slate-300 border-slate-700";
-                if(c.renewal === 'Aguardando pagamento') renewalClass = "bg-amber-500/10 text-amber-400 border-amber-500/30";
-                else if(c.renewal === 'Notificado do Vencimento') renewalClass = "bg-blue-500/10 text-blue-400 border-blue-500/30";
-                else if(c.renewal === 'Cancelamento') renewalClass = "bg-rose-500/10 text-rose-400 border-rose-500/30";
+                let renewalClass = "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700";
+                if(c.renewal === 'Aguardando pagamento') renewalClass = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
+                else if(c.renewal === 'Notificado do Vencimento') renewalClass = "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30";
+                else if(c.renewal === 'Cancelamento') renewalClass = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30";
 
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition border-b border-slate-800/40";
+                tr.className = "hover:bg-slate-200/50 dark:hover:bg-slate-800/40 transition border-b border-slate-200 dark:border-slate-800/40";
                 tr.innerHTML = `
-                    <td class="p-3.5 font-mono text-[11px] text-slate-500">#${c.id}</td>
-                    <td class="p-3.5 font-medium text-white">
+                    <td class="p-3.5 font-mono text-[11px] text-slate-400 dark:text-slate-500">#${c.id}</td>
+                    <td class="p-3.5 font-medium text-slate-900 dark:text-white">
                         <div>${c.name}</div>
-                        <div class="text-[10px] text-slate-500 font-mono">${c.phone}</div>
+                        <div class="text-[10px] text-slate-400 dark:text-slate-500 font-mono">${c.phone}</div>
                     </td>
-                    <td class="p-3.5 text-slate-300 font-semibold">${c.supplier || '-'}</td>
-                    <td class="p-3.5 text-slate-300">${c.screens || c.plan || '-'}</td>
-                    <td class="p-3.5 font-semibold text-slate-200">${formattedPrice}</td>
-                    <td class="p-3.5 text-slate-300">${formattedDate}</td>
+                    <td class="p-3.5 text-slate-700 dark:text-slate-300 font-semibold">${c.supplier || '-'}</td>
+                    <td class="p-3.5 text-slate-700 dark:text-slate-300">${c.screens || c.plan || '-'}</td>
+                    <td class="p-3.5 font-semibold text-slate-800 dark:text-slate-200">${formattedPrice}</td>
+                    <td class="p-3.5 text-slate-700 dark:text-slate-300">${formattedDate}</td>
                     <td class="p-3.5">
                         <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border ${renewalClass}">${c.renewal || 'Aguardando pagamento'}</span>
                     </td>
@@ -917,16 +977,16 @@
                     </td>
                     <td class="p-3.5 text-right">
                         <div class="flex items-center justify-end gap-1.5">
-                            <button onclick="quickRenew('${c.id}')" class="p-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition" title="Renovar +30 Dias">
+                            <button onclick="quickRenew('${c.id}')" class="p-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-lg transition" title="Renovar +30 Dias">
                                 <i data-lucide="rotate-cw" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="openWaModal('${c.id}')" class="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition" title="Notificar WhatsApp">
+                            <button onclick="openWaModal('${c.id}')" class="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg transition" title="Notificar WhatsApp">
                                 <i data-lucide="message-square" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="editClient('${c.id}')" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition" title="Editar">
+                            <button onclick="editClient('${c.id}')" class="p-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition" title="Editar">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="deleteClient('${c.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg transition" title="Excluir">
+                            <button onclick="deleteClient('${c.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg transition" title="Excluir">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
                         </div>
@@ -939,10 +999,10 @@
                 card.innerHTML = `
                     <div class="flex items-start justify-between">
                         <div>
-                            <span class="text-[10px] font-mono text-slate-500">#${c.id}</span>
-                            <h4 class="text-sm font-bold text-white">${c.name}</h4>
-                            <p class="text-xs text-slate-400">Fornecedor: <span class="text-slate-200 font-medium">${c.supplier || '-'}</span> | Telas: ${c.screens || c.plan || '-'}</p>
-                            <p class="text-xs font-semibold text-slate-200 mt-0.5">${formattedPrice}</p>
+                            <span class="text-[10px] font-mono text-slate-400 dark:text-slate-500">#${c.id}</span>
+                            <h4 class="text-sm font-bold text-slate-900 dark:text-white">${c.name}</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Fornecedor: <span class="text-slate-700 dark:text-slate-200 font-medium">${c.supplier || '-'}</span> | Telas: ${c.screens || c.plan || '-'}</p>
+                            <p class="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5">${formattedPrice}</p>
                         </div>
                         <div class="flex flex-col items-end gap-1">
                             <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full border ${st.class}">${st.label}</span>
@@ -950,19 +1010,19 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-800/60">
-                        <span>Vencimento: <strong class="text-slate-200">${formattedDate}</strong></span>
+                    <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-800/60">
+                        <span>Vencimento: <strong class="text-slate-800 dark:text-slate-200">${formattedDate}</strong></span>
                         <div class="flex items-center gap-1.5">
-                            <button onclick="quickRenew('${c.id}')" class="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg font-medium text-[10px]">
+                            <button onclick="quickRenew('${c.id}')" class="px-2 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg font-medium text-[10px]">
                                 +30d
                             </button>
-                            <button onclick="openWaModal('${c.id}')" class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg font-medium text-[11px] flex items-center gap-1">
+                            <button onclick="openWaModal('${c.id}')" class="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg font-medium text-[11px] flex items-center gap-1">
                                 Zap
                             </button>
-                            <button onclick="editClient('${c.id}')" class="p-1 bg-slate-800 text-slate-300 rounded-lg">
+                            <button onclick="editClient('${c.id}')" class="p-1 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg">
                                 <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                             </button>
-                            <button onclick="deleteClient('${c.id}')" class="p-1 bg-rose-500/10 text-rose-400 rounded-lg">
+                            <button onclick="deleteClient('${c.id}')" class="p-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-lg">
                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
                         </div>
@@ -1158,6 +1218,7 @@
 
         function initChart() {
             const ctx = document.getElementById('statusChart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -1174,7 +1235,7 @@
                     plugins: {
                         legend: {
                             position: 'bottom',
-                            labels: { color: '#94a3b8', font: { size: 10 } }
+                            labels: { color: isDark ? '#94a3b8' : '#475569', font: { size: 10 } }
                         }
                     },
                     cutout: '65%'
@@ -1200,6 +1261,10 @@
 
         function initFinancialChart() {
             const ctx = document.getElementById('financialChart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#475569';
+            const gridColor = isDark ? '#1e293b' : '#e2e8f0';
+
             financialChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1218,8 +1283,8 @@
                         legend: { display: false }
                     },
                     scales: {
-                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
-                        x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                        y: { ticks: { color: textColor }, grid: { color: gridColor } },
+                        x: { ticks: { color: textColor }, grid: { display: false } }
                     }
                 }
             });
