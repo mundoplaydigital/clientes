@@ -179,7 +179,7 @@
                     <span id="countTotalTab" class="ml-1 px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold border border-slate-300 dark:border-slate-700/60">0</span>
                 </button>
                 <button onclick="switchTab('alerts')" id="tab-alerts" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/60 dark:hover:bg-slate-800/70 border border-transparent">
-                    <i data-lucide="bell-ring" class="w-5 h-5 text-amber-500 dark:text-amber-400"></i> Alertas (7d, 5d, 3d, Vencidos)
+                    <i data-lucide="bell-ring" class="w-5 h-5 text-amber-500 dark:text-amber-400"></i> Alertas
                     <span id="countAlertsTab" class="ml-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-xs font-bold border border-amber-500/30">0</span>
                 </button>
                 <button onclick="switchTab('earnings')" id="tab-earnings" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/60 dark:hover:bg-slate-800/70 border border-transparent">
@@ -485,7 +485,7 @@
             </div>
         </main>
 
-        <!-- ABA 5: USUÁRIOS (ADMIN) -->
+        <!-- ABA 5: USUÁRIOS -->
         <main id="view-users" class="hidden space-y-4">
             <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/90 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
                 <div>
@@ -766,7 +766,7 @@
 
                 <div>
                     <label class="block text-slate-600 dark:text-slate-400 mb-1">Pré-visualização da Mensagem:</label>
-                    <textarea id="waPreviewText" rows="6" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-slate-200 font-mono text-[11px] leading-relaxed"></textarea>
+                    <textarea id="waPreviewText" rows="9" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-slate-800 dark:text-slate-200 font-mono text-[11px] leading-relaxed"></textarea>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2">
@@ -831,7 +831,6 @@
             const str = String(val).trim();
             if (!str) return '';
 
-            // Formato ISO: YYYY-MM-DD ou YYYY-MM-DDTHH:mm:ss
             const isoMatch = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
             if (isoMatch) {
                 const y = isoMatch[1];
@@ -840,7 +839,6 @@
                 return `${y}-${m}-${d}`;
             }
 
-            // Formato BR: DD/MM/YYYY
             const brMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
             if (brMatch) {
                 const d = brMatch[1].padStart(2, '0');
@@ -1080,7 +1078,7 @@
             const targetView = document.getElementById(`view-${tabId}`);
             if (targetView) targetView.classList.remove('hidden');
 
-            // Estilização das abas no Desktop
+            // Desktop Tab Button Styling
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30');
                 btn.classList.add('text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-100', 'border-transparent');
@@ -1092,7 +1090,7 @@
                 activeDesktopBtn.classList.remove('text-slate-600', 'dark:text-slate-400', 'border-transparent');
             }
 
-            // Estilização dos ícones do menu inferior Mobile
+            // Mobile Bottom Navigation Styling
             document.querySelectorAll('.mob-nav-btn').forEach(btn => {
                 if (btn.id !== 'mob-tab-more') {
                     btn.classList.remove('text-brand-600', 'dark:text-brand-400', 'font-bold');
@@ -1106,7 +1104,6 @@
                 activeMobBtn.classList.remove('text-slate-500', 'dark:text-slate-400', 'font-medium');
             }
 
-            // Redesenhar gráficos ao trocar de aba se necessário
             if (tabId === 'dashboard') {
                 setTimeout(() => updateChart(), 100);
             } else if (tabId === 'earnings') {
@@ -2026,17 +2023,17 @@
 
             let msg = "";
             if (tpl === 'ALERT_7') {
-                msg = `Olá ${currentWaClient.name}! 👋 Passando para lembrar que sua assinatura (${currentWaClient.screens || 'Telas'}) vence em 7 dias (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nDeseja antecipar a renovação?`;
+                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence em *7 dias (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'ALERT_5') {
-                msg = `Olá ${currentWaClient.name}! 🟡 Sua assinatura (${currentWaClient.screens || 'Telas'}) vence em 5 dias (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nPodemos confirmar a sua renovação?`;
+                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence em *5 dias (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'ALERT_3') {
-                msg = `Olá ${currentWaClient.name}! 🟠 Lembrete importante: faltam apenas 3 dias para o vencimento da sua assinatura (${currentWaClient.screens || 'Telas'}) no dia ${formattedDate}.\n\n💰 Valor: ${formattedPrice}\n\nEnvie o comprovante assim que realizar o pagamento!`;
+                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence em *3 dias (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'EXPIRED_TODAY') {
-                msg = `Olá ${currentWaClient.name}! 🚨 Sua assinatura (${currentWaClient.screens || 'Telas'}) VENCE HOJE (${formattedDate}).\n\n💰 Valor: ${formattedPrice}\n\nRealize o pagamento hoje para evitar o bloqueio do seu acesso!`;
+                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence *HOJE (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'EXPIRED') {
-                msg = `Olá ${currentWaClient.name}! ⚠️ Sua assinatura (${currentWaClient.screens || 'Telas'}) VENCEU no dia ${formattedDate}.\n\nPara reativar seu acesso imediato, o valor é de ${formattedPrice}.\n\nPodemos enviar a chave PIX para pagamento?`;
+                msg = `Olá querido (a) ${currentWaClient.name},\n\nSua assinatura *VENCEU no dia ${formattedDate}*\n\n💰 Valor: ${formattedPrice}\n\nEvite a permanência do bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else {
-                msg = `Olá ${currentWaClient.name}! 🎉 Sua assinatura (${currentWaClient.screens || 'Telas'}) foi renovada com sucesso!\n\n📅 Próximo vencimento: ${formattedDate}\n\nObrigado pela preferência!`;
+                msg = `Olá querido (a) ${currentWaClient.name}! 🎉 Sua assinatura foi renovada com sucesso!\n\n📅 Próximo vencimento: ${formattedDate}\n💰 Valor: ${formattedPrice}\n\nObrigado pela preferência!\n\n\nÉ sempre um prazer te atender.`;
             }
 
             document.getElementById('waPreviewText').value = msg;
