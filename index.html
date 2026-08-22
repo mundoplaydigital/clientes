@@ -1061,10 +1061,67 @@
                 document.getElementById('mainApp').classList.remove('hidden');
                 applyPermissions();
                 renderAll();
+                switchTab('dashboard');
             } else {
                 document.getElementById('authScreen').classList.remove('hidden');
                 document.getElementById('mainApp').classList.add('hidden');
             }
+        }
+
+        function switchTab(tabId) {
+            closeMobileMoreMenu();
+
+            const views = ['dashboard', 'clients', 'alerts', 'earnings', 'users', 'sheets'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+            });
+
+            const targetView = document.getElementById(`view-${tabId}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            // Estilização das abas no Desktop
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30');
+                btn.classList.add('text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-100', 'border-transparent');
+            });
+
+            const activeDesktopBtn = document.getElementById(`tab-${tabId}`);
+            if (activeDesktopBtn) {
+                activeDesktopBtn.classList.add('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30');
+                activeDesktopBtn.classList.remove('text-slate-600', 'dark:text-slate-400', 'border-transparent');
+            }
+
+            // Estilização dos ícones do menu inferior Mobile
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                if (btn.id !== 'mob-tab-more') {
+                    btn.classList.remove('text-brand-600', 'dark:text-brand-400', 'font-bold');
+                    btn.classList.add('text-slate-500', 'dark:text-slate-400', 'font-medium');
+                }
+            });
+
+            const activeMobBtn = document.getElementById(`mob-tab-${tabId}`);
+            if (activeMobBtn) {
+                activeMobBtn.classList.add('text-brand-600', 'dark:text-brand-400', 'font-bold');
+                activeMobBtn.classList.remove('text-slate-500', 'dark:text-slate-400', 'font-medium');
+            }
+
+            // Redesenhar gráficos ao trocar de aba se necessário
+            if (tabId === 'dashboard') {
+                setTimeout(() => updateChart(), 100);
+            } else if (tabId === 'earnings') {
+                setTimeout(() => renderEarnings(), 100);
+            }
+        }
+
+        function openMobileMoreMenu() {
+            const modal = document.getElementById('mobileMoreModal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeMobileMoreMenu() {
+            const modal = document.getElementById('mobileMoreModal');
+            if (modal) modal.classList.add('hidden');
         }
 
         function handleAuthLogin(e) {
