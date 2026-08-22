@@ -154,11 +154,11 @@
                 <button onclick="toggleTheme()" id="themeToggleBtn" class="p-2.5 bg-white dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl border border-slate-300 dark:border-slate-800 transition-all shadow-md" title="Alternar Tema Claro / Escuro">
                     <i data-lucide="sun" id="themeIcon" class="w-4.5 h-4.5"></i>
                 </button>
-                <button onclick="switchTab('sheets')" class="flex items-center gap-2 px-4 py-2.5 text-xs md:text-sm font-semibold bg-white dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl border border-slate-300 dark:border-slate-700/80 shadow-md transition-all">
+                <button onclick="switchTab('sheets')" class="hidden sm:flex items-center gap-2 px-4 py-2.5 text-xs md:text-sm font-semibold bg-white dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl border border-slate-300 dark:border-slate-700/80 shadow-md transition-all">
                     <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
                     <span id="syncStatusBadge">Google Sheets</span>
                 </button>
-                <button id="headerBtnNewClient" onclick="openClientModal()" class="flex items-center justify-center gap-2 px-5 py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white rounded-xl shadow-lg shadow-brand-600/25 transition-all">
+                <button id="headerBtnNewClient" onclick="openClientModal()" class="hidden sm:flex items-center justify-center gap-2 px-5 py-2.5 text-xs md:text-sm font-bold bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white rounded-xl shadow-lg shadow-brand-600/25 transition-all">
                     <i data-lucide="user-plus" class="w-4.5 h-4.5"></i>
                     <span>Novo Cliente</span>
                 </button>
@@ -168,8 +168,8 @@
             </div>
         </header>
 
-        <!-- Navegação por Abas -->
-        <div class="my-5 bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/90 p-1.5 rounded-2xl shadow-xl backdrop-blur-md transition-colors duration-300">
+        <!-- Navegação por Abas para Desktop/Tablet -->
+        <div class="hidden md:block my-5 bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800/90 p-1.5 rounded-2xl shadow-xl backdrop-blur-md transition-colors duration-300">
             <nav class="flex items-center space-x-2 overflow-x-auto text-sm no-scrollbar">
                 <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active px-5 py-3 font-bold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap bg-gradient-to-r from-brand-600 to-emerald-600 text-white shadow-lg border border-brand-400/30">
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
@@ -185,7 +185,7 @@
                 <button onclick="switchTab('earnings')" id="tab-earnings" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/60 dark:hover:bg-slate-800/70 border border-transparent">
                     <i data-lucide="trending-up" class="w-5 h-5 text-emerald-600 dark:text-emerald-400"></i> Ganhos & Financeiro
                 </button>
-                <button onclick="switchTab('users')" id="tab-users" class="tab-btn admin-only px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/60 dark:hover:bg-slate-800/70 border border-transparent">
+                <button onclick="switchTab('users')" id="tab-users" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/60 dark:hover:bg-slate-800/70 border border-transparent">
                     <i data-lucide="shield-check" class="w-5 h-5 text-blue-500 dark:text-blue-400"></i> Usuários
                 </button>
                 <button onclick="switchTab('sheets')" id="tab-sheets" class="tab-btn px-5 py-3 font-semibold text-sm rounded-xl flex items-center gap-2.5 whitespace-nowrap text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/60 dark:hover:bg-slate-800/70 border border-transparent">
@@ -581,6 +581,80 @@
         </main>
     </div>
 
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR PARA MOBILE -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800/80 px-2 py-2 shadow-2xl">
+        <nav class="flex items-center justify-around text-center">
+            <button onclick="switchTab('dashboard')" id="mob-tab-dashboard" class="mob-nav-btn flex flex-col items-center justify-center w-full py-1 text-brand-600 dark:text-brand-400 font-bold transition-all">
+                <i data-lucide="layout-dashboard" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[10px]">Início</span>
+            </button>
+
+            <button onclick="switchTab('clients')" id="mob-tab-clients" class="mob-nav-btn relative flex flex-col items-center justify-center w-full py-1 text-slate-500 dark:text-slate-400 font-medium transition-all">
+                <i data-lucide="users" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[10px]">Clientes</span>
+                <span id="mobCountTotal" class="absolute top-0 right-3 px-1.5 py-0.2 bg-brand-500 text-white text-[9px] font-black rounded-full">0</span>
+            </button>
+
+            <button onclick="switchTab('alerts')" id="mob-tab-alerts" class="mob-nav-btn relative flex flex-col items-center justify-center w-full py-1 text-slate-500 dark:text-slate-400 font-medium transition-all">
+                <i data-lucide="bell-ring" class="w-5 h-5 mb-0.5 text-amber-500 dark:text-amber-400"></i>
+                <span class="text-[10px]">Alertas</span>
+                <span id="mobCountAlerts" class="absolute top-0 right-3 px-1.5 py-0.2 bg-amber-500 text-white text-[9px] font-black rounded-full">0</span>
+            </button>
+
+            <button onclick="switchTab('earnings')" id="mob-tab-earnings" class="mob-nav-btn flex flex-col items-center justify-center w-full py-1 text-slate-500 dark:text-slate-400 font-medium transition-all">
+                <i data-lucide="trending-up" class="w-5 h-5 mb-0.5 text-emerald-600 dark:text-emerald-400"></i>
+                <span class="text-[10px]">Ganhos</span>
+            </button>
+
+            <button onclick="openMobileMoreMenu()" id="mob-tab-more" class="mob-nav-btn flex flex-col items-center justify-center w-full py-1 text-slate-500 dark:text-slate-400 font-medium transition-all">
+                <i data-lucide="grid" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[10px]">Mais</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- DRAWER DE OPÇÕES EXTRAS NO MOBILE -->
+    <div id="mobileMoreModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex flex-col justify-end transition-all">
+        <div class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 rounded-t-3xl p-6 space-y-4 shadow-2xl animate-in slide-in-from-bottom duration-200">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="menu" class="w-4 h-4 text-brand-500"></i> Menu de Acesso
+                </h3>
+                <button onclick="closeMobileMoreMenu()" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Botão Novo Cliente em destaque -->
+            <button onclick="closeMobileMoreMenu(); openClientModal();" class="w-full py-3 bg-gradient-to-r from-brand-600 to-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2">
+                <i data-lucide="user-plus" class="w-4 h-4"></i>
+                <span>Novo Cliente</span>
+            </button>
+
+            <div class="grid grid-cols-2 gap-2.5 text-xs font-semibold">
+                <button onclick="switchTab('users')" class="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-xl flex items-center gap-2.5 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-blue-500"></i>
+                    <span>Usuários</span>
+                </button>
+
+                <button onclick="switchTab('sheets')" class="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-xl flex items-center gap-2.5 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i data-lucide="database" class="w-4 h-4 text-emerald-500"></i>
+                    <span>Planilha & Logo</span>
+                </button>
+
+                <button onclick="toggleTheme()" class="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-xl flex items-center gap-2.5 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i data-lucide="sun" class="w-4 h-4 text-amber-500"></i>
+                    <span>Alternar Tema</span>
+                </button>
+
+                <button onclick="handleLogout()" class="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-xl flex items-center gap-2.5 hover:bg-rose-500/20">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Sair da Conta</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL CLIENTE -->
     <div id="clientModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
@@ -743,6 +817,83 @@
 
     <!-- JAVASCRIPT PRINCIPAL -->
     <script>
+        function openMobileMoreMenu() {
+            const modal = document.getElementById('mobileMoreModal');
+            if (modal) modal.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeMobileMoreMenu() {
+            const modal = document.getElementById('mobileMoreModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function switchTab(tabId) {
+            ['dashboard', 'clients', 'alerts', 'earnings', 'users', 'sheets'].forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+            });
+
+            // Desktop Tab Button Styling
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30');
+                btn.classList.add('text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-100', 'hover:bg-slate-200/60', 'dark:hover:bg-slate-800/70', 'border-transparent');
+            });
+
+            // Mobile Nav Button Styling
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                btn.classList.remove('text-brand-600', 'dark:text-brand-400', 'font-bold');
+                btn.classList.add('text-slate-500', 'dark:text-slate-400', 'font-medium');
+            });
+
+            const targetView = document.getElementById(`view-${tabId}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30');
+                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-100', 'hover:bg-slate-200/60', 'dark:hover:bg-slate-800/70', 'border-transparent');
+            }
+
+            const activeMobBtn = document.getElementById(`mob-tab-${tabId}`);
+            if (activeMobBtn) {
+                activeMobBtn.classList.remove('text-slate-500', 'dark:text-slate-400', 'font-medium');
+                activeMobBtn.classList.add('text-brand-600', 'dark:text-brand-400', 'font-bold');
+            }
+
+            closeMobileMoreMenu();
+        }
+
+        function safeFormatDate(str) {
+            if (!str) return '-';
+            if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+                const parts = str.split('-');
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) {
+                return str;
+            }
+
+            const d = new Date(str);
+            if (!isNaN(d.getTime())) {
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+
+            return str;
+        }
+
+        function parseAmount(val) {
+            if (typeof val === 'number') return isNaN(val) ? 0 : val;
+            if (!val) return 0;
+            const str = String(val).replace(/[^0-9,-]/g, '').replace(',', '.');
+            const num = parseFloat(str);
+            return isNaN(num) ? 0 : num;
+        }
+
         function isReader() {
             return currentUser && currentUser.role === 'reader';
         }
@@ -788,6 +939,11 @@
             initChart();
             initFinancialChart();
             
+            const expDateInput = document.getElementById('expenseDate');
+            if (expDateInput && !expDateInput.value) {
+                expDateInput.value = new Date().toISOString().split('T')[0];
+            }
+
             const savedUrl = localStorage.getItem('mundoplay_sheets_url');
             if (savedUrl) {
                 document.getElementById('sheetApiUrl').value = savedUrl;
@@ -988,38 +1144,12 @@
                 }
             }
 
-            document.querySelectorAll('.admin-only').forEach(el => {
-                if (currentUser.role === 'admin') el.classList.remove('hidden');
-                else el.classList.add('hidden');
-            });
-
             if (btnNewClient) {
                 if (currentUser.role === 'reader') btnNewClient.classList.add('hidden');
                 else btnNewClient.classList.remove('hidden');
             }
 
             renderUsersTable();
-        }
-
-        function switchTab(tabId) {
-            ['dashboard', 'clients', 'alerts', 'earnings', 'users', 'sheets'].forEach(v => {
-                const el = document.getElementById(`view-${v}`);
-                if (el) el.classList.add('hidden');
-            });
-
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30');
-                btn.classList.add('text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-100', 'hover:bg-slate-200/60', 'dark:hover:bg-slate-800/70', 'border-transparent');
-            });
-
-            const targetView = document.getElementById(`view-${tabId}`);
-            if (targetView) targetView.classList.remove('hidden');
-
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            if (activeBtn) {
-                activeBtn.classList.add('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30');
-                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-100', 'hover:bg-slate-200/60', 'dark:hover:bg-slate-800/70', 'border-transparent');
-            }
         }
 
         function getClientStatus(expDateStr) {
@@ -1174,13 +1304,17 @@
 
             document.getElementById('kpiTotal').innerText = total;
             document.getElementById('countTotalTab').innerText = total;
+            if (document.getElementById('mobCountTotal')) document.getElementById('mobCountTotal').innerText = total;
+
             document.getElementById('kpiActive').innerText = active;
             document.getElementById('kpi7Days').innerText = alert7;
             document.getElementById('kpi5Days').innerText = alert5;
             document.getElementById('kpi3Days').innerText = alert3;
             document.getElementById('kpiExpired').innerText = expired;
             
-            document.getElementById('countAlertsTab').innerText = alert7 + alert5 + alert3 + expired;
+            const totalAlerts = alert7 + alert5 + alert3 + expired;
+            document.getElementById('countAlertsTab').innerText = totalAlerts;
+            if (document.getElementById('mobCountAlerts')) document.getElementById('mobCountAlerts').innerText = totalAlerts;
         }
 
         function renderTable() {
@@ -1397,18 +1531,13 @@
             let grossEarnings = 0;
             clients.forEach(c => {
                 if(c.renewal !== 'Cancelamento') {
-                    grossEarnings += parseFloat(c.price || 0);
+                    grossEarnings += parseAmount(c.price);
                 }
             });
 
-            const currentMonthStr = new Date().toISOString().slice(0, 7);
             let totalExpenses = 0;
             expenses.forEach(e => {
-                if(e.date && e.date.startsWith(currentMonthStr)) {
-                    totalExpenses += parseFloat(e.amount || 0);
-                } else if(!e.date) {
-                    totalExpenses += parseFloat(e.amount || 0);
-                }
+                totalExpenses += parseAmount(e.amount);
             });
 
             const netProfit = grossEarnings - totalExpenses;
@@ -1445,8 +1574,8 @@
             const readerMode = isReader();
 
             expenses.forEach(e => {
-                const formattedPrice = parseFloat(e.amount || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                const formattedDate = e.date ? new Date(e.date + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+                const formattedPrice = parseAmount(e.amount).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                const formattedDate = safeFormatDate(e.date);
 
                 const deleteBtn = readerMode ? `-` : `
                     <button onclick="deleteExpense('${e.id}')" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg transition" title="Excluir despesa">
@@ -1698,8 +1827,9 @@
                 return;
             }
             const desc = document.getElementById('expenseDesc').value;
-            const amount = parseFloat(document.getElementById('expenseAmount').value || 0);
-            const date = document.getElementById('expenseDate').value;
+            const amount = parseAmount(document.getElementById('expenseAmount').value);
+            const dateInput = document.getElementById('expenseDate').value;
+            const date = dateInput || new Date().toISOString().split('T')[0];
             const supplier = document.getElementById('expenseSupplier').value;
 
             const newExpense = {
