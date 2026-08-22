@@ -817,73 +817,54 @@
 
     <!-- JAVASCRIPT PRINCIPAL -->
     <script>
-        function openMobileMoreMenu() {
-            const modal = document.getElementById('mobileMoreModal');
-            if (modal) modal.classList.remove('hidden');
-            if (window.lucide) lucide.createIcons();
-        }
-
-        function closeMobileMoreMenu() {
-            const modal = document.getElementById('mobileMoreModal');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        function switchTab(tabId) {
-            ['dashboard', 'clients', 'alerts', 'earnings', 'users', 'sheets'].forEach(v => {
-                const el = document.getElementById(`view-${v}`);
-                if (el) el.classList.add('hidden');
-            });
-
-            // Desktop Tab Button Styling
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30');
-                btn.classList.add('text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-100', 'hover:bg-slate-200/60', 'dark:hover:bg-slate-800/70', 'border-transparent');
-            });
-
-            // Mobile Nav Button Styling
-            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
-                btn.classList.remove('text-brand-600', 'dark:text-brand-400', 'font-bold');
-                btn.classList.add('text-slate-500', 'dark:text-slate-400', 'font-medium');
-            });
-
-            const targetView = document.getElementById(`view-${tabId}`);
-            if (targetView) targetView.classList.remove('hidden');
-
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            if (activeBtn) {
-                activeBtn.classList.add('active', 'bg-gradient-to-r', 'from-brand-600', 'to-emerald-600', 'text-white', 'shadow-lg', 'border-brand-400/30');
-                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-100', 'hover:bg-slate-200/60', 'dark:hover:bg-slate-800/70', 'border-transparent');
+        function normalizeDateToYYYYMMDD(val) {
+            if (!val) return '';
+            
+            if (val instanceof Date) {
+                if (isNaN(val.getTime())) return '';
+                const y = val.getFullYear();
+                const m = String(val.getMonth() + 1).padStart(2, '0');
+                const d = String(val.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
             }
 
-            const activeMobBtn = document.getElementById(`mob-tab-${tabId}`);
-            if (activeMobBtn) {
-                activeMobBtn.classList.remove('text-slate-500', 'dark:text-slate-400', 'font-medium');
-                activeMobBtn.classList.add('text-brand-600', 'dark:text-brand-400', 'font-bold');
+            const str = String(val).trim();
+            if (!str) return '';
+
+            // Formato ISO: YYYY-MM-DD ou YYYY-MM-DDTHH:mm:ss
+            const isoMatch = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+            if (isoMatch) {
+                const y = isoMatch[1];
+                const m = isoMatch[2].padStart(2, '0');
+                const d = isoMatch[3].padStart(2, '0');
+                return `${y}-${m}-${d}`;
             }
 
-            closeMobileMoreMenu();
+            // Formato BR: DD/MM/YYYY
+            const brMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+            if (brMatch) {
+                const d = brMatch[1].padStart(2, '0');
+                const m = brMatch[2].padStart(2, '0');
+                const y = brMatch[3];
+                return `${y}-${m}-${d}`;
+            }
+
+            const parsed = new Date(str);
+            if (!isNaN(parsed.getTime())) {
+                const y = parsed.getFullYear();
+                const m = String(parsed.getMonth() + 1).padStart(2, '0');
+                const d = String(parsed.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            }
+
+            return '';
         }
 
         function safeFormatDate(str) {
-            if (!str) return '-';
-            if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
-                const parts = str.split('-');
-                return `${parts[2]}/${parts[1]}/${parts[0]}`;
-            }
-
-            if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) {
-                return str;
-            }
-
-            const d = new Date(str);
-            if (!isNaN(d.getTime())) {
-                const day = String(d.getDate()).padStart(2, '0');
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const year = d.getFullYear();
-                return `${day}/${month}/${year}`;
-            }
-
-            return str;
+            const normalized = normalizeDateToYYYYMMDD(str);
+            if (!normalized) return '-';
+            const parts = normalized.split('-');
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
 
         function parseAmount(val) {
@@ -1153,14 +1134,18 @@
         }
 
         function getClientStatus(expDateStr) {
-            if (!expDateStr) return { code: 'ACTIVE', label: '🟢 Ativa', days: 99, class: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30' };
+            const normalized = normalizeDateToYYYYMMDD(expDateStr);
+            if (!normalized) return { code: 'ACTIVE', label: '🟢 Ativa', days: 99, class: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30' };
 
             const today = new Date();
             today.setHours(0,0,0,0);
 
-            const exp = new Date(expDateStr + 'T00:00:00');
+            const parts = normalized.split('-');
+            const exp = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            exp.setHours(0,0,0,0);
+
             const diffTime = exp.getTime() - today.getTime();
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
             if (diffDays < 0) {
                 return { code: 'EXPIRED', label: `🔴 Vencida (${Math.abs(diffDays)}d)`, days: diffDays, class: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30' };
@@ -1178,6 +1163,10 @@
         }
 
         function saveClientsData() {
+            clients = clients.map(c => ({
+                ...c,
+                expiration: normalizeDateToYYYYMMDD(c.expiration)
+            }));
             localStorage.setItem('mundoplay_clients', JSON.stringify(clients));
             renderAll();
             syncToGoogleSheetsIfConfigured();
@@ -1237,7 +1226,12 @@
                 const data = await response.json();
                 
                 if (data && (data.clients || data.expenses || data.users)) {
-                    if (Array.isArray(data.clients)) clients = data.clients;
+                    if (Array.isArray(data.clients)) {
+                        clients = data.clients.map(c => ({
+                            ...c,
+                            expiration: normalizeDateToYYYYMMDD(c.expiration)
+                        }));
+                    }
                     if (Array.isArray(data.expenses)) expenses = data.expenses;
                     if (Array.isArray(data.users) && data.users.length > 0) users = data.users;
 
@@ -1249,7 +1243,10 @@
                     if (!silent) showToast("Dados carregados da planilha!");
                     else showToast("Dados atualizados da nuvem ✨");
                 } else if (Array.isArray(data)) {
-                    clients = data;
+                    clients = data.map(c => ({
+                        ...c,
+                        expiration: normalizeDateToYYYYMMDD(c.expiration)
+                    }));
                     localStorage.setItem('mundoplay_clients', JSON.stringify(clients));
                     renderAll();
                 }
@@ -1717,11 +1714,18 @@
             }
             const index = clients.findIndex(c => c.id === id);
             if (index !== -1) {
-                const currExp = new Date(clients[index].expiration || new Date());
-                const baseDate = currExp < new Date() ? new Date() : currExp;
+                const normalized = normalizeDateToYYYYMMDD(clients[index].expiration);
+                let baseDate = new Date();
+                if (normalized) {
+                    const parts = normalized.split('-');
+                    const expDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                    if (expDate > baseDate) {
+                        baseDate = expDate;
+                    }
+                }
                 baseDate.setDate(baseDate.getDate() + 30);
                 
-                clients[index].expiration = baseDate.toISOString().split('T')[0];
+                clients[index].expiration = normalizeDateToYYYYMMDD(baseDate);
                 clients[index].renewal = "Em dia";
                 saveClientsData();
                 showToast(`Assinatura de ${clients[index].name} renovada por +30 dias!`);
@@ -1746,7 +1750,7 @@
                     document.getElementById('clientSupplier').value = c.supplier || '';
                     document.getElementById('clientScreens').value = c.screens || c.plan || '1 Tela';
                     document.getElementById('clientPrice').value = c.price;
-                    document.getElementById('clientExpiration').value = c.expiration;
+                    document.getElementById('clientExpiration').value = normalizeDateToYYYYMMDD(c.expiration);
                     document.getElementById('clientRenewal').value = c.renewal || 'Aguardando pagamento';
                     document.getElementById('clientNotes').value = c.notes || '';
                 }
@@ -1780,7 +1784,7 @@
                 supplier: document.getElementById('clientSupplier').value,
                 screens: document.getElementById('clientScreens').value,
                 price: parseFloat(document.getElementById('clientPrice').value || 0),
-                expiration: document.getElementById('clientExpiration').value,
+                expiration: normalizeDateToYYYYMMDD(document.getElementById('clientExpiration').value),
                 renewal: document.getElementById('clientRenewal').value,
                 notes: document.getElementById('clientNotes').value
             };
@@ -1960,7 +1964,7 @@
         function updateWaPreview() {
             if(!currentWaClient) return;
             const tpl = document.getElementById('waTemplate').value;
-            const formattedDate = currentWaClient.expiration ? new Date(currentWaClient.expiration + 'T00:00:00').toLocaleDateString('pt-BR') : '';
+            const formattedDate = safeFormatDate(currentWaClient.expiration);
             const formattedPrice = parseFloat(currentWaClient.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
             let msg = "";
