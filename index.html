@@ -1070,11 +1070,12 @@
 
         function renderKPIs() {
             if (!Array.isArray(clients)) clients = [];
+            if (!Array.isArray(renewalHistory)) renewalHistory = [];
             
             const total = clients.length;
             const grossFromHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
             const grossFromClients = clients.reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
-            const monthlyInc = renewalHistory.length > 0 ? grossFromHistory : grossFromClients;
+            const monthlyInc = Math.max(grossFromHistory, grossFromClients);
 
             let expiringSoonCount = 0;
             let expiredCount = 0;
@@ -1143,8 +1144,11 @@
             const ctxFinance = document.getElementById('chartFinance');
             if (ctxFinance) {
                 if (financeChartInstance) financeChartInstance.destroy();
-                const totalGross = renewalHistory.reduce((acc, r) => acc + parseAmount(r.amount), 0);
-                const totalExpenses = expenses.reduce((acc, e) => acc + parseAmount(e.amount), 0);
+                const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
+                const grossClients = clients.reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
+                const totalGross = Math.max(grossHistory, grossClients);
+
+                const totalExpenses = expenses.reduce((acc, e) => acc + parseAmount(e ? e.amount : 0), 0);
 
                 financeChartInstance = new Chart(ctxFinance, {
                     type: 'bar',
@@ -1334,7 +1338,7 @@
 
                 const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
                 const grossClients = clients.reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
-                const totalGross = renewalHistory.length > 0 ? grossHistory : grossClients;
+                const totalGross = Math.max(grossHistory, grossClients);
 
                 const totalExpenses = expenses.reduce((acc, e) => acc + parseAmount(e ? e.amount : 0), 0);
                 const netProfit = totalGross - totalExpenses;
@@ -1794,8 +1798,9 @@
                     return;
                 }
 
-                if (data.clients && Array.isArray(data.clients)) {
-                    clients = data.clients.map(c => ({
+                // Non-destructive merge for clients
+                if (data.clients && Array.isArray(data.clients) && data.clients.length > 0) {
+                    const remoteClients = data.clients.map(c => ({
                         ...c,
                         id: String(c.id || Date.now()),
                         price: parseAmount(c.price),
@@ -1803,29 +1808,51 @@
                         screens: c.screens || c.plan || '1 Tela',
                         plan: c.screens || c.plan || '1 Tela'
                     }));
+                    const clientMap = new Map();
+                    clients.forEach(c => { if(c && c.id) clientMap.set(String(c.id), c); });
+                    remoteClients.forEach(c => { if(c && c.id) clientMap.set(String(c.id), c); });
+                    clients = Array.from(clientMap.values());
                 }
-                if (data.expenses && Array.isArray(data.expenses)) {
-                    expenses = data.expenses.map(e => ({
+
+                // Non-destructive merge for expenses
+                if (data.expenses && Array.isArray(data.expenses) && data.expenses.length > 0) {
+                    const remoteExpenses = data.expenses.map(e => ({
                         ...e,
                         id: String(e.id || Date.now()),
                         amount: parseAmount(e.amount),
                         date: normalizeDateToYYYYMMDD(e.date)
                     }));
+                    const expMap = new Map();
+                    expenses.forEach(e => { if(e && e.id) expMap.set(String(e.id), e); });
+                    remoteExpenses.forEach(e => { if(e && e.id) expMap.set(String(e.id), e); });
+                    expenses = Array.from(expMap.values());
                 }
-                if (data.users && Array.isArray(data.users)) {
-                    users = data.users.map(u => ({
+
+                // Non-destructive merge for users
+                if (data.users && Array.isArray(data.users) && data.users.length > 0) {
+                    const remoteUsers = data.users.map(u => ({
                         ...u,
                         id: String(u.id || Date.now())
                     }));
+                    const userMap = new Map();
+                    users.forEach(u => { if(u && u.id) userMap.set(String(u.id), u); });
+                    remoteUsers.forEach(u => { if(u && u.id) userMap.set(String(u.id), u); });
+                    users = Array.from(userMap.values());
                 }
-                if (data.history && Array.isArray(data.history)) {
-                    renewalHistory = data.history.map(h => ({
+
+                // Non-destructive merge for renewalHistory
+                if (data.history && Array.isArray(data.history) && data.history.length > 0) {
+                    const remoteHistory = data.history.map(h => ({
                         ...h,
                         id: String(h.id || Date.now()),
                         clientId: String(h.clientId || ''),
                         amount: parseAmount(h.amount),
                         date: normalizeDateToYYYYMMDD(h.date)
                     }));
+                    const histMap = new Map();
+                    renewalHistory.forEach(h => { if(h && h.id) histMap.set(String(h.id), h); });
+                    remoteHistory.forEach(h => { if(h && h.id) histMap.set(String(h.id), h); });
+                    renewalHistory = Array.from(histMap.values());
                 }
 
                 saveAllLocal();
