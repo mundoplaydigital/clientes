@@ -655,7 +655,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE LÓGICA E REGRAS -->
+    <!-- SCRIPT DE LÓGICA E REGRAS DE NEGÓCIO -->
     <script>
         let clients = [];
         let expenses = [];
@@ -686,7 +686,7 @@
             applyLogo();
             checkSession();
             
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = getTodayISOString();
             const expenseDateInput = document.getElementById('expenseDate');
             if (expenseDateInput) expenseDateInput.value = todayStr;
 
@@ -829,6 +829,14 @@
             localStorage.setItem('mundoplay_history', JSON.stringify(Array.isArray(renewalHistory) ? renewalHistory : []));
         }
 
+        function getTodayISOString() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
         function normalizeDateToYYYYMMDD(val) {
             if (!val) return '';
             if (val instanceof Date) {
@@ -857,14 +865,6 @@
                 return `${y}-${m}-${d}`;
             }
             
-            const parsed = new Date(str);
-            if (!isNaN(parsed.getTime())) {
-                const y = parsed.getFullYear();
-                const m = String(parsed.getMonth() + 1).padStart(2, '0');
-                const d = String(parsed.getDate()).padStart(2, '0');
-                return `${y}-${m}-${d}`;
-            }
-            
             return '';
         }
 
@@ -878,17 +878,43 @@
             return normalized;
         }
 
+        function getDaysDiff(expirationStr) {
+            const normalized = normalizeDateToYYYYMMDD(expirationStr);
+            if (!normalized) return null;
+            const parts = normalized.split('-');
+            if (parts.length !== 3) return null;
+
+            const y = parseInt(parts[0], 10);
+            const m = parseInt(parts[1], 10) - 1;
+            const d = parseInt(parts[2], 10);
+
+            // Fixa para o meio-dia (12:00:00) para EVITAR problemas de fuso horário / horário de verão
+            const expDate = new Date(y, m, d, 12, 0, 0);
+            const now = new Date();
+            const todayNoon = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
+
+            const diffTime = expDate - todayNoon;
+            return Math.round(diffTime / (1000 * 60 * 60 * 24));
+        }
+
         function parseAmount(val) {
             if (val === null || val === undefined || val === '') return 0;
             if (val instanceof Date) return 0;
-            if (typeof val === 'number') return isNaN(val) ? 0 : val;
+            if (typeof val === 'number') {
+                if (isNaN(val) || val > 1000000 || val < -1000000) return 0;
+                return val;
+            }
             
             let str = String(val).trim();
             if (!str) return 0;
 
-            // Filtro para prevenir que textos de data virem números gigantes
+            // Rejeita datas ISO, textos com fusos de data ou sequências de telefone/IDs longos sem vírgula/ponto
             if (/^\d{4}-\d{2}-\d{2}/.test(str) || /GMT|UTC/i.test(str) || /^\d{1,2}\/\d{1,2}\/\d{4}/.test(str)) {
                 return 0;
+            }
+            const digitsOnly = str.replace(/[^0-9]/g, '');
+            if (digitsOnly.length >= 8 && !str.includes(',') && !str.includes('.')) {
+                return 0; // Previne que números de telefone (ex: 81999999999) virem valores em Reais
             }
 
             str = str.replace(/[^0-9,.-]/g, '');
@@ -908,7 +934,8 @@
             }
 
             const num = parseFloat(str);
-            return isNaN(num) ? 0 : num;
+            if (isNaN(num) || num > 1000000 || num < -1000000) return 0;
+            return num;
         }
 
         function showToast(msg, isSuccess = true) {
@@ -1049,18 +1076,12 @@
             const grossFromClients = clients.reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
             const monthlyInc = renewalHistory.length > 0 ? grossFromHistory : grossFromClients;
 
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
             let expiringSoonCount = 0;
             let expiredCount = 0;
 
             clients.forEach(c => {
-                const normalized = normalizeDateToYYYYMMDD(c.expiration);
-                if (!normalized) return;
-                const parts = normalized.split('-');
-                const expDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                const diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+                const diffDays = getDaysDiff(c.expiration);
+                if (diffDays === null) return;
 
                 if (diffDays < 0) {
                     expiredCount++;
@@ -1082,19 +1103,14 @@
             const textColor = isDark ? '#94a3b8' : '#475569';
 
             let activeCount = 0, expiringCount = 0, expiredCount = 0, testingCount = 0;
-            const today = new Date();
-            today.setHours(0,0,0,0);
 
             clients.forEach(c => {
                 if (c.renewal === 'Em Teste') {
                     testingCount++;
                     return;
                 }
-                const normalized = normalizeDateToYYYYMMDD(c.expiration);
-                if (!normalized) return;
-                const parts = normalized.split('-');
-                const expDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                const diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+                const diffDays = getDaysDiff(c.expiration);
+                if (diffDays === null) return;
 
                 if (diffDays < 0) expiredCount++;
                 else if (diffDays <= 5) expiringCount++;
@@ -1160,22 +1176,17 @@
 
             const search = (document.getElementById('searchClientInput').value || '').toLowerCase();
             const filter = document.getElementById('filterStatusSelect').value;
-            const today = new Date();
-            today.setHours(0,0,0,0);
 
             const filtered = clients.filter(c => {
                 const matchesText = (c.name || '').toLowerCase().includes(search) || (c.phone || '').includes(search);
                 if (!matchesText) return false;
 
-                const normalized = normalizeDateToYYYYMMDD(c.expiration);
-                const parts = normalized ? normalized.split('-') : [];
-                const expDate = parts.length === 3 ? new Date(parts[0], parts[1] - 1, parts[2]) : null;
-                const diffDays = expDate ? Math.ceil((expDate - today) / (1000 * 60 * 60 * 24)) : 0;
+                const diffDays = getDaysDiff(c.expiration);
 
                 if (filter === 'ALL') return true;
-                if (filter === 'ACTIVE') return diffDays > 5 && c.renewal !== 'Em Teste';
-                if (filter === 'EXPIRING') return diffDays >= 0 && diffDays <= 5 && c.renewal !== 'Em Teste';
-                if (filter === 'EXPIRED') return diffDays < 0 && c.renewal !== 'Em Teste';
+                if (filter === 'ACTIVE') return diffDays !== null && diffDays > 5 && c.renewal !== 'Em Teste';
+                if (filter === 'EXPIRING') return diffDays !== null && diffDays >= 0 && diffDays <= 5 && c.renewal !== 'Em Teste';
+                if (filter === 'EXPIRED') return diffDays !== null && diffDays < 0 && c.renewal !== 'Em Teste';
                 if (filter === 'TESTING') return c.renewal === 'Em Teste';
                 if (filter === 'NOTIFIED') return c.renewal === 'Notificação de Atraso Enviada';
                 return true;
@@ -1189,19 +1200,16 @@
             const isAdmin = currentUser && currentUser.role === 'admin';
 
             filtered.forEach(c => {
-                const normalized = normalizeDateToYYYYMMDD(c.expiration);
-                const parts = normalized ? normalized.split('-') : [];
-                const expDate = parts.length === 3 ? new Date(parts[0], parts[1] - 1, parts[2]) : null;
-                const diffDays = expDate ? Math.ceil((expDate - today) / (1000 * 60 * 60 * 24)) : 0;
+                const diffDays = getDaysDiff(c.expiration);
 
                 let statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">Em dia</span>';
                 if (c.renewal === 'Em Teste') {
                     statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-600 dark:text-purple-400">🧪 Em Teste</span>';
                 } else if (c.renewal === 'Notificação de Atraso Enviada') {
                     statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">⚠️ Notificação Enviada</span>';
-                } else if (diffDays < 0) {
+                } else if (diffDays !== null && diffDays < 0) {
                     statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-600 dark:text-rose-400">Vencido</span>';
-                } else if (diffDays <= 5) {
+                } else if (diffDays !== null && diffDays <= 5) {
                     statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">Vence em breve</span>';
                 }
 
@@ -1244,19 +1252,14 @@
             tbody.innerHTML = '';
 
             const category = document.getElementById('alertCategorySelect').value;
-            const today = new Date();
-            today.setHours(0,0,0,0);
 
             const filtered = clients.filter(c => {
-                const normalized = normalizeDateToYYYYMMDD(c.expiration);
-                if (!normalized) return false;
-                const parts = normalized.split('-');
-                const expDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                const diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+                const diffDays = getDaysDiff(c.expiration);
+                if (diffDays === null) return false;
 
                 if (category === 'ALL') return diffDays <= 5;
                 if (category === 'EXPIRED') return diffDays < 0;
-                return diffDays === parseInt(category);
+                return diffDays === parseInt(category, 10);
             });
 
             if (filtered.length === 0) {
@@ -1433,7 +1436,7 @@
             const supplier = document.getElementById('clientSupplier').value.trim();
             const screens = document.getElementById('clientScreens').value;
             const price = parseAmount(document.getElementById('clientPrice').value);
-            const expiration = document.getElementById('clientExpiration').value;
+            const expiration = normalizeDateToYYYYMMDD(document.getElementById('clientExpiration').value);
             const renewal = document.getElementById('clientRenewal').value;
             const notes = document.getElementById('clientNotes').value.trim();
 
@@ -1456,7 +1459,7 @@
                         clientId: newClient.id,
                         clientName: name,
                         amount: price,
-                        date: normalizeDateToYYYYMMDD(new Date()),
+                        date: getTodayISOString(),
                         supplier,
                         screens
                     });
@@ -1474,18 +1477,30 @@
             const client = clients.find(c => String(c.id) === String(id));
             if (!client) return;
 
-            const today = new Date();
-            const currentExpNormalized = normalizeDateToYYYYMMDD(client.expiration);
-            let baseDate = today;
+            const normExp = normalizeDateToYYYYMMDD(client.expiration);
+            let y, m, d;
 
-            if (currentExpNormalized) {
-                const parts = currentExpNormalized.split('-');
-                const expDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                if (expDate > today) baseDate = expDate;
+            if (normExp) {
+                const parts = normExp.split('-');
+                y = parseInt(parts[0], 10);
+                m = parseInt(parts[1], 10) - 1;
+                d = parseInt(parts[2], 10);
+            } else {
+                const now = new Date();
+                y = now.getFullYear();
+                m = now.getMonth();
+                d = now.getDate();
             }
 
-            baseDate.setDate(baseDate.getDate() + 30);
-            client.expiration = normalizeDateToYYYYMMDD(baseDate);
+            // Fixa para o meio-dia (12:00) para EVITAR erros de timezone/horário de verão ao adicionar 30 dias
+            const baseDate = new Date(y, m, d, 12, 0, 0);
+            const nowNoon = new Date();
+            nowNoon.setHours(12, 0, 0, 0);
+
+            let targetDate = baseDate > nowNoon ? baseDate : nowNoon;
+            targetDate.setDate(targetDate.getDate() + 30);
+
+            client.expiration = normalizeDateToYYYYMMDD(targetDate);
             client.renewal = 'Em dia';
 
             renewalHistory.unshift({
@@ -1493,7 +1508,7 @@
                 clientId: String(client.id),
                 clientName: client.name,
                 amount: parseAmount(client.price),
-                date: normalizeDateToYYYYMMDD(new Date()),
+                date: getTodayISOString(),
                 supplier: client.supplier || '',
                 screens: client.screens || client.plan || '1 Tela'
             });
@@ -1555,7 +1570,7 @@
             const description = document.getElementById('expenseDesc').value.trim();
             const supplier = document.getElementById('expenseSupplier').value.trim();
             const amount = parseAmount(document.getElementById('expenseAmount').value);
-            const date = document.getElementById('expenseDate').value;
+            const date = normalizeDateToYYYYMMDD(document.getElementById('expenseDate').value);
 
             const newExp = {
                 id: 'exp_' + Date.now(),
@@ -1563,7 +1578,7 @@
                 supplier,
                 category: supplier,
                 amount,
-                date: normalizeDateToYYYYMMDD(date)
+                date: date || getTodayISOString()
             };
 
             expenses.unshift(newExp);
@@ -1652,16 +1667,10 @@
             currentWaClient = clients.find(c => String(c.id) === String(clientId));
             if (!currentWaClient) return;
 
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const normalized = normalizeDateToYYYYMMDD(currentWaClient.expiration);
+            const diffDays = getDaysDiff(currentWaClient.expiration);
             let autoTpl = 'ALERT_5';
 
-            if (normalized) {
-                const parts = normalized.split('-');
-                const expDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                const diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
-
+            if (diffDays !== null) {
                 if (diffDays < 0) {
                     autoTpl = 'EXPIRED';
                 } else if (diffDays === 0) {
@@ -1696,7 +1705,7 @@
             } else if (tpl === 'ALERT_2') {
                 msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence em *2 dias (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'EXPIRED_TODAY') {
-                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence *HOJE (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
+                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence *HOJE (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possible.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'EXPIRED') {
                 msg = `Olá querido (a) ${currentWaClient.name},\n\nSua assinatura *VENCEU no dia ${formattedDate}*\n\n💰 Valor: ${formattedPrice}\n\nEvite a permanência do bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else {
@@ -1769,6 +1778,7 @@
                         ...c,
                         id: String(c.id || Date.now()),
                         price: parseAmount(c.price),
+                        expiration: normalizeDateToYYYYMMDD(c.expiration),
                         screens: c.screens || c.plan || '1 Tela',
                         plan: c.screens || c.plan || '1 Tela'
                     }));
@@ -1777,7 +1787,8 @@
                     expenses = data.expenses.map(e => ({
                         ...e,
                         id: String(e.id || Date.now()),
-                        amount: parseAmount(e.amount)
+                        amount: parseAmount(e.amount),
+                        date: normalizeDateToYYYYMMDD(e.date)
                     }));
                 }
                 if (data.users && Array.isArray(data.users)) {
@@ -1791,7 +1802,8 @@
                         ...h,
                         id: String(h.id || Date.now()),
                         clientId: String(h.clientId || ''),
-                        amount: parseAmount(h.amount)
+                        amount: parseAmount(h.amount),
+                        date: normalizeDateToYYYYMMDD(h.date)
                     }));
                 }
 
