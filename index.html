@@ -1368,7 +1368,7 @@
             document.getElementById('clientId').value = id || "";
 
             if (id) {
-                const c = clients.find(item => item.id === id);
+                const c = clients.find(item => String(item.id) === String(id));
                 if (c) {
                     document.getElementById('clientName').value = c.name || "";
                     document.getElementById('clientPhone').value = c.phone || "";
@@ -1413,7 +1413,7 @@
             const notes = document.getElementById('clientNotes').value.trim();
 
             if (id) {
-                const index = clients.findIndex(c => c.id === id);
+                const index = clients.findIndex(c => String(c.id) === String(id));
                 if (index !== -1) {
                     clients[index] = { ...clients[index], name, phone, supplier, screens, plan: screens, price, expiration, renewal, notes };
                     showToast("Cliente atualizado com sucesso!");
@@ -1446,7 +1446,7 @@
         }
 
         function renewClient(id) {
-            const client = clients.find(c => c.id === id);
+            const client = clients.find(c => String(c.id) === String(id));
             if (!client) return;
 
             const today = new Date();
@@ -1465,7 +1465,7 @@
 
             renewalHistory.unshift({
                 id: 'ren_' + Date.now(),
-                clientId: client.id,
+                clientId: String(client.id),
                 clientName: client.name,
                 amount: parseAmount(client.price),
                 date: normalizeDateToYYYYMMDD(new Date()),
@@ -1480,7 +1480,7 @@
         }
 
         function deleteClient(id) {
-            clients = clients.filter(c => c.id !== id);
+            clients = clients.filter(c => String(c.id) !== String(id));
             saveAllLocal();
             renderAll();
             syncToSheets();
@@ -1488,7 +1488,7 @@
         }
 
         function openClientHistoryModal(clientId) {
-            const client = clients.find(c => c.id === clientId);
+            const client = clients.find(c => String(c.id) === String(clientId));
             if (!client) return;
 
             document.getElementById('historyClientModalTitle').innerHTML = `<i data-lucide="history" class="text-brand-500"></i> <span>Histórico: ${client.name}</span>`;
@@ -1496,7 +1496,10 @@
             const tbody = document.getElementById('clientHistoryTableBody');
             tbody.innerHTML = '';
 
-            const history = renewalHistory.filter(h => h.clientId === clientId);
+            const history = renewalHistory.filter(h => 
+                (h.clientId && String(h.clientId).trim() === String(clientId).trim()) || 
+                (h.clientName && client.name && h.clientName.trim().toLowerCase() === client.name.trim().toLowerCase())
+            );
 
             if (history.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-400">Nenhum pagamento registrado para este cliente.</td></tr>';
@@ -1552,7 +1555,7 @@
         }
 
         function deleteExpense(id) {
-            expenses = expenses.filter(e => e.id !== id);
+            expenses = expenses.filter(e => String(e.id) !== String(id));
             saveAllLocal();
             renderEarnings();
             renderCharts();
@@ -1563,7 +1566,7 @@
         function openUserModal(id = null) {
             document.getElementById('userId').value = id || "";
             if (id) {
-                const u = users.find(item => item.id === id);
+                const u = users.find(item => String(item.id) === String(id));
                 if (u) {
                     document.getElementById('userName').value = u.username || "";
                     document.getElementById('userPassword').value = u.password || "";
@@ -1589,7 +1592,7 @@
             const role = document.getElementById('userRole').value;
 
             if (id) {
-                const index = users.findIndex(u => u.id === id);
+                const index = users.findIndex(u => String(u.id) === String(id));
                 if (index !== -1) {
                     users[index] = { ...users[index], username, password, role };
                     showToast("Usuário atualizado!");
@@ -1613,7 +1616,7 @@
                 showToast("Não é possível excluir o único usuário do sistema.", false);
                 return;
             }
-            users = users.filter(u => u.id !== id);
+            users = users.filter(u => String(u.id) !== String(id));
             saveAllLocal();
             renderUsersTable();
             syncToSheets();
@@ -1621,7 +1624,7 @@
         }
 
         function openWaModal(clientId) {
-            currentWaClient = clients.find(c => c.id === clientId);
+            currentWaClient = clients.find(c => String(c.id) === String(clientId));
             if (!currentWaClient) return;
 
             const today = new Date();
@@ -1736,10 +1739,36 @@
                     return;
                 }
 
-                if (data.clients && Array.isArray(data.clients)) clients = data.clients;
-                if (data.expenses && Array.isArray(data.expenses)) expenses = data.expenses;
-                if (data.users && Array.isArray(data.users)) users = data.users;
-                if (data.history && Array.isArray(data.history)) renewalHistory = data.history;
+                if (data.clients && Array.isArray(data.clients)) {
+                    clients = data.clients.map(c => ({
+                        ...c,
+                        id: String(c.id || Date.now()),
+                        price: parseAmount(c.price),
+                        screens: c.screens || c.plan || '1 Tela',
+                        plan: c.screens || c.plan || '1 Tela'
+                    }));
+                }
+                if (data.expenses && Array.isArray(data.expenses)) {
+                    expenses = data.expenses.map(e => ({
+                        ...e,
+                        id: String(e.id || Date.now()),
+                        amount: parseAmount(e.amount)
+                    }));
+                }
+                if (data.users && Array.isArray(data.users)) {
+                    users = data.users.map(u => ({
+                        ...u,
+                        id: String(u.id || Date.now())
+                    }));
+                }
+                if (data.history && Array.isArray(data.history)) {
+                    renewalHistory = data.history.map(h => ({
+                        ...h,
+                        id: String(h.id || Date.now()),
+                        clientId: String(h.clientId || ''),
+                        amount: parseAmount(h.amount)
+                    }));
+                }
 
                 saveAllLocal();
                 renderAll();
