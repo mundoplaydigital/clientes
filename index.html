@@ -43,7 +43,7 @@
     <section id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-100 dark:bg-slate-950 transition-colors">
         <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative z-10 space-y-6">
             <div class="text-center space-y-3">
-                <img src="logo.png" alt="Mundo Play Digital" onerror="this.src='https://placehold.co/100x100/16a34a/ffffff?text=MPD'" class="app-logo-img w-24 h-24 mx-auto rounded-full object-cover border-2 border-brand-500 shadow-xl shadow-brand-500/20">
+                <img src="logo.jpg" alt="Mundo Play Digital" onerror="this.src='https://placehold.co/100x100/16a34a/ffffff?text=MPD'" class="app-logo-img w-24 h-24 mx-auto rounded-full object-cover border-2 border-brand-500 shadow-xl shadow-brand-500/20">
                 <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Mundo Play <span class="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-600 dark:text-brand-400 border border-brand-500/30 font-extrabold uppercase">DIGITAL</span></h1>
                 <p class="text-xs text-slate-500 dark:text-slate-400">Entre com suas credenciais para gerenciar a plataforma</p>
             </div>
@@ -78,7 +78,7 @@
             <!-- HEADER DA APLICAÇÃO -->
             <header class="py-3 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-between gap-4 shadow-sm transition-colors">
                 <div class="flex items-center gap-3">
-                    <img src="logo.png" alt="Logo" onerror="this.src='https://placehold.co/80x80/16a34a/ffffff?text=MPD'" class="app-logo-img w-11 h-11 rounded-full border border-brand-500 object-cover shadow-md shadow-brand-500/10">
+                    <img src="logo.jpg" alt="Logo" onerror="this.src='https://placehold.co/80x80/16a34a/ffffff?text=MPD'" class="app-logo-img w-11 h-11 rounded-full border border-brand-500 object-cover shadow-md shadow-brand-500/10">
                     <div>
                         <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2 tracking-tight">
                             Mundo Play <span class="text-[10px] px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-600 dark:text-brand-400 border border-brand-500/30">DIGITAL</span>
@@ -403,7 +403,7 @@
                 </div>
 
                 <div class="flex items-center gap-4 py-2 border-y border-slate-200 dark:border-slate-800">
-                    <img src="logo.png" id="logoSettingsPreview" onerror="this.src='https://placehold.co/100x100/16a34a/ffffff?text=MPD'" class="app-logo-img w-16 h-16 rounded-full object-cover border-2 border-brand-500 shadow-lg">
+                    <img src="logo.jpg" id="logoSettingsPreview" onerror="this.src='https://placehold.co/100x100/16a34a/ffffff?text=MPD'" class="app-logo-img w-16 h-16 rounded-full object-cover border-2 border-brand-500 shadow-lg">
                     <div class="space-y-1 flex-1">
                         <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Escolha uma foto / Imagem local</label>
                         <input type="file" id="logoFileInput" accept="image/*" onchange="handleLogoFileUpload(event)" class="text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-600 file:text-white hover:file:bg-brand-500 cursor-pointer">
@@ -417,7 +417,7 @@
 
                 <div class="flex gap-2">
                     <button onclick="saveCustomLogo()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-xl transition-all">Salvar URL do Logo</button>
-                    <button onclick="resetDefaultLogo()" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl transition-all">Restaurar logo.png Padrão</button>
+                    <button onclick="resetDefaultLogo()" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl transition-all">Restaurar logo.jpg Padrão</button>
                 </div>
             </div>
 
@@ -756,13 +756,46 @@
         }
 
         function applyLogo() {
-            const savedLogo = localStorage.getItem('mundoplay_logo_url') || 'logo.png';
+            let savedLogo = localStorage.getItem('mundoplay_logo_url');
+            if (!savedLogo || savedLogo === 'logo.png') {
+                savedLogo = 'logo.jpg';
+                localStorage.setItem('mundoplay_logo_url', 'logo.jpg');
+            }
             const logoImgs = document.querySelectorAll('.app-logo-img');
             logoImgs.forEach(img => {
                 img.src = savedLogo;
             });
             const logoInput = document.getElementById('customLogoUrl');
-            if (logoInput) logoInput.value = (savedLogo !== 'logo.png' && !savedLogo.startsWith('data:image')) ? savedLogo : '';
+            if (logoInput) logoInput.value = (savedLogo !== 'logo.jpg' && !savedLogo.startsWith('data:image')) ? savedLogo : '';
+        }
+
+        function saveCustomLogo() {
+            const url = document.getElementById('customLogoUrl').value.trim();
+            if (url) {
+                localStorage.setItem('mundoplay_logo_url', url);
+                applyLogo();
+                showToast("Logotipo da empresa atualizado!");
+            }
+        }
+
+        function handleLogoFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const dataUrl = e.target.result;
+                    localStorage.setItem('mundoplay_logo_url', dataUrl);
+                    applyLogo();
+                    showToast("Novo logotipo carregado com sucesso!");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function resetDefaultLogo() {
+            localStorage.setItem('mundoplay_logo_url', 'logo.jpg');
+            applyLogo();
+            showToast("Logotipo padrão (logo.jpg) restaurado!");
         }
 
         function saveCustomLogo() {
