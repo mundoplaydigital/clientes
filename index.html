@@ -437,7 +437,7 @@
 
                 <div class="flex flex-wrap gap-2 pt-2">
                     <button onclick="saveSheetsUrl()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition-all">Salvar URL e Sincronizar</button>
-                    <button onclick="fetchFromGoogleSheets()" class="px-5 py-2.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-xs font-bold rounded-xl transition-all">Carregar Dados do Banco</button>
+                    <button onclick="fetchFromGoogleSheets(true)" class="px-5 py-2.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-xs font-bold rounded-xl transition-all">Carregar Dados do Banco</button>
                 </div>
             </div>
         </main>
@@ -667,7 +667,7 @@
         let statusChartInstance = null;
         let financeChartInstance = null;
 
-        // URL padrão embutida e codificada (Base64) para inicialização automática
+        // URL padrão embutida e codificada (Base64) para inicialização automática do banco de dados
         const DEFAULT_SHEET_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6c0tWUExKdUJpRlpzX2FDbzZuTTRMck5HM2hBREZvblIzd1FuUlVzWHh4aU1hVXhBc1Rfak5DU1F3aVhMR1VMUWIvZXhlYw==');
 
         function getSheetUrl() {
@@ -693,6 +693,20 @@
             const sheetInput = document.getElementById('sheetApiUrl');
             if (sheetInput) sheetInput.value = getSheetUrl();
             fetchFromGoogleSheets();
+
+            // Auto-sincronização em segundo plano a cada 15 segundos
+            setInterval(() => {
+                if (currentUser) {
+                    fetchFromGoogleSheets();
+                }
+            }, 15000);
+
+            // Sincronização instantânea ao clicar/voltar para a aba
+            window.addEventListener('focus', () => {
+                if (currentUser) {
+                    fetchFromGoogleSheets();
+                }
+            });
         });
 
         function initTheme() {
@@ -1697,6 +1711,10 @@
                     headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify({ clients, expenses, users, history: renewalHistory })
                 });
+
+                setTimeout(() => {
+                    fetchFromGoogleSheets();
+                }, 1200);
             } catch (e) {
                 console.warn("Erro na sincronização com a nuvem:", e);
             }
