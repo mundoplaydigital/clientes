@@ -313,7 +313,7 @@
                     </div>
                     <div>
                         <label class="block text-slate-600 dark:text-slate-400 mb-1">Valor (R$)</label>
-                        <input type="number" step="0.01" id="expenseAmount" required placeholder="150.00" class="w-full p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white">
+                        <input type="text" id="expenseAmount" required placeholder="150,00" class="w-full p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white">
                     </div>
                     <div>
                         <label class="block text-slate-600 dark:text-slate-400 mb-1">Data</label>
@@ -541,7 +541,7 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-slate-600 dark:text-slate-400 mb-1">Valor Mensal (R$)</label>
-                        <input type="number" step="0.01" id="clientPrice" required placeholder="35.00" class="w-full p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white">
+                        <input type="text" id="clientPrice" required placeholder="40,00" class="w-full p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white">
                     </div>
                     <div>
                         <label class="block text-slate-600 dark:text-slate-400 mb-1">Data de Vencimento</label>
@@ -667,7 +667,7 @@
         let statusChartInstance = null;
         let financeChartInstance = null;
 
-        // URL padrão embutida e codificada (Base64) para inicialização automática do banco de dados
+        // URL padrão embutida e codificada (Base64)
         const DEFAULT_SHEET_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6c0tWUExKdUJpRlpzX2FDbzZuTTRMck5HM2hBREZvblIzd1FuUlVzWHh4aU1hVXhBc1Rfak5DU1F3aVhMR1VMUWIvZXhlYw==');
 
         function getSheetUrl() {
@@ -694,14 +694,12 @@
             if (sheetInput) sheetInput.value = getSheetUrl();
             fetchFromGoogleSheets();
 
-            // Auto-sincronização em segundo plano a cada 15 segundos
             setInterval(() => {
                 if (currentUser) {
                     fetchFromGoogleSheets();
                 }
             }, 15000);
 
-            // Sincronização instantânea ao clicar/voltar para a aba
             window.addEventListener('focus', () => {
                 if (currentUser) {
                     fetchFromGoogleSheets();
@@ -798,35 +796,6 @@
             showToast("Logotipo padrão (logo.jpg) restaurado!");
         }
 
-        function saveCustomLogo() {
-            const url = document.getElementById('customLogoUrl').value.trim();
-            if (url) {
-                localStorage.setItem('mundoplay_logo_url', url);
-                applyLogo();
-                showToast("Logotipo da empresa atualizado!");
-            }
-        }
-
-        function handleLogoFileUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const dataUrl = e.target.result;
-                    localStorage.setItem('mundoplay_logo_url', dataUrl);
-                    applyLogo();
-                    showToast("Novo logotipo carregado com sucesso!");
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function resetDefaultLogo() {
-            localStorage.removeItem('mundoplay_logo_url');
-            applyLogo();
-            showToast("Logotipo padrão (logo.png) restaurado!");
-        }
-
         function loadLocalData() {
             try {
                 const u = localStorage.getItem('mundoplay_users');
@@ -910,31 +879,33 @@
         }
 
         function parseAmount(val) {
+            if (val === null || val === undefined || val === '') return 0;
+            if (val instanceof Date) return 0;
             if (typeof val === 'number') return isNaN(val) ? 0 : val;
-            if (!val) return 0;
             
             let str = String(val).trim();
             if (!str) return 0;
 
-            // Mantém apenas números, vírgulas, pontos e sinal negativo
+            // Filtro para prevenir que textos de data virem números gigantes
+            if (/^\d{4}-\d{2}-\d{2}/.test(str) || /GMT|UTC/i.test(str) || /^\d{1,2}\/\d{1,2}\/\d{4}/.test(str)) {
+                return 0;
+            }
+
             str = str.replace(/[^0-9,.-]/g, '');
+            if (!str) return 0;
 
             const hasComma = str.includes(',');
             const hasDot = str.includes('.');
 
             if (hasComma && hasDot) {
                 if (str.lastIndexOf(',') > str.lastIndexOf('.')) {
-                    // Formato Brasileiro: 1.250,50 -> 1250.50
                     str = str.replace(/\./g, '').replace(',', '.');
                 } else {
-                    // Formato US: 1,250.50 -> 1250.50
                     str = str.replace(/,/g, '');
                 }
             } else if (hasComma) {
-                // Formato simples com vírgula: 40,00 -> 40.00
                 str = str.replace(',', '.');
             }
-            // Se tiver apenas ponto (ex: 40.00), mantém o ponto decimal!
 
             const num = parseFloat(str);
             return isNaN(num) ? 0 : num;
@@ -1130,7 +1101,6 @@
                 else activeCount++;
             });
 
-            // Status Pie Chart
             const ctxStatus = document.getElementById('chartStatus');
             if (ctxStatus) {
                 if (statusChartInstance) statusChartInstance.destroy();
@@ -1154,7 +1124,6 @@
                 });
             }
 
-            // Finance Bar Chart
             const ctxFinance = document.getElementById('chartFinance');
             if (ctxFinance) {
                 if (financeChartInstance) financeChartInstance.destroy();
@@ -1430,7 +1399,7 @@
                     document.getElementById('clientPhone').value = c.phone || "";
                     document.getElementById('clientSupplier').value = c.supplier || "";
                     document.getElementById('clientScreens').value = c.screens || c.plan || "1 Tela";
-                    document.getElementById('clientPrice').value = c.price || "";
+                    document.getElementById('clientPrice').value = parseAmount(c.price);
                     document.getElementById('clientExpiration').value = normalizeDateToYYYYMMDD(c.expiration);
                     document.getElementById('clientRenewal').value = c.renewal || "Em dia";
                     document.getElementById('clientNotes').value = c.notes || "";
@@ -1463,7 +1432,7 @@
             const phone = document.getElementById('clientPhone').value.trim();
             const supplier = document.getElementById('clientSupplier').value.trim();
             const screens = document.getElementById('clientScreens').value;
-            const price = parseFloat(document.getElementById('clientPrice').value || 0);
+            const price = parseAmount(document.getElementById('clientPrice').value);
             const expiration = document.getElementById('clientExpiration').value;
             const renewal = document.getElementById('clientRenewal').value;
             const notes = document.getElementById('clientNotes').value.trim();
@@ -1585,7 +1554,7 @@
             e.preventDefault();
             const description = document.getElementById('expenseDesc').value.trim();
             const supplier = document.getElementById('expenseSupplier').value.trim();
-            const amount = parseFloat(document.getElementById('expenseAmount').value || 0);
+            const amount = parseAmount(document.getElementById('expenseAmount').value);
             const date = document.getElementById('expenseDate').value;
 
             const newExp = {
