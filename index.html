@@ -211,10 +211,12 @@
                     <select id="filterStatusSelect" onchange="renderClients()" class="w-full sm:w-auto px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 focus:outline-none transition-colors">
                         <option value="ALL">Todos os Status</option>
                         <option value="ACTIVE">Em dia</option>
+                        <option value="WAITING">Aguardando Pagamento</option>
                         <option value="EXPIRING">Vencendo em breve</option>
                         <option value="EXPIRED">Vencidos</option>
                         <option value="TESTING">Em Teste</option>
                         <option value="NOTIFIED">Notificação de Atraso Enviada</option>
+                        <option value="CANCELLED">Cancelado</option>
                     </select>
                     <button onclick="openClientModal()" class="px-4 py-2.5 bg-brand-600 text-white font-bold text-xs rounded-xl shadow-lg hover:bg-brand-500 whitespace-nowrap">+ Adicionar</button>
                 </div>
@@ -888,7 +890,6 @@
             const m = parseInt(parts[1], 10) - 1;
             const d = parseInt(parts[2], 10);
 
-            // Fixa para o meio-dia (12:00:00) para EVITAR problemas de fuso horário / horário de verão
             const expDate = new Date(y, m, d, 12, 0, 0);
             const now = new Date();
             const todayNoon = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
@@ -908,13 +909,12 @@
             let str = String(val).trim();
             if (!str) return 0;
 
-            // Rejeita datas ISO, textos com fusos de data ou sequências de telefone/IDs longos sem vírgula/ponto
             if (/^\d{4}-\d{2}-\d{2}/.test(str) || /GMT|UTC/i.test(str) || /^\d{1,2}\/\d{1,2}\/\d{4}/.test(str)) {
                 return 0;
             }
             const digitsOnly = str.replace(/[^0-9]/g, '');
             if (digitsOnly.length >= 8 && !str.includes(',') && !str.includes('.')) {
-                return 0; // Previne que números de telefone (ex: 81999999999) virem valores em Reais
+                return 0;
             }
 
             str = str.replace(/[^0-9,.-]/g, '');
@@ -1184,11 +1184,13 @@
                 const diffDays = getDaysDiff(c.expiration);
 
                 if (filter === 'ALL') return true;
-                if (filter === 'ACTIVE') return diffDays !== null && diffDays > 5 && c.renewal !== 'Em Teste';
-                if (filter === 'EXPIRING') return diffDays !== null && diffDays >= 0 && diffDays <= 5 && c.renewal !== 'Em Teste';
-                if (filter === 'EXPIRED') return diffDays !== null && diffDays < 0 && c.renewal !== 'Em Teste';
+                if (filter === 'WAITING') return c.renewal === 'Aguardando pagamento';
+                if (filter === 'ACTIVE') return (c.renewal === 'Em dia' || !c.renewal) && diffDays !== null && diffDays > 5;
+                if (filter === 'EXPIRING') return (c.renewal === 'Em dia' || !c.renewal) && diffDays !== null && diffDays >= 0 && diffDays <= 5;
+                if (filter === 'EXPIRED') return (c.renewal === 'Em dia' || !c.renewal) && diffDays !== null && diffDays < 0;
                 if (filter === 'TESTING') return c.renewal === 'Em Teste';
                 if (filter === 'NOTIFIED') return c.renewal === 'Notificação de Atraso Enviada';
+                if (filter === 'CANCELLED') return c.renewal === 'Cancelado';
                 return true;
             });
 
@@ -1202,15 +1204,21 @@
             filtered.forEach(c => {
                 const diffDays = getDaysDiff(c.expiration);
 
-                let statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">Em dia</span>';
-                if (c.renewal === 'Em Teste') {
+                let statusBadge = '';
+                if (c.renewal === 'Aguardando pagamento') {
+                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">⏳ Aguardando Pagamento</span>';
+                } else if (c.renewal === 'Em Teste') {
                     statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-600 dark:text-purple-400">🧪 Em Teste</span>';
                 } else if (c.renewal === 'Notificação de Atraso Enviada') {
                     statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">⚠️ Notificação Enviada</span>';
+                } else if (c.renewal === 'Cancelado') {
+                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-500/20 text-slate-600 dark:text-slate-400">🚫 Cancelado</span>';
                 } else if (diffDays !== null && diffDays < 0) {
-                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-600 dark:text-rose-400">Vencido</span>';
+                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-600 dark:text-rose-400">🔴 Vencido</span>';
                 } else if (diffDays !== null && diffDays <= 5) {
-                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">Vence em breve</span>';
+                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">🟡 Vence em breve</span>';
+                } else {
+                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">🟢 Em dia</span>';
                 }
 
                 const tr = document.createElement('tr');
@@ -1443,7 +1451,21 @@
             if (id) {
                 const index = clients.findIndex(c => String(c.id) === String(id));
                 if (index !== -1) {
+                    const oldRenewal = clients[index].renewal;
                     clients[index] = { ...clients[index], name, phone, supplier, screens, plan: screens, price, expiration, renewal, notes };
+                    
+                    // Se o status mudou para 'Em dia' (vindo de Aguardando Pagamento ou outro), registra pagamento no histórico!
+                    if (oldRenewal !== 'Em dia' && renewal === 'Em dia') {
+                        renewalHistory.unshift({
+                            id: 'ren_' + Date.now(),
+                            clientId: String(id),
+                            clientName: name,
+                            amount: price,
+                            date: getTodayISOString(),
+                            supplier,
+                            screens
+                        });
+                    }
                     showToast("Cliente atualizado com sucesso!");
                 }
             } else {
@@ -1492,7 +1514,6 @@
                 d = now.getDate();
             }
 
-            // Fixa para o meio-dia (12:00) para EVITAR erros de timezone/horário de verão ao adicionar 30 dias
             const baseDate = new Date(y, m, d, 12, 0, 0);
             const nowNoon = new Date();
             nowNoon.setHours(12, 0, 0, 0);
@@ -1705,7 +1726,7 @@
             } else if (tpl === 'ALERT_2') {
                 msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence em *2 dias (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'EXPIRED_TODAY') {
-                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence *HOJE (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possible.\n\n\nÉ sempre um prazer te atender.`;
+                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence *HOJE (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'EXPIRED') {
                 msg = `Olá querido (a) ${currentWaClient.name},\n\nSua assinatura *VENCEU no dia ${formattedDate}*\n\n💰 Valor: ${formattedPrice}\n\nEvite a permanência do bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else {
