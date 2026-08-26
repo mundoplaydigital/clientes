@@ -33,13 +33,11 @@
 </head>
 <body class="h-full text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-950 flex flex-col antialiased selection:bg-brand-500 selection:text-white transition-colors duration-200">
 
-    <!-- Toast Notification -->
     <div id="toastNotification" class="fixed top-5 right-5 z-50 transform translate-y-[-100%] opacity-0 transition-all duration-300 pointer-events-none bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm">
         <i data-lucide="info" id="toastIcon" class="w-5 h-5 text-brand-500 shrink-0"></i>
         <span id="toastMessage" class="text-xs font-semibold">Mensagem do sistema</span>
     </div>
 
-    <!-- TELA DE LOGIN -->
     <section id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-100 dark:bg-slate-950 transition-colors">
         <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative z-10 space-y-6">
             <div class="text-center space-y-3">
@@ -70,12 +68,10 @@
         </div>
     </section>
 
-    <!-- APLICAÇÃO PRINCIPAL -->
     <div id="mainApp" class="hidden flex-1 flex flex-col min-h-screen max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8 pb-24 md:pb-10">
 
-        <!-- ESTRUTURA FIXA DO CABEÇALHO E MENU SUPERIOR -->
+        <!-- HEADER DA APLICAÇÃO -->
         <div class="sticky top-0 z-30 bg-slate-100 dark:bg-slate-950 pt-2 pb-2 transition-colors">
-            <!-- HEADER DA APLICAÇÃO -->
             <header class="py-3 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-between gap-4 shadow-sm transition-colors">
                 <div class="flex items-center gap-3">
                     <img src="logo.jpg" alt="Logo" onerror="this.src='https://placehold.co/80x80/16a34a/ffffff?text=MPD'" class="app-logo-img w-11 h-11 rounded-full border border-brand-500 object-cover shadow-md shadow-brand-500/10">
@@ -117,9 +113,10 @@
                         <i data-lucide="users" class="w-4 h-4"></i>
                         <span>Clientes</span>
                     </button>
-                    <button onclick="switchTab('alerts')" id="tab-alerts" class="tab-btn px-4 py-2.5 font-semibold text-slate-600 dark:text-slate-400 rounded-xl hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2">
+                    <button onclick="switchTab('alerts')" id="tab-alerts" class="tab-btn px-4 py-2.5 font-semibold text-slate-600 dark:text-slate-400 rounded-xl hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2 relative">
                         <i data-lucide="bell" class="w-4 h-4"></i>
                         <span>Alertas</span>
+                        <span id="tabAlertsBadge" class="hidden px-2 py-0.5 text-[10px] font-black bg-rose-500 text-white rounded-full shadow-sm animate-pulse">0</span>
                     </button>
                     <button onclick="switchTab('earnings')" id="tab-earnings" class="tab-btn px-4 py-2.5 font-semibold text-slate-600 dark:text-slate-400 rounded-xl hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-2">
                         <i data-lucide="dollar-sign" class="w-4 h-4"></i>
@@ -137,7 +134,6 @@
             </div>
         </div>
 
-        <!-- DASHBOARD -->
         <main id="view-dashboard" class="space-y-6">
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl space-y-2 transition-colors">
@@ -200,7 +196,6 @@
             </div>
         </main>
 
-        <!-- CLIENTES -->
         <main id="view-clients" class="hidden space-y-4">
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 transition-colors">
                 <div class="relative w-full sm:w-80">
@@ -215,7 +210,7 @@
                         <option value="EXPIRING">Vencendo em breve</option>
                         <option value="EXPIRED">Vencidos</option>
                         <option value="TESTING">Em Teste</option>
-                        <option value="NOTIFIED">Notificação de Atraso Enviada</option>
+                        <option value="NOTIFIED">Notificação Enviada</option>
                         <option value="CANCELLED">Cancelado</option>
                     </select>
                     <button onclick="openClientModal()" class="px-4 py-2.5 bg-brand-600 text-white font-bold text-xs rounded-xl shadow-lg hover:bg-brand-500 whitespace-nowrap">+ Adicionar</button>
@@ -242,8 +237,12 @@
             </div>
         </main>
 
-        <!-- ALERTAS DE VENCIMENTO -->
         <main id="view-alerts" class="hidden space-y-4">
+            <div id="alertHeaderBanner" class="hidden p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-xs text-amber-700 dark:text-amber-300 flex items-center gap-2.5 shadow-sm">
+                <i data-lucide="bell-ring" class="w-4 h-4 shrink-0 text-amber-500"></i>
+                <span id="alertHeaderBannerText">Atenção ao vencimento dos clientes!</span>
+            </div>
+
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 transition-colors">
                 <div>
                     <h2 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -279,7 +278,6 @@
             </div>
         </main>
 
-        <!-- GANHOS E DESPESAS -->
         <main id="view-earnings" class="hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl space-y-2 transition-colors">
@@ -364,7 +362,6 @@
             </div>
         </main>
 
-        <!-- CONTROLE DE USUÁRIOS -->
         <main id="view-users" class="hidden space-y-4">
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex items-center justify-between transition-colors">
                 <div>
@@ -393,7 +390,6 @@
             </div>
         </main>
 
-        <!-- CONFIGURAÇÃO GOOGLE SHEETS & LOGO -->
         <main id="view-sheets" class="hidden space-y-6">
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl space-y-4 max-w-2xl mx-auto transition-colors">
                 <div class="space-y-1">
@@ -443,64 +439,6 @@
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- BARRA INFERIOR MOBILE FIXA -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 border-t border-slate-200 dark:border-slate-800 backdrop-blur-md md:hidden z-40 px-2 py-2 transition-colors">
-        <div class="grid grid-cols-5 text-center text-[10px]">
-            <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white py-1">
-                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                <span>Início</span>
-            </button>
-            <button onclick="switchTab('clients')" class="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white py-1">
-                <i data-lucide="users" class="w-5 h-5"></i>
-                <span>Clientes</span>
-            </button>
-            <button onclick="switchTab('alerts')" class="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white py-1">
-                <i data-lucide="bell" class="w-5 h-5"></i>
-                <span>Alertas</span>
-            </button>
-            <button onclick="switchTab('earnings')" class="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white py-1">
-                <i data-lucide="dollar-sign" class="w-5 h-5"></i>
-                <span>Ganhos</span>
-            </button>
-            <button onclick="openMobileMoreMenu()" class="flex flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white py-1">
-                <i data-lucide="menu" class="w-5 h-5"></i>
-                <span>Mais</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- MENU "MAIS" MOBILE DRAWER -->
-    <div id="mobileMoreMenu" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex flex-col justify-end">
-        <div class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 rounded-t-3xl p-6 space-y-4 transition-colors">
-            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Menu de Navegação Extra</h3>
-                <button onclick="closeMobileMoreMenu()" class="text-slate-400 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="grid grid-cols-2 gap-3 text-xs">
-                <button onclick="toggleTheme(); closeMobileMoreMenu();" class="p-3 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-2xl flex items-center gap-2 font-bold">
-                    <i data-lucide="sun" id="mobileThemeIcon" class="w-4 h-4 text-amber-500"></i>
-                    <span id="mobileThemeLabel">Modo Claro</span>
-                </button>
-                <button onclick="openClientModal(); closeMobileMoreMenu();" class="p-3 bg-brand-600/20 text-brand-600 dark:text-brand-400 border border-brand-500/30 rounded-2xl flex items-center gap-2 font-bold">
-                    <i data-lucide="user-plus" class="w-4 h-4"></i>
-                    <span>Novo Cliente</span>
-                </button>
-                <button onclick="switchTab('users'); closeMobileMoreMenu();" class="p-3 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-2xl flex items-center gap-2">
-                    <i data-lucide="shield-check" class="w-4 h-4 text-blue-500"></i>
-                    <span>Usuários</span>
-                </button>
-                <button onclick="switchTab('sheets'); closeMobileMoreMenu();" class="p-3 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-2xl flex items-center gap-2">
-                    <i data-lucide="database" class="w-4 h-4 text-emerald-500"></i>
-                    <span>Planilha & Logo</span>
-                </button>
-                <button onclick="handleLogout(); closeMobileMoreMenu();" class="p-3 bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-500/20 rounded-2xl flex items-center gap-2 font-bold col-span-2">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
-                    <span>Sair</span>
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- MODAL NOVO/EDITAR CLIENTE -->
@@ -657,7 +595,6 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE LÓGICA E REGRAS DE NEGÓCIO -->
     <script>
         let clients = [];
         let expenses = [];
@@ -669,7 +606,6 @@
         let statusChartInstance = null;
         let financeChartInstance = null;
 
-        // URL padrão embutida e codificada (Base64)
         const DEFAULT_SHEET_URL = atob('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6c0tWUExKdUJpRlpzX2FDbzZuTTRMck5HM2hBREZvblIzd1FuUlVzWHh4aU1hVXhBc1Rfak5DU1F3aVhMR1VMUWIvZXhlYw==');
 
         function getSheetUrl() {
@@ -737,20 +673,9 @@
 
         function updateThemeIcons() {
             const isDark = document.documentElement.classList.contains('dark');
-            
             const headerBtn = document.getElementById('btnThemeToggle');
             if (headerBtn) {
                 headerBtn.innerHTML = isDark ? `<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>` : `<i data-lucide="moon" class="w-4 h-4 text-indigo-600"></i>`;
-            }
-
-            const mobileLabel = document.getElementById('mobileThemeLabel');
-            const mobileIcon = document.getElementById('mobileThemeIcon');
-            if (mobileLabel) {
-                mobileLabel.innerText = isDark ? 'Modo Claro' : 'Modo Escuro';
-            }
-            if (mobileIcon) {
-                mobileIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-                mobileIcon.className = isDark ? 'w-4 h-4 text-amber-400' : 'w-4 h-4 text-indigo-500';
             }
             lucide.createIcons();
         }
@@ -762,9 +687,7 @@
                 localStorage.setItem('mundoplay_logo_url', 'logo.jpg');
             }
             const logoImgs = document.querySelectorAll('.app-logo-img');
-            logoImgs.forEach(img => {
-                img.src = savedLogo;
-            });
+            logoImgs.forEach(img => { img.src = savedLogo; });
             const logoInput = document.getElementById('customLogoUrl');
             if (logoInput) logoInput.value = (savedLogo !== 'logo.jpg' && !savedLogo.startsWith('data:image')) ? savedLogo : '';
         }
@@ -900,20 +823,14 @@
 
         function parseAmount(val) {
             if (val === null || val === undefined || val === '') return 0;
-            if (val instanceof Date) return 0;
             if (typeof val === 'number') {
-                if (isNaN(val) || val > 1000000 || val < -1000000) return 0;
-                return val;
+                return isNaN(val) ? 0 : val;
             }
             
             let str = String(val).trim();
             if (!str) return 0;
 
             if (/^\d{4}-\d{2}-\d{2}/.test(str) || /GMT|UTC/i.test(str) || /^\d{1,2}\/\d{1,2}\/\d{4}/.test(str)) {
-                return 0;
-            }
-            const digitsOnly = str.replace(/[^0-9]/g, '');
-            if (digitsOnly.length >= 8 && !str.includes(',') && !str.includes('.')) {
                 return 0;
             }
 
@@ -934,8 +851,7 @@
             }
 
             const num = parseFloat(str);
-            if (isNaN(num) || num > 1000000 || num < -1000000) return 0;
-            return num;
+            return isNaN(num) ? 0 : num;
         }
 
         function showToast(msg, isSuccess = true) {
@@ -1051,14 +967,6 @@
             }
         }
 
-        function openMobileMoreMenu() {
-            document.getElementById('mobileMoreMenu').classList.remove('hidden');
-        }
-
-        function closeMobileMoreMenu() {
-            document.getElementById('mobileMoreMenu').classList.add('hidden');
-        }
-
         function renderAll() {
             renderKPIs();
             renderCharts();
@@ -1066,55 +974,74 @@
             renderAlerts();
             renderEarnings();
             renderUsersTable();
+            updateAlertBadges();
         }
 
         function renderKPIs() {
             if (!Array.isArray(clients)) clients = [];
+            if (!Array.isArray(renewalHistory)) renewalHistory = [];
+
+            const totalClients = clients.length;
             
-            const total = clients.length;
-            const grossFromHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
-            const grossFromClients = clients.reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
-            const monthlyInc = renewalHistory.length > 0 ? grossFromHistory : grossFromClients;
+            const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
+            const grossClients = clients.reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
+            const totalGross = Math.max(grossHistory, grossClients);
 
             let expiringSoonCount = 0;
             let expiredCount = 0;
 
             clients.forEach(c => {
+                if (!c || c.renewal === 'Cancelado') return;
                 const diffDays = getDaysDiff(c.expiration);
-                if (diffDays === null) return;
-
-                if (diffDays < 0) {
-                    expiredCount++;
-                } else if (diffDays >= 0 && diffDays <= 5) {
-                    expiringSoonCount++;
+                if (diffDays !== null) {
+                    if (diffDays < 0) {
+                        expiredCount++;
+                    } else if (diffDays <= 5) {
+                        expiringSoonCount++;
+                    }
                 }
             });
 
-            document.getElementById('kpiTotalClients').innerText = total;
-            document.getElementById('kpiMonthlyIncome').innerText = monthlyInc.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            document.getElementById('kpiExpiringSoon').innerText = expiringSoonCount;
-            document.getElementById('kpiExpired').innerText = expiredCount;
+            const totalEl = document.getElementById('kpiTotalClients');
+            const incomeEl = document.getElementById('kpiMonthlyIncome');
+            const expiringEl = document.getElementById('kpiExpiringSoon');
+            const expiredEl = document.getElementById('kpiExpired');
+
+            if (totalEl) totalEl.innerText = totalClients;
+            if (incomeEl) incomeEl.innerText = totalGross.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            if (expiringEl) expiringEl.innerText = expiringSoonCount;
+            if (expiredEl) expiredEl.innerText = expiredCount;
         }
 
         function renderCharts() {
             if (typeof Chart === 'undefined') return;
 
             const isDark = document.documentElement.classList.contains('dark');
-            const textColor = isDark ? '#94a3b8' : '#475569';
+            const textColor = isDark ? '#cbd5e1' : '#334155';
 
-            let activeCount = 0, expiringCount = 0, expiredCount = 0, testingCount = 0;
+            // Chart 1: Status delle assinaturas
+            let activeCount = 0;
+            let waitingCount = 0;
+            let expiringCount = 0;
+            let expiredCount = 0;
+            let cancelledCount = 0;
 
             clients.forEach(c => {
-                if (c.renewal === 'Em Teste') {
-                    testingCount++;
+                if (!c) return;
+                if (c.renewal === 'Cancelado') {
+                    cancelledCount++;
                     return;
                 }
                 const diffDays = getDaysDiff(c.expiration);
-                if (diffDays === null) return;
-
-                if (diffDays < 0) expiredCount++;
-                else if (diffDays <= 5) expiringCount++;
-                else activeCount++;
+                if (diffDays !== null && diffDays < 0) {
+                    expiredCount++;
+                } else if (diffDays !== null && diffDays <= 5) {
+                    expiringCount++;
+                } else if (c.renewal === 'Aguardando pagamento' || c.renewal === 'Em Teste') {
+                    waitingCount++;
+                } else {
+                    activeCount++;
+                }
             });
 
             const ctxStatus = document.getElementById('chartStatus');
@@ -1123,43 +1050,55 @@
                 statusChartInstance = new Chart(ctxStatus, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Em Dia', 'Vencendo', 'Vencidos', 'Em Teste'],
+                        labels: ['Em dia', 'Aguardando / Teste', 'Vencem em Breve', 'Vencidos', 'Cancelados'],
                         datasets: [{
-                            data: [activeCount, expiringCount, expiredCount, testingCount],
-                            backgroundColor: ['#22c55e', '#f59e0b', '#ef4444', '#a855f7'],
-                            borderWidth: 0
+                            data: [activeCount, waitingCount, expiringCount, expiredCount, cancelledCount],
+                            backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#64748b'],
+                            borderWidth: 2,
+                            borderColor: isDark ? '#0f172a' : '#ffffff'
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { labels: { color: textColor, font: { family: 'Inter', size: 11 } } }
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: textColor, font: { size: 11, weight: '600' }, padding: 12 }
+                            }
                         }
                     }
                 });
             }
 
+            // Chart 2: Balanço financeiro
+            const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
+            const grossClients = clients.reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
+            const totalGross = Math.max(grossHistory, grossClients);
+
+            const totalExpenses = expenses.reduce((acc, e) => acc + parseAmount(e ? e.amount : 0), 0);
+            const netProfit = totalGross - totalExpenses;
+
             const ctxFinance = document.getElementById('chartFinance');
             if (ctxFinance) {
                 if (financeChartInstance) financeChartInstance.destroy();
-                const totalGross = renewalHistory.reduce((acc, r) => acc + parseAmount(r.amount), 0);
-                const totalExpenses = expenses.reduce((acc, e) => acc + parseAmount(e.amount), 0);
-
                 financeChartInstance = new Chart(ctxFinance, {
                     type: 'bar',
                     data: {
                         labels: ['Receita Bruta', 'Despesas Totais', 'Lucro Líquido'],
                         datasets: [{
-                            data: [totalGross, totalExpenses, totalGross - totalExpenses],
-                            backgroundColor: ['#16a34a', '#f43f5e', '#3b82f6'],
+                            label: 'Valor (R$)',
+                            data: [totalGross, totalExpenses, netProfit],
+                            backgroundColor: ['#10b981', '#f43f5e', '#06b6d4'],
                             borderRadius: 8
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
+                        plugins: {
+                            legend: { display: false }
+                        },
                         scales: {
                             x: { ticks: { color: textColor } },
                             y: { ticks: { color: textColor } }
@@ -1174,23 +1113,28 @@
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            const search = (document.getElementById('searchClientInput').value || '').toLowerCase();
-            const filter = document.getElementById('filterStatusSelect').value;
+            const searchTerm = (document.getElementById('searchClientInput')?.value || '').toLowerCase().trim();
+            const statusFilter = document.getElementById('filterStatusSelect')?.value || 'ALL';
 
             const filtered = clients.filter(c => {
-                const matchesText = (c.name || '').toLowerCase().includes(search) || (c.phone || '').includes(search);
-                if (!matchesText) return false;
+                if (!c) return false;
+                const matchSearch = !searchTerm || 
+                    (c.name && c.name.toLowerCase().includes(searchTerm)) || 
+                    (c.phone && c.phone.includes(searchTerm));
+
+                if (!matchSearch) return false;
 
                 const diffDays = getDaysDiff(c.expiration);
 
-                if (filter === 'ALL') return true;
-                if (filter === 'WAITING') return c.renewal === 'Aguardando pagamento';
-                if (filter === 'ACTIVE') return (c.renewal === 'Em dia' || !c.renewal) && diffDays !== null && diffDays > 5;
-                if (filter === 'EXPIRING') return (c.renewal === 'Em dia' || !c.renewal) && diffDays !== null && diffDays >= 0 && diffDays <= 5;
-                if (filter === 'EXPIRED') return (c.renewal === 'Em dia' || !c.renewal) && diffDays !== null && diffDays < 0;
-                if (filter === 'TESTING') return c.renewal === 'Em Teste';
-                if (filter === 'NOTIFIED') return c.renewal === 'Notificação de Atraso Enviada';
-                if (filter === 'CANCELLED') return c.renewal === 'Cancelado';
+                if (statusFilter === 'ALL') return true;
+                if (statusFilter === 'ACTIVE') return c.renewal === 'Em dia' && (diffDays === null || diffDays >= 0);
+                if (statusFilter === 'WAITING') return c.renewal === 'Aguardando pagamento';
+                if (statusFilter === 'EXPIRING') return diffDays !== null && diffDays >= 0 && diffDays <= 5 && c.renewal !== 'Cancelado';
+                if (statusFilter === 'EXPIRED') return diffDays !== null && diffDays < 0 && c.renewal !== 'Cancelado';
+                if (statusFilter === 'TESTING') return c.renewal === 'Em Teste';
+                if (statusFilter === 'NOTIFIED') return c.renewal === 'Notificação de Atraso Enviada';
+                if (statusFilter === 'CANCELLED') return c.renewal === 'Cancelado';
+
                 return true;
             });
 
@@ -1202,46 +1146,42 @@
             const isAdmin = currentUser && currentUser.role === 'admin';
 
             filtered.forEach(c => {
-                const diffDays = getDaysDiff(c.expiration);
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 transition-colors";
 
+                const diffDays = getDaysDiff(c.expiration);
                 let statusBadge = '';
-                if (c.renewal === 'Aguardando pagamento') {
-                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">⏳ Aguardando Pagamento</span>';
-                } else if (c.renewal === 'Em Teste') {
-                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-600 dark:text-purple-400">🧪 Em Teste</span>';
-                } else if (c.renewal === 'Notificação de Atraso Enviada') {
-                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">⚠️ Notificação Enviada</span>';
-                } else if (c.renewal === 'Cancelado') {
-                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-500/20 text-slate-600 dark:text-slate-400">🚫 Cancelado</span>';
+
+                if (c.renewal === 'Cancelado') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">🚫 Cancelado</span>`;
                 } else if (diffDays !== null && diffDays < 0) {
-                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-600 dark:text-rose-400">🔴 Vencido</span>';
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30">🔴 Vencido (${Math.abs(diffDays)}d)</span>`;
                 } else if (diffDays !== null && diffDays <= 5) {
-                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400">🟡 Vence em breve</span>';
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">⚠️ Vence em ${diffDays}d</span>`;
+                } else if (c.renewal === 'Aguardando pagamento') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30">⏳ Aguardando Pagamento</span>`;
+                } else if (c.renewal === 'Em Teste') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30">🧪 Em Teste</span>`;
                 } else {
-                    statusBadge = '<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">🟢 Em dia</span>';
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">✅ Em dia</span>`;
                 }
 
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800/60";
                 tr.innerHTML = `
                     <td class="p-3.5">
-                        <div class="font-bold text-slate-900 dark:text-white">${c.name}</div>
-                        <div class="text-[10px] text-slate-400">${c.notes || 'Sem observações'}</div>
+                        <div class="font-bold text-slate-900 dark:text-white">${c.name || 'Sem nome'}</div>
+                        ${c.notes ? `<div class="text-[10px] text-slate-400 truncate max-w-[180px]">${c.notes}</div>` : ''}
                     </td>
                     <td class="p-3.5">
-                        <div class="font-mono">${c.phone}</div>
+                        <div class="font-mono text-slate-600 dark:text-slate-300">${c.phone || ''}</div>
                         <div class="text-[10px] text-slate-400">${c.screens || c.plan || '1 Tela'}</div>
                     </td>
-                    <td class="p-3.5 text-slate-500 dark:text-slate-400">${c.supplier || 'N/I'}</td>
+                    <td class="p-3.5 font-medium text-slate-600 dark:text-slate-300">${c.supplier || '-'}</td>
                     <td class="p-3.5 font-bold text-emerald-600 dark:text-emerald-400">${parseAmount(c.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                     <td class="p-3.5 font-mono text-slate-700 dark:text-slate-300">${safeFormatDate(c.expiration)}</td>
                     <td class="p-3.5">${statusBadge}</td>
                     <td class="p-3.5 text-right space-x-1">
-                        <button onclick="renewClient('${c.id}')" title="Renovar +30 dias" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] rounded-lg shadow inline-flex items-center gap-1">
-                            <i data-lucide="check" class="w-3 h-3"></i>
-                            <span>Renovado</span>
-                        </button>
-                        <button onclick="openWaModal('${c.id}')" title="WhatsApp" class="p-1.5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-emerald-500 hover:text-white transition-colors"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="renewClient('${c.id}')" title="Renovar +30 dias" class="p-1.5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-emerald-500 hover:text-white transition-colors"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="openWaModal('${c.id}')" title="Enviar WhatsApp" class="p-1.5 bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-emerald-600 hover:text-white transition-colors"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>
                         <button onclick="openClientHistoryModal('${c.id}')" title="Histórico" class="p-1.5 bg-brand-500/20 text-brand-600 dark:text-brand-400 rounded-lg hover:bg-brand-500 hover:text-white transition-colors"><i data-lucide="history" class="w-3.5 h-3.5"></i></button>
                         ${isAdmin ? `
                             <button onclick="openClientModal('${c.id}')" title="Editar" class="p-1.5 bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-colors"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button>
@@ -1254,14 +1194,51 @@
             lucide.createIcons();
         }
 
+        function updateAlertBadges() {
+            let totalAlerts = 0;
+
+            if (Array.isArray(clients)) {
+                clients.forEach(c => {
+                    if (!c || c.renewal === 'Cancelado') return;
+                    const diffDays = getDaysDiff(c.expiration);
+                    if (diffDays !== null && diffDays <= 5) {
+                        totalAlerts++;
+                    }
+                });
+            }
+
+            const badge = document.getElementById('tabAlertsBadge');
+            if (badge) {
+                if (totalAlerts > 0) {
+                    badge.innerText = totalAlerts;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+
+            const alertBanner = document.getElementById('alertHeaderBanner');
+            const alertText = document.getElementById('alertHeaderBannerText');
+            if (alertBanner && alertText) {
+                if (totalAlerts > 0) {
+                    alertText.innerHTML = `Atenção: Você possui <b>${totalAlerts} cliente(s)</b> com contas prestes a vencer ou já vencidas. Envie uma notificação via WhatsApp!`;
+                    alertBanner.classList.remove('hidden');
+                } else {
+                    alertBanner.classList.add('hidden');
+                }
+            }
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+
         function renderAlerts() {
             const tbody = document.getElementById('alertsTableBody');
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            const category = document.getElementById('alertCategorySelect').value;
+            const category = document.getElementById('alertCategorySelect')?.value || 'ALL';
 
             const filtered = clients.filter(c => {
+                if (!c || c.renewal === 'Cancelado') return false;
                 const diffDays = getDaysDiff(c.expiration);
                 if (diffDays === null) return false;
 
@@ -1279,8 +1256,8 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800";
                 tr.innerHTML = `
-                    <td class="p-3.5 font-bold text-slate-900 dark:text-white">${c.name}</td>
-                    <td class="p-3.5 font-mono text-slate-500 dark:text-slate-400">${c.phone}</td>
+                    <td class="p-3.5 font-bold text-slate-900 dark:text-white">${c.name || 'Cliente'}</td>
+                    <td class="p-3.5 font-mono text-slate-500 dark:text-slate-400">${c.phone || ''}</td>
                     <td class="p-3.5 font-mono text-amber-500">${safeFormatDate(c.expiration)}</td>
                     <td class="p-3.5 font-bold text-emerald-600 dark:text-emerald-400">${parseAmount(c.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                     <td class="p-3.5 text-right">
@@ -1334,7 +1311,7 @@
 
                 const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
                 const grossClients = clients.reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
-                const totalGross = renewalHistory.length > 0 ? grossHistory : grossClients;
+                const totalGross = Math.max(grossHistory, grossClients);
 
                 const totalExpenses = expenses.reduce((acc, e) => acc + parseAmount(e ? e.amount : 0), 0);
                 const netProfit = totalGross - totalExpenses;
@@ -1410,7 +1387,7 @@
                     document.getElementById('clientPhone').value = c.phone || "";
                     document.getElementById('clientSupplier').value = c.supplier || "";
                     document.getElementById('clientScreens').value = c.screens || c.plan || "1 Tela";
-                    document.getElementById('clientPrice').value = parseAmount(c.price);
+                    document.getElementById('clientPrice').value = parseAmount(c.price) > 0 ? parseAmount(c.price) : "";
                     document.getElementById('clientExpiration').value = normalizeDateToYYYYMMDD(c.expiration);
                     document.getElementById('clientRenewal').value = c.renewal || "Em dia";
                     document.getElementById('clientNotes').value = c.notes || "";
@@ -1454,7 +1431,6 @@
                     const oldRenewal = clients[index].renewal;
                     clients[index] = { ...clients[index], name, phone, supplier, screens, plan: screens, price, expiration, renewal, notes };
                     
-                    // Se o status mudou para 'Em dia' (vindo de Aguardando Pagamento ou outro), registra pagamento no histórico!
                     if (oldRenewal !== 'Em dia' && renewal === 'Em dia') {
                         renewalHistory.unshift({
                             id: 'ren_' + Date.now(),
@@ -1795,14 +1771,19 @@
                 }
 
                 if (data.clients && Array.isArray(data.clients)) {
-                    clients = data.clients.map(c => ({
-                        ...c,
-                        id: String(c.id || Date.now()),
-                        price: parseAmount(c.price),
-                        expiration: normalizeDateToYYYYMMDD(c.expiration),
-                        screens: c.screens || c.plan || '1 Tela',
-                        plan: c.screens || c.plan || '1 Tela'
-                    }));
+                    clients = data.clients.map(c => {
+                        const existing = clients.find(item => String(item.id) === String(c.id));
+                        const parsedPrice = parseAmount(c.price);
+                        const finalPrice = parsedPrice > 0 ? parsedPrice : (existing && existing.price > 0 ? existing.price : 0);
+                        return {
+                            ...c,
+                            id: String(c.id || Date.now()),
+                            price: finalPrice,
+                            expiration: normalizeDateToYYYYMMDD(c.expiration),
+                            screens: c.screens || c.plan || '1 Tela',
+                            plan: c.screens || c.plan || '1 Tela'
+                        };
+                    });
                 }
                 if (data.expenses && Array.isArray(data.expenses)) {
                     expenses = data.expenses.map(e => ({
