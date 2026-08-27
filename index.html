@@ -850,6 +850,11 @@
             let str = String(val).trim();
             if (!str) return 0;
 
+            // Rejeita explicitamente textos contendo "tela", "telas", status, nomes ou datas
+            if (/tela|telas|screen|plan|dia|aguardando|teste|cancelado|em dia/i.test(str)) {
+                return 0;
+            }
+
             if (/^\d{4}[-/]\d{2}[-/]\d{2}/.test(str) || /GMT|UTC/i.test(str) || /^\d{1,2}[-/]\d{1,2}[-/]\d{4}/.test(str)) {
                 return 0;
             }
@@ -1727,7 +1732,7 @@
             } else if (tpl === 'ALERT_2') {
                 msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence em *2 dias (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'EXPIRED_TODAY') {
-                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence *HOJE (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
+                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence *HOJE (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possible.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'EXPIRED') {
                 msg = `Olá querido (a) ${currentWaClient.name},\n\nSua assinatura *VENCEU no dia ${formattedDate}*\n\n💰 Valor: ${formattedPrice}\n\nEvite a permanência do bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else {
