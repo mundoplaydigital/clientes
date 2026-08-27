@@ -155,7 +155,7 @@
                         <i data-lucide="trending-up" class="w-4 h-4 text-emerald-500"></i>
                     </div>
                     <div id="kpiMonthlyIncome" class="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">R$ 0,00</div>
-                    <p class="text-[10px] text-slate-400 dark:text-slate-500">Soma de renovações e mensalidades</p>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500">Apenas clientes com status 'Em dia'</p>
                 </div>
 
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl space-y-2 transition-colors">
@@ -290,7 +290,7 @@
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl space-y-2 transition-colors">
                     <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold">Receita Total Bruta</span>
                     <div id="financeGrossIncome" class="text-2xl font-black text-emerald-600 dark:text-emerald-400">R$ 0,00</div>
-                    <p class="text-[10px] text-slate-400 dark:text-slate-500">Soma acumulada das renovações</p>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500">Apenas valores com status 'Em dia' ou histórico</p>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl space-y-2 transition-colors">
                     <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold">Despesas Totais</span>
@@ -843,7 +843,6 @@
             let str = String(val).trim();
             if (!str) return 0;
 
-            // Rejeita datas ISO, GMT ou datas no formato BR
             if (/^\d{4}-\d{2}-\d{2}/.test(str) || /GMT|UTC/i.test(str) || /^\d{1,2}\/\d{1,2}\/\d{4}/.test(str)) {
                 return 0;
             }
@@ -865,7 +864,7 @@
             }
 
             const num = parseFloat(str);
-            if (isNaN(num) || num > 100000) return 0; // Trava para evitar preços irreais de trilhões
+            if (isNaN(num) || num > 100000) return 0;
             return num;
         }
 
@@ -998,9 +997,12 @@
 
             const totalClients = clients.length;
             
+            // Faturamento Real: Apenas considera 'renewalHistory' e clientes com status explicitamente "Em dia"
             const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
-            const grossClients = clients.reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
-            const totalGross = Math.max(grossHistory, grossClients);
+            const grossActiveClients = clients
+                .filter(c => c && c.renewal === 'Em dia')
+                .reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
+            const totalGross = Math.max(grossHistory, grossActiveClients);
 
             let expiringSoonCount = 0;
             let expiredCount = 0;
@@ -1085,9 +1087,12 @@
                 });
             }
 
+            // Somente clientes "Em dia" entram no cálculo do gráfico financeiro
             const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
-            const grossClients = clients.reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
-            const totalGross = Math.max(grossHistory, grossClients);
+            const grossActiveClients = clients
+                .filter(c => c && c.renewal === 'Em dia')
+                .reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
+            const totalGross = Math.max(grossHistory, grossActiveClients);
 
             const totalExpenses = expenses.reduce((acc, e) => acc + parseAmount(e ? e.amount : 0), 0);
             const netProfit = totalGross - totalExpenses;
@@ -1322,9 +1327,12 @@
                 if (!Array.isArray(expenses)) expenses = [];
                 if (!Array.isArray(clients)) clients = [];
 
+                // Somente clientes com status 'Em dia' são somados à Receita Bruta se não houver histórico
                 const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
-                const grossClients = clients.reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
-                const totalGross = Math.max(grossHistory, grossClients);
+                const grossActiveClients = clients
+                    .filter(c => c && c.renewal === 'Em dia')
+                    .reduce((acc, c) => acc + parseAmount(c ? c.price : 0), 0);
+                const totalGross = Math.max(grossHistory, grossActiveClients);
 
                 const totalExpenses = expenses.reduce((acc, e) => acc + parseAmount(e ? e.amount : 0), 0);
                 const netProfit = totalGross - totalExpenses;
@@ -1402,7 +1410,7 @@
                     document.getElementById('clientScreens').value = c.screens || c.plan || "1 Tela";
                     document.getElementById('clientPrice').value = parseAmount(c.price) > 0 ? parseAmount(c.price) : "";
                     document.getElementById('clientExpiration').value = normalizeDateToYYYYMMDD(c.expiration);
-                    document.getElementById('clientRenewal').value = c.renewal || "Em dia";
+                    document.getElementById('clientRenewal').value = c.renewal || "Aguardando pagamento";
                     document.getElementById('clientNotes').value = c.notes || "";
                 }
             } else {
@@ -1415,7 +1423,7 @@
                 const nextMonth = new Date();
                 nextMonth.setDate(nextMonth.getDate() + 30);
                 document.getElementById('clientExpiration').value = normalizeDateToYYYYMMDD(nextMonth);
-                document.getElementById('clientRenewal').value = "Em dia";
+                document.getElementById('clientRenewal').value = "Aguardando pagamento";
                 document.getElementById('clientNotes').value = "";
             }
 
@@ -1444,6 +1452,7 @@
                     const oldRenewal = clients[index].renewal;
                     clients[index] = { ...clients[index], name, phone, supplier, screens, plan: screens, price, expiration, renewal, notes };
                     
+                    // Somente adiciona ao histórico financeiro se o status passou de OUTRO para "Em dia"
                     if (oldRenewal !== 'Em dia' && renewal === 'Em dia') {
                         renewalHistory.unshift({
                             id: 'ren_' + Date.now(),
@@ -1464,6 +1473,7 @@
                 };
                 clients.push(newClient);
 
+                // Somente cadastra no histórico financeiro se criado direto como "Em dia"
                 if (renewal === 'Em dia') {
                     renewalHistory.unshift({
                         id: 'ren_' + Date.now(),
@@ -1715,7 +1725,7 @@
             } else if (tpl === 'ALERT_2') {
                 msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence em *2 dias (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'EXPIRED_TODAY') {
-                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence *HOJE (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possible.\n\n\nÉ sempre um prazer te atender.`;
+                msg = `Olá querido (a) ${currentWaClient.name},\n\nPassando para lembrar que sua assinatura vence *HOJE (${formattedDate})*\n\n💰 Valor: ${formattedPrice}\n\nEvite o bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else if (tpl === 'EXPIRED') {
                 msg = `Olá querido (a) ${currentWaClient.name},\n\nSua assinatura *VENCEU no dia ${formattedDate}*\n\n💰 Valor: ${formattedPrice}\n\nEvite a permanência do bloqueio automático do seu sinal\n\nPara renovar o seu plano agora, faça um *PIX* para:\n\n*mundoplaydigital@gmail.com*\n\nPor favor, nos envie o comprovante de pagamento assim que possível.\n\n\nÉ sempre um prazer te atender.`;
             } else {
