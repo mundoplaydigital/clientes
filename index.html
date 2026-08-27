@@ -785,7 +785,8 @@
             const str = String(val).trim();
             if (!str) return '';
             
-            const isoMatch = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+            // Suporte ISO: 2026-08-27 ou 2026/08/27
+            const isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
             if (isoMatch) {
                 const y = isoMatch[1];
                 const m = isoMatch[2].padStart(2, '0');
@@ -793,11 +794,21 @@
                 return `${y}-${m}-${d}`;
             }
             
-            const brMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+            // Suporte BR: 27/08/2026 ou 27-08-2026
+            const brMatch = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
             if (brMatch) {
                 const d = brMatch[1].padStart(2, '0');
                 const m = brMatch[2].padStart(2, '0');
                 const y = brMatch[3];
+                return `${y}-${m}-${d}`;
+            }
+            
+            // Converte automaticamente strings GMT ou formatos legíveis
+            const parsed = new Date(str);
+            if (!isNaN(parsed.getTime())) {
+                const y = parsed.getFullYear();
+                const m = String(parsed.getMonth() + 1).padStart(2, '0');
+                const d = String(parsed.getDate()).padStart(2, '0');
                 return `${y}-${m}-${d}`;
             }
             
@@ -836,14 +847,14 @@
             if (val === null || val === undefined || val === '') return 0;
             if (typeof val === 'number') {
                 if (isNaN(val)) return 0;
-                if (val > 100000) return 0; // Se for ID ou telefone acidental, descarta
+                if (val > 100000) return 0; // Trava para evitar que IDs ou telefones virem valores
                 return val;
             }
             
             let str = String(val).trim();
             if (!str) return 0;
 
-            if (/^\d{4}-\d{2}-\d{2}/.test(str) || /GMT|UTC/i.test(str) || /^\d{1,2}\/\d{1,2}\/\d{4}/.test(str)) {
+            if (/^\d{4}[-/]\d{2}[-/]\d{2}/.test(str) || /GMT|UTC/i.test(str) || /^\d{1,2}[-/]\d{1,2}[-/]\d{4}/.test(str)) {
                 return 0;
             }
 
@@ -997,7 +1008,7 @@
 
             const totalClients = clients.length;
             
-            // Faturamento Real: Apenas considera 'renewalHistory' e clientes com status explicitamente "Em dia"
+            // Faturamento Real: Apenas clientes com status 'Em dia'
             const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
             const grossActiveClients = clients
                 .filter(c => c && c.renewal === 'Em dia')
@@ -1087,7 +1098,6 @@
                 });
             }
 
-            // Somente clientes "Em dia" entram no cálculo do gráfico financeiro
             const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
             const grossActiveClients = clients
                 .filter(c => c && c.renewal === 'Em dia')
@@ -1327,7 +1337,6 @@
                 if (!Array.isArray(expenses)) expenses = [];
                 if (!Array.isArray(clients)) clients = [];
 
-                // Somente clientes com status 'Em dia' são somados à Receita Bruta se não houver histórico
                 const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
                 const grossActiveClients = clients
                     .filter(c => c && c.renewal === 'Em dia')
@@ -1452,7 +1461,6 @@
                     const oldRenewal = clients[index].renewal;
                     clients[index] = { ...clients[index], name, phone, supplier, screens, plan: screens, price, expiration, renewal, notes };
                     
-                    // Somente adiciona ao histórico financeiro se o status passou de OUTRO para "Em dia"
                     if (oldRenewal !== 'Em dia' && renewal === 'Em dia') {
                         renewalHistory.unshift({
                             id: 'ren_' + Date.now(),
@@ -1473,7 +1481,6 @@
                 };
                 clients.push(newClient);
 
-                // Somente cadastra no histórico financeiro se criado direto como "Em dia"
                 if (renewal === 'Em dia') {
                     renewalHistory.unshift({
                         id: 'ren_' + Date.now(),
@@ -1801,6 +1808,9 @@
                             ? parsedPrice 
                             : ((existing && existing.price > 0 && existing.price <= 100000) ? existing.price : 0);
                             
+                        const normExp = normalizeDateToYYYYMMDD(c.expiration);
+                        const finalExp = normExp || (existing ? normalizeDateToYYYYMMDD(existing.expiration) : '');
+
                         return {
                             ...c,
                             id: String(c.id || Date.now()),
@@ -1808,7 +1818,7 @@
                             phone: String(c.phone || ''),
                             supplier: String(c.supplier || ''),
                             price: finalPrice,
-                            expiration: normalizeDateToYYYYMMDD(c.expiration),
+                            expiration: finalExp,
                             renewal: String(c.renewal || 'Aguardando pagamento'),
                             screens: String(c.screens || c.plan || '1 Tela'),
                             plan: String(c.screens || c.plan || '1 Tela'),
