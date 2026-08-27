@@ -851,8 +851,10 @@
             let str = String(val).trim();
             if (!str) return 0;
 
-            // Rejeitar texto contendo letras que não sejam do R$
-            if (/[a-zA-Z]/i.test(str.replace(/r\$/i, ''))) return 0;
+            // Rejeitar expressamente textos de telas e status
+            if (/tela|telas|plan|plano|aguardando|teste|cancelado/i.test(str)) return 0;
+
+            // Rejeitar textos com formato de data
             if (/^\d{4}[-/]\d{2}[-/]\d{2}/.test(str) || /^\d{1,2}[-/]\d{1,2}[-/]\d{4}/.test(str)) return 0;
 
             str = str.replace(/[^0-9,.-]/g, '');
@@ -874,6 +876,25 @@
             const num = parseFloat(str);
             if (isNaN(num) || num < 0 || num > 100000) return 0;
             return num;
+        }
+
+        function sanitizeClientScreens(val, defaultVal = '1 Tela') {
+            if (!val) return defaultVal;
+            let str = String(val).trim();
+            
+            // Se for apenas um dígito numérico (ex: "1", "2", "3")
+            if (/^\d+$/.test(str)) {
+                let num = parseInt(str, 10);
+                if (num >= 1 && num <= 10) return num === 1 ? '1 Tela' : `${num} Telas`;
+                // Se for um valor alto tipo 40, é um preço enviado incorretamente
+                return defaultVal;
+            }
+            
+            if (/^\d+\s*tela/i.test(str)) {
+                return str;
+            }
+            
+            return defaultVal;
         }
 
         function showToast(msg, isSuccess = true) {
@@ -1412,7 +1433,7 @@
                     document.getElementById('clientName').value = c.name || "";
                     document.getElementById('clientPhone').value = c.phone || "";
                     document.getElementById('clientSupplier').value = c.supplier || "";
-                    document.getElementById('clientScreens').value = c.screens || c.plan || "1 Tela";
+                    document.getElementById('clientScreens').value = sanitizeClientScreens(c.screens || c.plan, "1 Tela");
                     document.getElementById('clientPrice').value = parseAmount(c.price) > 0 ? parseAmount(c.price) : "";
                     document.getElementById('clientExpiration').value = normalizeDateToYYYYMMDD(c.expiration);
                     document.getElementById('clientRenewal').value = c.renewal || "Aguardando pagamento";
@@ -1445,7 +1466,7 @@
             const name = document.getElementById('clientName').value.trim();
             const phone = document.getElementById('clientPhone').value.trim();
             const supplier = document.getElementById('clientSupplier').value.trim();
-            const screens = document.getElementById('clientScreens').value;
+            const screens = sanitizeClientScreens(document.getElementById('clientScreens').value, "1 Tela");
             const price = parseAmount(document.getElementById('clientPrice').value);
             const expiration = normalizeDateToYYYYMMDD(document.getElementById('clientExpiration').value);
             const renewal = document.getElementById('clientRenewal').value;
@@ -1533,7 +1554,7 @@
                 amount: parseAmount(client.price),
                 date: getTodayISOString(),
                 supplier: client.supplier || '',
-                screens: client.screens || client.plan || '1 Tela'
+                screens: sanitizeClientScreens(client.screens || client.plan, "1 Tela")
             });
 
             saveAllLocal();
@@ -1574,7 +1595,7 @@
                         <td class="p-2.5 font-mono text-slate-700 dark:text-slate-300">${safeFormatDate(h.date)}</td>
                         <td class="p-2.5 font-bold text-emerald-600 dark:text-emerald-400">${parseAmount(h.amount).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                         <td class="p-2.5 text-slate-500">${h.supplier || 'N/I'}</td>
-                        <td class="p-2.5 text-slate-500">${h.screens || '1 Tela'}</td>
+                        <td class="p-2.5 text-slate-500">${sanitizeClientScreens(h.screens, "1 Tela")}</td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -1804,7 +1825,13 @@
                             (item.name && c.name && item.name.trim().toLowerCase() === String(c.name).trim().toLowerCase())
                         );
 
-                        const parsedPrice = parseAmount(c.price);
+                        let parsedPrice = parseAmount(c.price);
+                        
+                        // Proteção contra troca de telas/preço: Se o valor veio <= 10 e já existe um preço > 10, mantêm-se o preço existente
+                        if ((parsedPrice === 0 || parsedPrice <= 10) && existing && existing.price > 10) {
+                            parsedPrice = existing.price;
+                        }
+
                         const finalPrice = (parsedPrice > 0 && parsedPrice <= 100000) 
                             ? parsedPrice 
                             : ((existing && existing.price > 0 && existing.price <= 100000) ? existing.price : 0);
@@ -1815,7 +1842,7 @@
                         const finalSupplier = (c.supplier && String(c.supplier).trim()) || (existing ? existing.supplier : '');
                         const finalPhone = (c.phone && String(c.phone).trim()) || (existing ? existing.phone : '');
                         const finalName = (c.name && String(c.name).trim()) || (existing ? existing.name : '');
-                        const finalScreens = (c.screens && String(c.screens).trim()) || (c.plan && String(c.plan).trim()) || (existing ? existing.screens : '1 Tela');
+                        const normScreens = sanitizeClientScreens(c.screens || c.plan, existing ? existing.screens : '1 Tela');
                         const finalRenewal = (c.renewal && String(c.renewal).trim()) || (existing ? existing.renewal : 'Aguardando pagamento');
                         const finalNotes = (c.notes !== undefined && c.notes !== null && String(c.notes).trim() !== '') ? String(c.notes) : (existing ? existing.notes : '');
 
@@ -1827,8 +1854,8 @@
                             price: finalPrice,
                             expiration: finalExp,
                             renewal: finalRenewal,
-                            screens: finalScreens,
-                            plan: finalScreens,
+                            screens: normScreens,
+                            plan: normScreens,
                             notes: finalNotes
                         };
                     });
@@ -1867,7 +1894,8 @@
                         id: String(h.id || '').replace(/^'/, '').trim() || ('ren_' + Date.now()),
                         clientId: String(h.clientId || '').replace(/^'/, '').trim(),
                         amount: parseAmount(h.amount),
-                        date: normalizeDateToYYYYMMDD(h.date)
+                        date: normalizeDateToYYYYMMDD(h.date),
+                        screens: sanitizeClientScreens(h.screens, '1 Tela')
                     }));
                 }
 
