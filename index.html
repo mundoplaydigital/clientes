@@ -785,7 +785,6 @@
             const str = String(val).trim();
             if (!str) return '';
             
-            // Suporte ISO: 2026-08-27 ou 2026/08/27
             const isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
             if (isoMatch) {
                 const y = isoMatch[1];
@@ -794,7 +793,6 @@
                 return `${y}-${m}-${d}`;
             }
             
-            // Suporte BR: 27/08/2026 ou 27-08-2026
             const brMatch = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
             if (brMatch) {
                 const d = brMatch[1].padStart(2, '0');
@@ -803,7 +801,6 @@
                 return `${y}-${m}-${d}`;
             }
             
-            // Converte automaticamente strings GMT ou formatos legíveis
             const parsed = new Date(str);
             if (!isNaN(parsed.getTime())) {
                 const y = parsed.getFullYear();
@@ -846,8 +843,7 @@
         function parseAmount(val) {
             if (val === null || val === undefined || val === '') return 0;
             if (typeof val === 'number') {
-                if (isNaN(val)) return 0;
-                if (val > 100000) return 0; // Trava para evitar que IDs ou telefones virem valores
+                if (isNaN(val) || val < 0 || val > 100000) return 0;
                 return val;
             }
             
@@ -875,7 +871,7 @@
             }
 
             const num = parseFloat(str);
-            if (isNaN(num) || num > 100000) return 0;
+            if (isNaN(num) || num < 0 || num > 100000) return 0;
             return num;
         }
 
@@ -1008,7 +1004,6 @@
 
             const totalClients = clients.length;
             
-            // Faturamento Real: Apenas clientes com status 'Em dia'
             const grossHistory = renewalHistory.reduce((acc, r) => acc + parseAmount(r ? r.amount : 0), 0);
             const grossActiveClients = clients
                 .filter(c => c && c.renewal === 'Em dia')
@@ -1802,7 +1797,12 @@
 
                 if (data.clients && Array.isArray(data.clients)) {
                     clients = data.clients.map(c => {
-                        const existing = clients.find(item => String(item.id) === String(c.id));
+                        const cleanId = String(c.id || '').replace(/^'/, '').trim();
+                        const existing = clients.find(item => 
+                            (item.id && cleanId && String(item.id).trim() === cleanId) ||
+                            (item.name && c.name && item.name.trim().toLowerCase() === String(c.name).trim().toLowerCase())
+                        );
+
                         const parsedPrice = parseAmount(c.price);
                         const finalPrice = (parsedPrice > 0 && parsedPrice <= 100000) 
                             ? parsedPrice 
@@ -1811,40 +1811,60 @@
                         const normExp = normalizeDateToYYYYMMDD(c.expiration);
                         const finalExp = normExp || (existing ? normalizeDateToYYYYMMDD(existing.expiration) : '');
 
+                        const finalSupplier = (c.supplier && String(c.supplier).trim()) || (existing ? existing.supplier : '');
+                        const finalPhone = (c.phone && String(c.phone).trim()) || (existing ? existing.phone : '');
+                        const finalName = (c.name && String(c.name).trim()) || (existing ? existing.name : '');
+                        const finalScreens = (c.screens && String(c.screens).trim()) || (c.plan && String(c.plan).trim()) || (existing ? existing.screens : '1 Tela');
+                        const finalRenewal = (c.renewal && String(c.renewal).trim()) || (existing ? existing.renewal : 'Aguardando pagamento');
+                        const finalNotes = (c.notes !== undefined && c.notes !== null && String(c.notes).trim() !== '') ? String(c.notes) : (existing ? existing.notes : '');
+
                         return {
-                            ...c,
-                            id: String(c.id || Date.now()),
-                            name: String(c.name || ''),
-                            phone: String(c.phone || ''),
-                            supplier: String(c.supplier || ''),
+                            id: existing ? existing.id : (cleanId || String(Date.now())),
+                            name: finalName,
+                            phone: finalPhone,
+                            supplier: finalSupplier,
                             price: finalPrice,
                             expiration: finalExp,
-                            renewal: String(c.renewal || 'Aguardando pagamento'),
-                            screens: String(c.screens || c.plan || '1 Tela'),
-                            plan: String(c.screens || c.plan || '1 Tela'),
-                            notes: String(c.notes || '')
+                            renewal: finalRenewal,
+                            screens: finalScreens,
+                            plan: finalScreens,
+                            notes: finalNotes
                         };
                     });
                 }
+
                 if (data.expenses && Array.isArray(data.expenses)) {
-                    expenses = data.expenses.map(e => ({
-                        ...e,
-                        id: String(e.id || Date.now()),
-                        amount: parseAmount(e.amount),
-                        date: normalizeDateToYYYYMMDD(e.date)
-                    }));
+                    expenses = data.expenses.map(e => {
+                        const cleanId = String(e.id || '').replace(/^'/, '').trim();
+                        const existing = expenses.find(item => item.id && String(item.id).trim() === cleanId);
+                        const parsedAmt = parseAmount(e.amount);
+                        const finalAmt = (parsedAmt > 0 && parsedAmt <= 100000) 
+                            ? parsedAmt 
+                            : (existing ? existing.amount : 0);
+                        return {
+                            ...e,
+                            id: existing ? existing.id : (cleanId || ('exp_' + Date.now())),
+                            description: String(e.description || (existing ? existing.description : '')),
+                            supplier: String(e.supplier || e.category || (existing ? existing.supplier : '')),
+                            category: String(e.supplier || e.category || (existing ? existing.supplier : '')),
+                            amount: finalAmt,
+                            date: normalizeDateToYYYYMMDD(e.date) || (existing ? normalizeDateToYYYYMMDD(existing.date) : getTodayISOString())
+                        };
+                    });
                 }
+
                 if (data.users && Array.isArray(data.users)) {
                     users = data.users.map(u => ({
                         ...u,
-                        id: String(u.id || Date.now())
+                        id: String(u.id || '').replace(/^'/, '').trim() || String(Date.now())
                     }));
                 }
+
                 if (data.history && Array.isArray(data.history)) {
                     renewalHistory = data.history.map(h => ({
                         ...h,
-                        id: String(h.id || Date.now()),
-                        clientId: String(h.clientId || ''),
+                        id: String(h.id || '').replace(/^'/, '').trim() || ('ren_' + Date.now()),
+                        clientId: String(h.clientId || '').replace(/^'/, '').trim(),
                         amount: parseAmount(h.amount),
                         date: normalizeDateToYYYYMMDD(h.date)
                     }));
