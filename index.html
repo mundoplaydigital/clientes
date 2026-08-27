@@ -215,7 +215,6 @@
                         <option value="EXPIRING">Vencendo em breve</option>
                         <option value="EXPIRED">Vencidos</option>
                         <option value="TESTING">Em Teste</option>
-                        <option value="NOTIFIED">Notificação Enviada</option>
                         <option value="CANCELLED">Cancelado</option>
                     </select>
                     <button onclick="openClientModal()" class="px-4 py-2.5 bg-brand-600 text-white font-bold text-xs rounded-xl shadow-lg hover:bg-brand-500 whitespace-nowrap">+ Adicionar</button>
@@ -504,7 +503,6 @@
                         <option value="Em dia">Em dia</option>
                         <option value="Aguardando pagamento">Aguardando pagamento</option>
                         <option value="Em Teste">Em Teste</option>
-                        <option value="Notificação de Atraso Enviada">Notificação de Atraso Enviada</option>
                         <option value="Cancelado">Cancelado</option>
                     </select>
                 </div>
@@ -1177,7 +1175,6 @@
                 if (statusFilter === 'EXPIRING') return diffDays !== null && diffDays >= 0 && diffDays <= 5 && c.renewal !== 'Cancelado';
                 if (statusFilter === 'EXPIRED') return diffDays !== null && diffDays < 0 && c.renewal !== 'Cancelado';
                 if (statusFilter === 'TESTING') return c.renewal === 'Em Teste';
-                if (statusFilter === 'NOTIFIED') return c.renewal === 'Notificação de Atraso Enviada';
                 if (statusFilter === 'CANCELLED') return c.renewal === 'Cancelado';
 
                 return true;
@@ -1764,11 +1761,6 @@
             const text = encodeURIComponent(document.getElementById('waPreviewText').value);
             const cleanPhone = currentWaClient.phone.replace(/[^0-9]/g, '');
             window.open(`https://wa.me/55${cleanPhone}?text=${text}`, '_blank');
-
-            currentWaClient.renewal = 'Notificação de Atraso Enviada';
-            saveAllLocal();
-            renderClients();
-            syncToSheets();
             closeWaModal();
         }
 
