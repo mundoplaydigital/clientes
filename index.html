@@ -33,13 +33,11 @@
 </head>
 <body class="h-full text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-950 flex flex-col antialiased selection:bg-brand-500 selection:text-white transition-colors duration-200">
 
-    <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed top-5 right-5 z-50 transform translate-y-[-100%] opacity-0 transition-all duration-300 pointer-events-none bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm">
         <i data-lucide="info" id="toastIcon" class="w-5 h-5 text-brand-500 shrink-0"></i>
         <span id="toastMessage" class="text-xs font-semibold">Mensagem do sistema</span>
     </div>
 
-    <!-- TELA DE LOGIN (AUTH) -->
     <section id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-100 dark:bg-slate-950 transition-colors">
         <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative z-10 space-y-6">
             <div class="text-center space-y-3">
@@ -70,7 +68,6 @@
         </div>
     </section>
 
-    <!-- APLICAÇÃO PRINCIPAL -->
     <div id="mainApp" class="hidden flex-1 flex flex-col min-h-screen max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8 pb-24 md:pb-10">
 
         <!-- HEADER DA APLICAÇÃO -->
@@ -105,7 +102,6 @@
                 </div>
             </header>
 
-            <!-- MENU DE NAVEGAÇÃO SUPERIOR -->
             <div class="mt-2 bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 hide-scrollbar overflow-x-auto transition-colors">
                 <nav class="flex space-x-2 text-xs min-w-max">
                     <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-2.5 font-bold rounded-xl text-white bg-brand-600 transition-all flex items-center gap-2">
@@ -137,7 +133,6 @@
             </div>
         </div>
 
-        <!-- ABA DASHBOARD -->
         <main id="view-dashboard" class="space-y-6">
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl space-y-2 transition-colors">
@@ -200,7 +195,6 @@
             </div>
         </main>
 
-        <!-- ABA CLIENTES -->
         <main id="view-clients" class="hidden space-y-4">
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 transition-colors">
                 <div class="relative w-full sm:w-80">
@@ -241,7 +235,6 @@
             </div>
         </main>
 
-        <!-- ABA ALERTAS -->
         <main id="view-alerts" class="hidden space-y-4">
             <div id="alertHeaderBanner" class="hidden p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-xs text-amber-700 dark:text-amber-300 flex items-center gap-2.5 shadow-sm">
                 <i data-lucide="bell-ring" class="w-4 h-4 shrink-0 text-amber-500"></i>
@@ -283,7 +276,6 @@
             </div>
         </main>
 
-        <!-- ABA GANHOS E DESPESAS -->
         <main id="view-earnings" class="hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl space-y-2 transition-colors">
@@ -368,7 +360,6 @@
             </div>
         </main>
 
-        <!-- ABA USUÁRIOS -->
         <main id="view-users" class="hidden space-y-4">
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex items-center justify-between transition-colors">
                 <div>
@@ -397,7 +388,6 @@
             </div>
         </main>
 
-        <!-- ABA PLANILHA & LOGO -->
         <main id="view-sheets" class="hidden space-y-6">
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl space-y-4 max-w-2xl mx-auto transition-colors">
                 <div class="space-y-1">
@@ -449,7 +439,6 @@
         </main>
     </div>
 
-    <!-- MODAIS -->
     <!-- MODAL NOVO/EDITAR CLIENTE -->
     <div id="clientModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto transition-colors">
@@ -603,7 +592,6 @@
         </div>
     </div>
 
-    <!-- LOGIC SCRIPT -->
     <script>
         let clients = [];
         let expenses = [];
@@ -849,10 +837,7 @@
             let str = String(val).trim();
             if (!str) return 0;
 
-            // Rejeitar expressamente textos de telas e status
             if (/tela|telas|plan|plano|aguardando|teste|cancelado/i.test(str)) return 0;
-
-            // Rejeitar textos com formato de data
             if (/^\d{4}[-/]\d{2}[-/]\d{2}/.test(str) || /^\d{1,2}[-/]\d{1,2}[-/]\d{4}/.test(str)) return 0;
 
             str = str.replace(/[^0-9,.-]/g, '');
@@ -880,11 +865,9 @@
             if (!val) return defaultVal;
             let str = String(val).trim();
             
-            // Se for apenas um dígito numérico (ex: "1", "2", "3")
             if (/^\d+$/.test(str)) {
                 let num = parseInt(str, 10);
                 if (num >= 1 && num <= 10) return num === 1 ? '1 Tela' : `${num} Telas`;
-                // Se for um valor alto tipo 40, é um preço enviado incorretamente
                 return defaultVal;
             }
             
@@ -1819,7 +1802,6 @@
 
                         let parsedPrice = parseAmount(c.price);
                         
-                        // Proteção contra troca de telas/preço: Se o valor veio <= 10 e já existe um preço > 10, mantêm-se o preço existente
                         if ((parsedPrice === 0 || parsedPrice <= 10) && existing && existing.price > 10) {
                             parsedPrice = existing.price;
                         }
@@ -1857,17 +1839,24 @@
                     expenses = data.expenses.map(e => {
                         const cleanId = String(e.id || '').replace(/^'/, '').trim();
                         const existing = expenses.find(item => item.id && String(item.id).trim() === cleanId);
-                        const parsedAmt = parseAmount(e.amount);
-                        const finalAmt = (parsedAmt > 0 && parsedAmt <= 100000) 
-                            ? parsedAmt 
-                            : (existing ? existing.amount : 0);
+                        
+                        let parsedAmt = parseAmount(e.amount);
+                        let expSupplier = String(e.supplier || e.category || '').trim();
+
+                        if ((parseAmount(expSupplier) > 0 || /^\d+([.,]\d+)?$/.test(expSupplier)) && existing && existing.supplier && parseAmount(existing.supplier) === 0) {
+                            expSupplier = existing.supplier;
+                        }
+
+                        if (parsedAmt === 0 && existing && existing.amount > 0) {
+                            parsedAmt = existing.amount;
+                        }
+
                         return {
-                            ...e,
                             id: existing ? existing.id : (cleanId || ('exp_' + Date.now())),
-                            description: String(e.description || (existing ? existing.description : '')),
-                            supplier: String(e.supplier || e.category || (existing ? existing.supplier : '')),
-                            category: String(e.supplier || e.category || (existing ? existing.supplier : '')),
-                            amount: finalAmt,
+                            description: String(e.description || (existing ? existing.description : '')).trim(),
+                            supplier: expSupplier || (existing ? existing.supplier : 'Geral'),
+                            category: expSupplier || (existing ? existing.category : 'Geral'),
+                            amount: parsedAmt,
                             date: normalizeDateToYYYYMMDD(e.date) || (existing ? normalizeDateToYYYYMMDD(existing.date) : getTodayISOString())
                         };
                     });
